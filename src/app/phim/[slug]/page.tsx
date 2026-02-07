@@ -153,8 +153,8 @@ export default function MoviePage() {
                 <button
                     onClick={() => setTheaterMode(!theaterMode)}
                     className={`absolute top-[10px] left-[10px] z-20 px-[12px] py-[6px] rounded-full text-[11px] font-medium transition-all flex items-center gap-[6px] ${theaterMode
-                            ? 'bg-[var(--accent-color)] text-black'
-                            : 'bg-black/50 text-white hover:bg-black/70'
+                        ? 'bg-[var(--accent-color)] text-black'
+                        : 'bg-black/50 text-white hover:bg-black/70'
                         }`}
                     title="Theater Mode (T)"
                 >
@@ -232,37 +232,37 @@ export default function MoviePage() {
                     {/* Info */}
                     <div className="flex-1">
                         <h1 className="text-[26px] lg:text-[32px] font-bold text-white mb-[8px]">
-                            {movieData.name}
+                            {String(movieData.name || "")}
                         </h1>
                         <p className="text-[#FFD875] text-[16px] mb-[16px]">
-                            {movieData.origin_name}
+                            {String(movieData.origin_name || "")}
                         </p>
 
                         <div className="flex flex-wrap gap-[10px] mb-[16px]">
                             {movieData.quality && (
                                 <span className="px-[12px] py-[5px] bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black text-[12px] font-semibold rounded-full">
-                                    {movieData.quality}
+                                    {String(movieData.quality)}
                                 </span>
                             )}
                             {movieData.lang && (
                                 <span className="px-[12px] py-[5px] bg-white/10 text-white text-[12px] rounded-full border border-white/20">
-                                    {movieData.lang}
+                                    {String(movieData.lang)}
                                 </span>
                             )}
                             <span className="px-[12px] py-[5px] bg-white/10 text-white text-[12px] rounded-full border border-white/20">
-                                {movieData.year}
+                                {String(movieData.year)}
                             </span>
                             {movieData.time && (
                                 <span className="px-[12px] py-[5px] bg-white/10 text-white text-[12px] rounded-full border border-white/20">
-                                    {movieData.time}
+                                    {String(movieData.time)}
                                 </span>
                             )}
                         </div>
 
                         <div className="text-white/70 text-[14px] mb-[12px]">
                             <span className="text-white">Trạng thái: </span>
-                            <span className="text-[#FFD875]">{movieData.episode_current}</span>
-                            {movieData.episode_total && ` / ${movieData.episode_total}`}
+                            <span className="text-[#FFD875]">{String(movieData.episode_current || "")}</span>
+                            {movieData.episode_total && ` / ${String(movieData.episode_total)}`}
                         </div>
 
                         {movieData.category?.length > 0 && (
@@ -280,7 +280,7 @@ export default function MoviePage() {
 
                         {movieData.content && (
                             <div className="text-white/60 text-[14px] leading-relaxed max-h-[100px] overflow-y-auto">
-                                <div dangerouslySetInnerHTML={{ __html: movieData.content }} />
+                                <div dangerouslySetInnerHTML={{ __html: String(movieData.content || "") }} />
                             </div>
                         )}
                     </div>

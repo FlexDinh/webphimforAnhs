@@ -79,19 +79,19 @@ export default function MovieGrid({ fetchFunction, title, showFilters = false }:
                             </div>
                             {/* Badges */}
                             <div className="absolute top-[8px] left-[8px] flex flex-col gap-[4px]">
-                                {movie.quality && (
+                                {typeof movie.quality === 'string' && movie.quality && (
                                     <span className="px-[6px] py-[2px] bg-[#FFD875] text-black text-[10px] font-semibold rounded">
                                         {movie.quality}
                                     </span>
                                 )}
-                                {movie.lang && movie.lang.includes("Thuyết Minh") && (
+                                {movie.lang && typeof movie.lang === 'string' && movie.lang.includes("Thuyết Minh") && (
                                     <span className="px-[6px] py-[2px] bg-[#e74c3c] text-white text-[10px] font-semibold rounded">
                                         TM
                                     </span>
                                 )}
                             </div>
                             {/* Episode badge */}
-                            {movie.episode_current && (
+                            {typeof movie.episode_current === 'string' && movie.episode_current && (
                                 <div className="absolute bottom-[8px] right-[8px]">
                                     <span className="px-[6px] py-[2px] bg-black/70 text-white text-[10px] rounded">
                                         {movie.episode_current}
@@ -101,11 +101,11 @@ export default function MovieGrid({ fetchFunction, title, showFilters = false }:
                         </div>
                         <div className="mt-[10px]">
                             <h3 className="text-white text-[14px] font-medium truncate group-hover:text-[#FFD875] transition-colors">
-                                {movie.name}
+                                {typeof movie.name === 'string' ? movie.name : ""}
                             </h3>
                             <div className="flex items-center gap-[8px] mt-[4px]">
-                                <span className="text-[#888] text-[12px]">{movie.year}</span>
-                                {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
+                                <span className="text-[#888] text-[12px]">{String(movie.year)}</span>
+                                {movie.tmdb?.vote_average && typeof movie.tmdb.vote_average === 'number' && movie.tmdb.vote_average > 0 && (
                                     <span className="text-[#FFD875] text-[11px]">
                                         ⭐ {movie.tmdb.vote_average.toFixed(1)}
                                     </span>
