@@ -48,6 +48,12 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
+        {/* iOS & Mobile Optimization */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+
         {/* Preconnect for performance - API & Image domains */}
         <link rel="preconnect" href="https://phimapi.com" />
         <link rel="preconnect" href="https://img.ophim1.com" />
@@ -64,6 +70,9 @@ export default function RootLayout({
         {/* Preconnect for fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* Apple Touch Icon */}
+        <link rel="apple-touch-icon" href="/logo.svg" />
       </head>
       <body>
         <ClientLayout>{children}</ClientLayout>
