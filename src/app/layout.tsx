@@ -9,11 +9,14 @@ import "@ant-design/v5-patch-for-react-19";
 import "./globals.css";
 import Header from "@/component/Header";
 import Footer from "@/component/Footer";
-import SettingsPanel from "@/component/SettingsPanel";
+// import SettingsPanel from "@/component/SettingsPanel";
 import { PreferencesProvider } from "@/lib/usePreferences";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { ToastContainer } from "react-toastify";
+import dynamic from "next/dynamic";
+
+const SettingsPanel = dynamic(() => import("@/component/SettingsPanel"), { ssr: false });
 
 config.autoAddCss = false;
 
