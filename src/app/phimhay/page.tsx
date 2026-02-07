@@ -16,7 +16,7 @@ const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => 
     <div className="relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e]">
       <Image
         src={getImageUrl(movie.poster_url || movie.thumb_url)}
-        alt={movie.name}
+        alt={typeof movie.name === 'string' ? movie.name : "Movie"}
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
         sizes="(max-width: 640px) 140px, 160px"
@@ -28,14 +28,14 @@ const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => 
           <FontAwesomeIcon icon={faPlay} className="text-black text-[12px] ml-[2px]" />
         </div>
       </div>
-      {movie.quality && (
+      {typeof movie.quality === 'string' && movie.quality && (
         <span className="absolute top-[6px] left-[6px] px-[5px] py-[2px] bg-[#FFD875] text-black text-[9px] font-semibold rounded">
           {movie.quality}
         </span>
       )}
     </div>
     <h3 className="mt-[8px] text-white text-[12px] font-medium truncate group-hover:text-[#FFD875] transition-colors">
-      {movie.name}
+      {typeof movie.name === 'string' ? movie.name : ""}
     </h3>
   </div>
 ));
@@ -150,14 +150,14 @@ export default function PhimHay() {
                       </span>
                     )}
                     <span className="px-[8px] py-[3px] bg-white/10 text-white text-[11px] rounded-full">
-                      {heroMovie.year}
+                      {String(heroMovie.year || "")}
                     </span>
                   </div>
                   <h1 className="text-[28px] lg:text-[36px] font-bold text-white mb-[6px] leading-tight">
-                    {heroMovie.name}
+                    {String(heroMovie.name || "")}
                   </h1>
                   <p className="text-[14px] text-[#FFD875] mb-[16px]">
-                    {heroMovie.origin_name}
+                    {String(heroMovie.origin_name || "")}
                   </p>
                   <button
                     onClick={() => router.push(`/phim/${heroMovie.slug}`)}

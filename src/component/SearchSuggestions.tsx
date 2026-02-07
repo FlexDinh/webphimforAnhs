@@ -103,19 +103,19 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                         </div>
                         <div className="flex-1 min-w-0">
                             <h4 className="text-white text-[14px] font-medium truncate group-hover:text-[#FFD875] transition-colors">
-                                {movie.name}
+                                {String(movie.name || "")}
                             </h4>
                             <p className="text-[#888] text-[12px] truncate">
-                                {movie.origin_name}
+                                {String(movie.origin_name || "")}
                             </p>
                             <div className="flex items-center gap-[8px] mt-[4px]">
-                                {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 ? (
+                                {movie.tmdb?.vote_average && typeof movie.tmdb.vote_average === 'number' && movie.tmdb.vote_average > 0 ? (
                                     <span className="text-[10px] text-[#FFD875] bg-[#FFD87520] px-[6px] py-[2px] rounded">
                                         ⭐ {movie.tmdb.vote_average.toFixed(1)}
                                     </span>
                                 ) : null}
                                 <span className="text-[10px] text-[#888]">
-                                    {movie.year}
+                                    {String(movie.year || "")}
                                 </span>
                             </div>
                         </div>
