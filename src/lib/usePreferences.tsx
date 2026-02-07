@@ -60,10 +60,16 @@ const PreferencesContext = createContext<PreferencesContextType | null>(null);
 
 // Provider
 export function PreferencesProvider({ children }: { children: ReactNode }) {
+    const [mounted, setMounted] = useState(false);
     const [preferences, setPreferences] = useLocalStorage<UserPreferences>(
         "rophim-preferences",
         defaultPreferences
     );
+
+    // Mark as mounted after hydration
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const updatePreference = <K extends keyof UserPreferences>(
         key: K,
@@ -86,8 +92,21 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
 
     // Apply accent color CSS variable
     useEffect(() => {
-        document.documentElement.style.setProperty("--accent-color", preferences.accentColor);
-    }, [preferences.accentColor]);
+        if (mounted) {
+            document.documentElement.style.setProperty("--accent-color", preferences.accentColor);
+        }
+    }, [preferences.accentColor, mounted]);
+
+    // Render a simple wrapper during SSR/hydration to prevent mismatch
+    if (!mounted) {
+        return (
+            <PreferencesContext.Provider
+                value={{ preferences: defaultPreferences, updatePreference, toggleSection, resetPreferences }}
+            >
+                {children}
+            </PreferencesContext.Provider>
+        );
+    }
 
     return (
         <PreferencesContext.Provider
