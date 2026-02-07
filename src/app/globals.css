@@ -3,7 +3,12 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --accent-color: #FFD875;
+  --accent-color: #FFD700;
+  /* Tet Gold */
+  --tet-red: #C41E3A;
+  --tet-gold: #FFD700;
+  --tet-pink: #FFB7C5;
+  /* Cherry blossom */
 }
 
 @theme inline {

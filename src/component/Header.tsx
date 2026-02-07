@@ -66,11 +66,11 @@ export default function Header() {
               onClick={() => router.push("/phimhay")}
               className="cursor-pointer flex items-center gap-[8px]"
             >
-              <div className="w-[40px] h-[40px] rounded-xl bg-gradient-to-br from-[#FFD875] to-[#f0a500] flex items-center justify-center">
-                <span className="text-black font-bold text-[18px]">R</span>
+              <div className="w-[40px] h-[40px] rounded-xl bg-gradient-to-br from-[#C41E3A] to-[#FFD700] flex items-center justify-center">
+                <span className="text-white text-[18px]">🧧</span>
               </div>
               <span className="text-[20px] font-bold hidden sm:block">
-                Ro<span className="text-[#FFD875]">Phim</span>
+                Web<span className="text-[#FFD700]">ForAnhs</span>
               </span>
             </a>
           </div>
@@ -82,8 +82,8 @@ export default function Header() {
                 key={item.path}
                 onClick={() => router.push(item.path)}
                 className={`px-[16px] py-[8px] rounded-full text-[14px] cursor-pointer transition-all whitespace-nowrap flex items-center gap-[6px] ${isActive(item.path)
-                    ? "bg-[#FFD875] text-black font-semibold"
-                    : "hover:bg-white/10 text-white/90 hover:text-white"
+                  ? "bg-[#FFD875] text-black font-semibold"
+                  : "hover:bg-white/10 text-white/90 hover:text-white"
                   }`}
               >
                 {item.icon && <FontAwesomeIcon icon={item.icon} className="text-[12px]" />}
@@ -172,8 +172,8 @@ export default function Header() {
                     setOpenBarMenu(false);
                   }}
                   className={`px-[16px] py-[12px] rounded-xl text-[15px] cursor-pointer transition-all flex items-center gap-[10px] ${isActive(item.path)
-                      ? "bg-[#FFD875] text-black font-semibold"
-                      : "hover:bg-white/10"
+                    ? "bg-[#FFD875] text-black font-semibold"
+                    : "hover:bg-white/10"
                     }`}
                 >
                   {item.icon && <FontAwesomeIcon icon={item.icon} className="text-[14px]" />}

@@ -39,71 +39,21 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="bg-[#14161E]">
-        <div className="container mx-auto 2xl:px-[300px] xl:px-[200px] px-4 ">
-          <h5 className="leading-7 text-[#cfcfcf]">
-            Trong kỷ nguyên số ngày nay, việc xem phim miễn phí trực tuyến đã
-            trở thành nhu cầu giải trí không thể thiếu. Với sự bùng nổ của các
-            nền tảng phát trực tuyến phim, RoPhim nổi bật lên như một trang web
-            xem phim miễn phí uy tín, mang đến cho khán giả hàng loạt tác phẩm
-            điện ảnh chất lượng cao từ mọi thể loại. Hãy cùng khám phá những
-            điểm độc đáo khiến RoPhim trở thành lựa chọn hàng đầu cho những ai
-            yêu thích phim online!
-          </h5>
-          <h2 className="text-[#FFD875] text-[24.64px] font-semibold py-[24px]">
-            Giới thiệu về RoPhim – Phim hay cả rổ - Nền tảng xem online miễn phí
-            mới 2024
-          </h2>
-          <h5 className="text-[#cfcfcf] leading-7">
-            <span className=" font-semibold">RoPhim</span>, một nền tảng xem
-            phim trực tuyến hoàn toàn miễn phí, đã không ngừng phát triển để đáp
-            ứng nhu cầu giải trí của hàng triệu người dùng. Với giao diện dễ sử
-            dụng và kho phim phong phú,{" "}
-            <span className=" font-semibold">RoPhim</span> không chỉ thu hút
-            người dùng nhờ vào việc{" "}
-            <span className=" font-semibold">xem phim miễn phí trực tuyến</span>
-            , mà còn nhờ vào chất lượng video đỉnh cao. Từ phim HD đến 4K, tất
-            cả đều có tại đây, giúp bạn tận hưởng từng khoảnh khắc giải trí
-            tuyệt vời.
-          </h5>
-          <h2 className="text-[24.64px] font-semibold pt-[60px] pb-[20px]">
-            Trang web xem phim chất lượng HD 4K duy nhất tại Việt Nam
-          </h2>
-          <h5 className="text-[#cfcfcf] leading-7">
-            <span className="inline font-semibold">RoPhim</span>, không chỉ dừng
-            lại ở việc mang đến những bộ phim miễn phí. Một trong những lý do
-            trang web này trở thành lựa chọn hàng đầu là nhờ vào chất lượng hình
-            ảnh vượt trội, đặc biệt là những bộ{" "}
-            <span className="inline font-semibold">phim HD</span> và{" "}
-            <span className="inline font-semibold">phim 4K</span>. Điều này giúp
-            người dùng cảm nhận được mọi chi tiết trong từng khung hình với độ
-            sắc nét cao, không khác gì trải nghiệm rạp chiếu phim tại gia.
-          </h5>
-          <h2 className="text-[24.64px] font-semibold pt-[60px] pb-[20px]">
-            Điểm nổi bật của RoPhim
-          </h2>
-          <p className="text-[#cfcfcf] leading-7">
-            <span className="inline font-semibold">RoPhim</span> có nhiều đặc
-            điểm nổi bật mà không phải trang web nào cũng có thể cung cấp. Hãy
-            điểm qua một vài yếu tố đã giúp
-          </p>
-          <p className="text-[#cfcfcf] leading-7">
-            <span className="inline font-semibold">RoPhim</span> vươn lên trở
-            thành trang web xem phim miễn phí hàng đầu tại Việt Nam:
-          </p>
-
-          <h2 className="text-[24.64px] font-semibold pt-[60px] pb-[20px]">
-            Kết luận
-          </h2>
-          <div className="text-[#cfcfcf] leading-7">
-            Với những ưu điểm vượt trội như kho phim đa dạng, chất lượng hình
-            ảnh và âm thanh tuyệt vời, giao diện thân thiện và cập nhật thường
-            xuyên, <span className="inline font-semibold">RoPhim</span> đã khẳng
-            định được vị thế của mình trong lòng người yêu điện ảnh Việt Nam.
-            Đây là nơi lý tưởng để bạn thưởng thức những bộ phim yêu thích mà
-            không cần lo lắng về chi phí. Hãy truy cập{" "}
-            <span className="inline font-semibold">RoPhim</span> ngay hôm nay để
-            trải nghiệm những giây phút giải trí tuyệt vời nhất.
+      <div className="bg-[#14161E] py-[60px]">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-[600px] mx-auto glass rounded-[24px] p-[40px]">
+            <h2 className="text-[#FFD700] text-[28px] font-bold mb-[16px]">
+              🧧 Chúc Mừng Năm Mới 2025! 🎊
+            </h2>
+            <p className="text-white text-[18px] mb-[8px]">
+              <span className="text-[#FFD700] font-semibold">WebForAnhs</span> được dựng lên dành riêng cho
+            </p>
+            <p className="text-[#FFB7C5] text-[32px] font-bold mb-[16px]">
+              ✨ Bé Ánh ✨
+            </p>
+            <p className="text-[#888] text-[14px]">
+              Xem phim thả ga, không quảng cáo, chất lượng cao 💕
+            </p>
           </div>
         </div>
       </div>

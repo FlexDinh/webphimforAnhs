@@ -6,28 +6,28 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#191B24',
+  themeColor: '#C41E3A', // Tet Red
 };
 
 export const metadata: Metadata = {
-  title: "RoPhim - Xem Phim Online Miễn Phí | Phim Hay Cả Rổ",
-  description: "RoPhim - Trang xem phim online chất lượng cao miễn phí... Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K, Vietsub, thuyết minh. Cập nhật liên tục 2024.",
-  keywords: "xem phim, phim online, phim miễn phí, phim hay, phim HD, phim 4K, phim Vietsub, phim thuyết minh, phim chiếu rạp, phim bộ, phim lẻ, RoPhim",
-  authors: [{ name: "RoPhim" }],
+  title: "WebForAnhs - Xem Phim Online Miễn Phí | Chúc Mừng Năm Mới 🧧",
+  description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K, Vietsub, thuyết minh.",
+  keywords: "xem phim, phim online, phim miễn phí, phim hay, phim HD, phim 4K, phim Vietsub, phim thuyết minh, phim chiếu rạp, phim bộ, phim lẻ, WebForAnhs",
+  authors: [{ name: "WebForAnhs" }],
   openGraph: {
     type: "website",
-    url: "https://rophim.me/",
-    title: "RoPhim - Xem Phim Online Miễn Phí | Phim Hay Cả Rổ",
-    description: "RoPhim - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K.",
+    url: "https://webphimfor-anhs.vercel.app/",
+    title: "WebForAnhs - Xem Phim Online Miễn Phí | Chúc Mừng Năm Mới 🧧",
+    description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K.",
     images: ["/logo.svg"],
     locale: "vi_VN",
-    siteName: "RoPhim",
+    siteName: "WebForAnhs",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@RoPhim",
-    title: "RoPhim - Xem Phim Online Miễn Phí | Phim Hay Cả Rổ",
-    description: "RoPhim - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K.",
+    site: "@WebForAnhs",
+    title: "WebForAnhs - Xem Phim Online Miễn Phí | Chúc Mừng Năm Mới 🧧",
+    description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K.",
     images: ["/logo.svg"],
   },
   icons: {

@@ -62,7 +62,7 @@ const PreferencesContext = createContext<PreferencesContextType | null>(null);
 export function PreferencesProvider({ children }: { children: ReactNode }) {
     const [mounted, setMounted] = useState(false);
     const [preferences, setPreferences] = useLocalStorage<UserPreferences>(
-        "rophim-preferences",
+        "webforanhs-preferences",
         defaultPreferences
     );
 
