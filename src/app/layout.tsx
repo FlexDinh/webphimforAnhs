@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi">
+    <html lang="vi" suppressHydrationWarning>
       <head>
         {/* Preconnect for performance - API & Image domains */}
         <link rel="preconnect" href="https://phimapi.com" />
