@@ -1,14 +1,19 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import "./globals.css";
 import ClientLayout from "@/component/ClientLayout";
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#191B24',
+};
 
 export const metadata: Metadata = {
   title: "RoPhim - Xem Phim Online Miễn Phí | Phim Hay Cả Rổ",
   description: "RoPhim - Trang xem phim online chất lượng cao miễn phí... Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K, Vietsub, thuyết minh. Cập nhật liên tục 2024.",
   keywords: "xem phim, phim online, phim miễn phí, phim hay, phim HD, phim 4K, phim Vietsub, phim thuyết minh, phim chiếu rạp, phim bộ, phim lẻ, RoPhim",
   authors: [{ name: "RoPhim" }],
-  viewport: "width=device-width, initial-scale=1.0, maximum-scale=5.0",
-  themeColor: "#191B24",
   openGraph: {
     type: "website",
     url: "https://rophim.me/",
