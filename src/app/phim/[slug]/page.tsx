@@ -60,6 +60,7 @@ export default function MoviePage() {
     const [selectedServer, setSelectedServer] = useState(0);
     const [hdSource, setHdSource] = useState<string | null>(null);
     const [useHdSource, setUseHdSource] = useState(false);
+    const [theaterMode, setTheaterMode] = useState(false);
 
     useEffect(() => {
         if (!slug) return;
@@ -87,6 +88,17 @@ export default function MoviePage() {
 
         fetchMovie();
     }, [slug]);
+
+    // Keyboard shortcut for theater mode (T key)
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 't' || e.key === 'T') {
+                setTheaterMode(prev => !prev);
+            }
+        };
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, []);
 
     if (loading) {
         return (
@@ -123,19 +135,6 @@ export default function MoviePage() {
         if (serverName.toLowerCase().includes("thuyết minh") || serverName.toLowerCase().includes("lồng tiếng")) return faMicrophone;
         return faServer;
     };
-
-    const [theaterMode, setTheaterMode] = useState(false);
-
-    // Keyboard shortcut for theater mode (T key)
-    useEffect(() => {
-        const handleKeyPress = (e: KeyboardEvent) => {
-            if (e.key === 't' || e.key === 'T') {
-                setTheaterMode(prev => !prev);
-            }
-        };
-        window.addEventListener('keydown', handleKeyPress);
-        return () => window.removeEventListener('keydown', handleKeyPress);
-    }, []);
 
     return (
         <div className="min-h-screen bg-[#0F111A] pt-[70px]">
