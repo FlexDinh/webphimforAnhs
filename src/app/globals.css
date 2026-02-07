@@ -1,0 +1,414 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --accent-color: #FFD875;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ant-modal-content {
+  padding: 0 !important;
+  background: #1E2545 !important;
+}
+
+.ant-modal-body {
+  padding: 0 !important;
+  background: #1E2545 !important;
+}
+
+.ant-modal-close-x {
+  color: white !important;
+}
+
+.slick-dots li {
+  width: 70px;
+  height: 45px;
+}
+
+.slick-dots li img {
+  border-radius: 8px !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.heat:hover svg {
+  color: #f0d25c;
+}
+
+.slick-dots {
+  width: 450px;
+  height: auto;
+  position: absolute;
+  left: 60px;
+  bottom: 10%;
+  white-space: nowrap;
+}
+
+.slick-dots .slick-active {
+  border: 1px solid white;
+  border-radius: 8px !important;
+}
+
+.play:hover {
+  box-shadow: 0 5px 10px 10px rgba(255, 218, 125, .15) !important;
+}
+
+.carouselMovie .slick-disabled {
+  display: none !important;
+}
+
+.carouselMovie .slick-next {
+  right: 8px !important;
+  top: 32% !important;
+}
+
+.carouselMovie .slick-prev {
+  left: -19px !important;
+  top: 32% !important;
+  z-index: 100;
+}
+
+.carouselMovie .slick-prev::before,
+.slick-next::before {
+  font-size: 40px !important;
+}
+
+.ant-tooltip-arrow {
+  display: none !important;
+}
+
+.custom-clip-right {
+  clip-path: polygon(94.239% 100%, 5.761% 100%, 5.761% 100%, 4.826% 99.95%, 3.94% 99.803%,
+      3.113% 99.569%, 2.358% 99.256%, 1.687% 98.87%, 1.111% 98.421%,
+      0.643% 97.915%, 0.294% 97.362%, 0.075% 96.768%, 0 96.142%,
+      0 3.858%, 0 3.858%, 0.087% 3.185%, 0.338% 2.552%, 0.737% 1.968%,
+      1.269% 1.442%, 1.92% 0.984%, 2.672% 0.602%, 3.512% 0.306%,
+      4.423% 0.105%, 5.391% 0.008%, 6.4% 0.024%, 94.879% 6.625%,
+      94.879% 6.625%, 95.731% 6.732%, 96.532% 6.919%, 97.272% 7.178%,
+      97.942% 7.503%, 98.533% 7.887%, 99.038% 8.323%, 99.445% 8.805%,
+      99.747% 9.326%, 99.935% 9.88%, 100% 10.459%, 100% 96.142%,
+      100% 96.142%, 99.925% 96.768%, 99.706% 97.362%, 99.357% 97.915%,
+      98.889% 98.421%, 98.313% 98.87%, 97.642% 99.256%, 96.887% 99.569%,
+      96.06% 99.803%, 95.174% 99.95%, 94.239% 100%);
+}
+
+.custom-clip-left {
+  clip-path: polygon(5.761% 100%, 94.239% 100%, 94.239% 100%, 95.174% 99.95%, 96.06% 99.803%, 96.887% 99.569%, 97.642% 99.256%, 98.313% 98.87%, 98.889% 98.421%, 99.357% 97.915%, 99.706% 97.362%, 99.925% 96.768%, 100% 96.142%, 100% 3.858%, 100% 3.858%, 99.913% 3.185%, 99.662% 2.552%, 99.263% 1.968%, 98.731% 1.442%, 98.08% .984%, 97.328% .602%, 96.488% .306%, 95.577% .105%, 94.609% .008%, 93.6% .024%, 5.121% 6.625%, 5.121% 6.625%, 4.269% 6.732%, 3.468% 6.919%, 2.728% 7.178%, 2.058% 7.503%, 1.467% 7.887%, .962% 8.323%, .555% 8.805%, .253% 9.326%, .065% 9.88%, 0 10.459%, 0 96.142%, 0 96.142%, .075% 96.768%, .294% 97.362%, .643% 97.915%, 1.111% 98.421%, 1.687% 98.87%, 2.358% 99.256%, 3.113% 99.569%, 3.94% 99.803%, 4.826% 99.95%, 5.761% 100%);
+}
+
+@media only screen and (max-width: 1200px) {
+  .slick-dots {
+    bottom: 5%;
+  }
+
+  .play svg {
+    font-size: 20px !important;
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .slick-dots {
+    bottom: 10%;
+  }
+
+  .play svg {
+    font-size: 18px !important;
+  }
+
+  .slick-dots li {
+    width: 40px;
+    height: 40px;
+  }
+
+  .slick-dots li img {
+    border-radius: 50% !important;
+  }
+
+  .slick-dots .slick-active {
+    border-radius: 50% !important;
+  }
+
+  .slick-dots {
+    display: flex !important;
+    left: 30px !important;
+    width: 350px;
+  }
+}
+
+/* Skeleton Shimmer Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Enhanced Movie Card Hover Effects */
+.movie-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.movie-card-hover:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(255, 216, 117, 0.15);
+}
+
+.movie-card-hover:hover img {
+  filter: brightness(1.1);
+}
+
+.movie-card-hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 0 20px rgba(255, 216, 117, 0.3);
+  pointer-events: none;
+}
+
+.movie-card-hover:hover::after {
+  opacity: 1;
+}
+
+/* Image Lazy Loading with Blur */
+.lazy-image {
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.lazy-image-loading {
+  filter: blur(10px);
+  opacity: 0.7;
+}
+
+.lazy-image-loaded {
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* Parallax Effect */
+.parallax-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.parallax-bg {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* Search Suggestions Dropdown */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1E2545;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-suggestion-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-suggestion-item:hover {
+  background: rgba(255, 216, 117, 0.1);
+}
+
+.search-suggestion-item img {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar for horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch-friendly tap targets */
+@media (hover: none) and (pointer: coarse) {
+  .movie-card-hover:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .movie-card-hover:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+/* Mobile First - Small phones */
+@media only screen and (max-width: 480px) {
+  .container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .movie-card-hover:hover {
+    transform: none;
+  }
+
+  /* Touch-friendly buttons */
+  button,
+  a {
+    min-height: 40px;
+  }
+
+  /* Player optimization */
+  .aspect-video {
+    min-height: 200px;
+  }
+
+  h1 {
+    font-size: 22px !important;
+  }
+
+  h2 {
+    font-size: 16px !important;
+  }
+}
+
+/* Medium phones */
+@media only screen and (max-width: 640px) {
+  .fixed.top-0 {
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* Tablets */
+@media only screen and (max-width: 768px) {
+
+  /* Reduce hero height - use custom class instead */
+  .mobile-hero {
+    height: 45vh !important;
+    min-height: 300px !important;
+  }
+}
+
+/* Landscape mode optimization */
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+  .aspect-video {
+    max-height: 100vh !important;
+  }
+}
+
+/* Dark mode scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F111A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2d3e;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3d4e;
+}
+
+/* Prevent text selection on touch */
+.select-none {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Safe area for notched phones */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Optimize animations for mobile */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Better focus states for accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #FFD875;
+  outline-offset: 2px;
+}
