@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
   // Enable compression
   compress: true,
   // Optimize JS/CSS
-  swcMinify: true,
+  // swcMinify and minimize are enabled by default in Next.js 13+
 };
 
 export default nextConfig;
