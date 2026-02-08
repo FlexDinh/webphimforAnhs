@@ -39,28 +39,33 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
         return () => clearTimeout(timer);
     }, [searchValue]);
 
-    // Close on click/touch outside
+    // Close on click outside - only use mousedown (not touchstart which fires before tap completes)
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                onClose();
-            }
+        const handleClickOutside = (event: MouseEvent) => {
+            // Small delay to allow touch events to complete first
+            setTimeout(() => {
+                if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                    onClose();
+                }
+            }, 10);
         };
 
         if (isOpen) {
             document.addEventListener("mousedown", handleClickOutside);
-            document.addEventListener("touchstart", handleClickOutside);
         }
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
-            document.removeEventListener("touchstart", handleClickOutside);
         };
     }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
-    const handleMovieClick = (movie: OPhimMovie) => {
+    const handleMovieClick = (movie: OPhimMovie, e?: React.MouseEvent | React.TouchEvent) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         router.push(`/phim/${movie.slug}`);
         onClose();
     };
@@ -91,11 +96,8 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                 {!isLoading && suggestions.map((movie, index) => (
                     <div
                         key={`${movie._id}-${index}`}
-                        onClick={() => handleMovieClick(movie)}
-                        onTouchEnd={(e) => {
-                            e.preventDefault();
-                            handleMovieClick(movie);
-                        }}
+                        onClick={(e) => handleMovieClick(movie, e)}
+                        onTouchEnd={(e) => handleMovieClick(movie, e)}
                         className="flex items-center gap-[12px] p-[14px] rounded-[12px] cursor-pointer transition-all duration-200 hover:bg-[#ffffff10] active:bg-[#ffffff20] active:scale-[0.98] min-h-[80px]"
                         role="button"
                         tabIndex={0}
