@@ -55,14 +55,14 @@ export default function MovieGrid({ fetchFunction, title, showFilters = false }:
     return (
         <div>
             {/* Movie Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-[16px]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-[12px] sm:gap-[16px]">
                 {movies.map((movie) => (
                     <div
                         key={movie._id}
                         onClick={() => handleMovieClick(movie)}
-                        className="cursor-pointer group movie-card-hover"
+                        className="cursor-pointer group movie-card-hover touch-feedback active:scale-[0.98] transition-transform"
                     >
-                        <div className="relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e]">
+                        <div className="relative aspect-[2/3] rounded-[12px] sm:rounded-[12px] overflow-hidden bg-[#2a2d3e] shadow-lg">
                             <Image
                                 src={getImageUrl(movie.poster_url || movie.thumb_url)}
                                 alt={movie.name}

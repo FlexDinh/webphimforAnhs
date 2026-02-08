@@ -46,30 +46,30 @@ export default function Header() {
         } text-white`}
     >
       <div className="container max-w-[1400px] mx-auto">
-        <div className="flex items-center justify-between py-3 gap-[20px] h-[70px]">
+        <div className="flex items-center justify-between py-3 gap-[16px] h-[64px] sm:h-[70px]">
 
           {/* Logo + Mobile Menu */}
           <div className="flex items-center gap-[12px]">
             {/* Mobile menu toggle */}
             <button
               onClick={() => setOpenBarMenu(!openBarMenu)}
-              className="min-[1024px]:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="min-[1024px]:hidden p-3 min-w-[48px] min-h-[48px] flex items-center justify-center hover:bg-white/10 rounded-xl transition-colors active:scale-95"
             >
               <FontAwesomeIcon
                 icon={openBarMenu ? faXmark : faBars}
-                className="text-[20px]"
+                className="text-[22px]"
               />
             </button>
 
             {/* Logo */}
             <a
               onClick={() => router.push("/phimhay")}
-              className="cursor-pointer flex items-center gap-[8px]"
+              className="cursor-pointer flex items-center gap-[8px] active:scale-95 transition-transform"
             >
-              <div className="w-[40px] h-[40px] rounded-xl bg-gradient-to-br from-[#C41E3A] to-[#FFD700] flex items-center justify-center">
-                <span className="text-white text-[18px]">🧧</span>
+              <div className="w-[44px] h-[44px] sm:w-[40px] sm:h-[40px] rounded-xl bg-gradient-to-br from-[#C41E3A] to-[#FFD700] flex items-center justify-center shadow-lg">
+                <span className="text-white text-[20px] sm:text-[18px]">🧧</span>
               </div>
-              <span className="text-[20px] font-bold hidden sm:block">
+              <span className="text-[18px] sm:text-[20px] font-bold hidden sm:block">
                 Web<span className="text-[#FFD700]">ForAnhs</span>
               </span>
             </a>
@@ -148,7 +148,7 @@ export default function Header() {
                   setShowSuggestions(true);
                 }}
                 placeholder="Tìm phim, diễn viên..."
-                className="w-full pl-[40px] pr-[16px] py-[12px] text-[14px] placeholder-[#666] text-white rounded-full bg-white/10 border border-white/10 focus:outline-none"
+                className="w-full pl-[44px] pr-[16px] py-[14px] text-[16px] placeholder-[#666] text-white rounded-full bg-white/10 border border-white/10 focus:outline-none"
                 autoFocus
               />
               <SearchSuggestions
@@ -162,8 +162,8 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {openBarMenu && (
-          <nav className="min-[1024px]:hidden pb-4 border-t border-white/10 pt-4">
-            <div className="flex flex-col gap-[4px]">
+          <nav className="min-[1024px]:hidden pb-5 border-t border-white/10 pt-4">
+            <div className="flex flex-col gap-[8px]">
               {navItems.map((item) => (
                 <a
                   key={item.path}
@@ -171,12 +171,12 @@ export default function Header() {
                     router.push(item.path);
                     setOpenBarMenu(false);
                   }}
-                  className={`px-[16px] py-[12px] rounded-xl text-[15px] cursor-pointer transition-all flex items-center gap-[10px] ${isActive(item.path)
-                    ? "bg-[#FFD875] text-black font-semibold"
-                    : "hover:bg-white/10"
+                  className={`px-[20px] py-[16px] rounded-2xl text-[17px] cursor-pointer transition-all flex items-center gap-[12px] active:scale-[0.98] ${isActive(item.path)
+                    ? "bg-gradient-to-r from-[#FFD700] to-[#f0a500] text-black font-bold shadow-lg"
+                    : "hover:bg-white/10 bg-white/5"
                     }`}
                 >
-                  {item.icon && <FontAwesomeIcon icon={item.icon} className="text-[14px]" />}
+                  {item.icon && <FontAwesomeIcon icon={item.icon} className="text-[18px]" />}
                   {item.label}
                 </a>
               ))}

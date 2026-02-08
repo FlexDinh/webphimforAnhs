@@ -390,12 +390,126 @@ html {
   user-select: none;
 }
 
-/* Safe area for notched phones */
+/* Safe area for notched phones (iPhone X+) */
 @supports (padding: max(0px)) {
   body {
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Fixed header safe area */
+  .header-safe {
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+}
+
+/* ======================= */
+/* IPHONE SPECIFIC STYLES  */
+/* ======================= */
+
+/* Minimum 44px touch targets for iPhone - only for interactive elements */
+@media (max-width: 768px) {
+
+  /* Interactive buttons and nav links */
+  button:not(.inline-btn),
+  [role="button"],
+  nav a,
+  .btn-primary,
+  .btn-secondary {
+    min-height: 44px;
+  }
+
+  /* Larger, more readable text */
+  body {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Smoother scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better input styling - prevent iOS zoom */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+    border-radius: 12px;
+  }
+
+  /* Larger clickable areas for movie cards */
+  .movie-card {
+    touch-action: manipulation;
+  }
+
+  /* Smooth transitions for touch feedback */
+  .touch-feedback {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+
+  .touch-feedback:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+}
+
+/* iPhone Pro/Max specific */
+@media (max-width: 430px) {
+
+  /* Even larger touch targets for smaller screens */
+  button,
+  a,
+  [role="button"] {
+    min-height: 48px;
+  }
+
+  /* Better padding for iPhone */
+  .container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Larger font for readability */
+  p,
+  span {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+}
+
+/* iPhone SE / Mini specific */
+@media (max-width: 375px) {
+
+  /* Compact but still touch-friendly */
+  .container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* Prevent iOS scrolling issues */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS-style momentum scrolling */
+.scroll-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Hide scrollbar on iOS for cleaner look */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    scrollbar-width: none;
   }
 }
 
