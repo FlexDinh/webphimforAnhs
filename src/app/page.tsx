@@ -43,7 +43,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-[600px] mx-auto glass rounded-[24px] p-[40px]">
             <h2 className="text-[#FFD700] text-[28px] font-bold mb-[16px]">
-              🧧 Chúc Mừng Năm Mới 2025! 🎊
+              🧧 Chúc Mừng Năm Mới 2026! 🎊
             </h2>
             <p className="text-white text-[18px] mb-[8px]">
               <span className="text-[#FFD700] font-semibold">WebForAnhs</span> được dựng lên dành riêng cho

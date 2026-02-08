@@ -34,6 +34,7 @@ export default function Header() {
     { label: "Phim Mới", path: "/phimhay", icon: faPlay },
     { label: "Phim Lẻ", path: "/phim-le", icon: faFilm },
     { label: "Phim Bộ", path: "/phim-bo", icon: faTv },
+    { label: "Thể Loại", path: "/the-loai", icon: null },
     { label: "Chiếu Rạp", path: "/chieu-rap", icon: faClapperboard },
     { label: "Anime", path: "/anime", icon: null },
   ];

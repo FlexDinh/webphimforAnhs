@@ -10,6 +10,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://webphimfor-anhs.vercel.app"),
   title: "WebForAnhs - Xem Phim Online Miễn Phí | Chúc Mừng Năm Mới 🧧",
   description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K, Vietsub, thuyết minh.",
   keywords: "xem phim, phim online, phim miễn phí, phim hay, phim HD, phim 4K, phim Vietsub, phim thuyết minh, phim chiếu rạp, phim bộ, phim lẻ, WebForAnhs",
