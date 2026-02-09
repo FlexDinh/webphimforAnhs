@@ -392,9 +392,9 @@ html {
 
 /* Safe area for notched phones (iPhone X+) */
 @supports (padding: max(0px)) {
+
+  /* Only bottom safe area for home indicator */
   body {
-    padding-left: max(12px, env(safe-area-inset-left));
-    padding-right: max(12px, env(safe-area-inset-right));
     padding-bottom: env(safe-area-inset-bottom);
   }
 
