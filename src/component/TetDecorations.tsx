@@ -101,6 +101,43 @@ export default function TetDecorations() {
                     )}
                 </div>
             ))}
+
+            {/* Festive Border Frame (SVG) */}
+            <div className="fixed inset-0 pointer-events-none z-[35] hidden sm:block">
+                <svg width="100%" height="100%" className="w-full h-full">
+                    <defs>
+                        <pattern id="borderPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                            <path d="M0 20 Q10 0 20 20 T40 20" fill="none" stroke="#FFD700" strokeWidth="1" opacity="0.3" />
+                        </pattern>
+                        <linearGradient id="cornerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#FFD700" stopOpacity="0.8" />
+                            <stop offset="100%" stopColor="#FF4D4D" stopOpacity="0" />
+                        </linearGradient>
+                    </defs>
+
+                    {/* Top-Left Corner Pattern */}
+                    <path d="M20 20 L100 20 M20 20 L20 100" stroke="url(#cornerGradient)" strokeWidth="2" fill="none" />
+                    <circle cx="20" cy="20" r="4" fill="#FFD700" />
+
+                    {/* Top-Right Corner Pattern */}
+                    <g transform="translate(0,0) scale(-1, 1)" style={{ transformOrigin: 'center' }}>
+                        {/* SVG coordinate system makes generic flip hard without exact width. 
+                             Using absolute positioned divs for corners might be easier than one big SVG.
+                             Let's revert to simple border lines.
+                         */}
+                    </g>
+
+                    {/* Simple Gold Border Frame */}
+                    <rect x="10" y="10" width="calc(100% - 20px)" height="calc(100% - 20px)" rx="20" ry="20" fill="none" stroke="#FFD700" strokeWidth="1" strokeOpacity="0.3" strokeDasharray="10 5" />
+                </svg>
+
+                {/* Corner Images (Cloud Pattern) */}
+                <div className="absolute top-0 left-0 w-[150px] h-[150px] bg-[url('https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Cloud/3D/cloud_3d.png')] bg-contain bg-no-repeat opacity-20 rotate-180 mix-blend-overlay"></div>
+                <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-[url('https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Cloud/3D/cloud_3d.png')] bg-contain bg-no-repeat opacity-20 -scale-x-100 rotate-180 mix-blend-overlay"></div>
+            </div>
+
+            {/* Mobile Top Border Gradient */}
+            <div className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-red-600 via-[#FFD700] to-red-600 z-[60] sm:hidden shadow-[0_0_10px_rgba(255,215,0,0.5)]"></div>
         </div>
     );
 }

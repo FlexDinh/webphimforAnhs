@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Logo from "@/component/Logo";
 
 export default function Home() {
   const router = useRouter();
@@ -55,15 +56,12 @@ export default function Home() {
               />
             </div>
 
+
             {/* Animated logo */}
             <div className="animated-text-enter">
-              <Image
-                src="/logo.svg"
-                alt="Logo"
-                className="object-cover 2xl:w-[260px] xl:w-[250px] lg:w-[230px] md:w-[220px] sm:w-[200px] w-[180px] drop-shadow-[0_0_20px_rgba(255,215,0,0.3)]"
-                width={260}
-                height={60}
-              />
+              <div className="w-[180px] h-[60px] sm:w-[220px] sm:h-[70px] xl:w-[260px] xl:h-[80px]">
+                <Logo />
+              </div>
             </div>
 
             {/* Animated headline */}

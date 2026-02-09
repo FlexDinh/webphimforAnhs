@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import SearchSuggestions from "./SearchSuggestions";
+import Logo from "./Logo";
 
 const COUNTRIES = [
   { name: "Hàn Quốc", slug: "han-quoc" },
@@ -102,12 +103,9 @@ export default function Header() {
               onClick={() => router.push("/phimhay")}
               className="cursor-pointer flex items-center gap-[8px] active:scale-95 transition-transform"
             >
-              <div className="w-[44px] h-[44px] sm:w-[40px] sm:h-[40px] rounded-xl bg-gradient-to-br from-[#C41E3A] to-[#FFD700] flex items-center justify-center shadow-lg">
-                <span className="text-white text-[20px] sm:text-[18px]">🧧</span>
+              <div className="w-[160px] h-[50px] sm:w-[180px] sm:h-[60px]">
+                <Logo />
               </div>
-              <span className="text-[18px] sm:text-[20px] font-bold hidden sm:block">
-                Web<span className="text-[#FFD700]">ForAnhs</span>
-              </span>
             </a>
           </div>
 
