@@ -2,10 +2,10 @@
 import { useEffect, useState, memo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getLatestMovies, getMoviesByType, getImageUrl, OPhimMovie } from "@/lib/ophimApi";
+import { getLatestMovies, getMoviesByType, getMoviesByCountry, getImageUrl, OPhimMovie } from "@/lib/ophimApi";
 import { usePreferences } from "@/lib/usePreferences";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faAngleRight, faFilm, faTv, faClapperboard, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faAngleRight, faFilm, faTv, faClapperboard, faStar, faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 // Memoized MovieCard for performance
 const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => void }) => (
@@ -216,6 +216,31 @@ export default function PhimHay() {
             gradient="bg-gradient-to-br from-[#9b59b6] to-[#8e44ad]"
           />
         )}
+
+        {/* Country Sections */}
+        <MovieSection
+          title="Phim Hàn Quốc"
+          icon={faGlobe}
+          fetchFn={async () => (await getMoviesByCountry("han-quoc", 1)).items.slice(0, 8)}
+          viewAllPath="/quoc-gia/han-quoc"
+          gradient="bg-gradient-to-br from-[#FF6B9D] to-[#C44569]"
+        />
+
+        <MovieSection
+          title="Phim Trung Quốc"
+          icon={faGlobe}
+          fetchFn={async () => (await getMoviesByCountry("trung-quoc", 1)).items.slice(0, 8)}
+          viewAllPath="/quoc-gia/trung-quoc"
+          gradient="bg-gradient-to-br from-[#e74c3c] to-[#c0392b]"
+        />
+
+        <MovieSection
+          title="Phim Âu Mỹ"
+          icon={faGlobe}
+          fetchFn={async () => (await getMoviesByCountry("au-my", 1)).items.slice(0, 8)}
+          viewAllPath="/quoc-gia/au-my"
+          gradient="bg-gradient-to-br from-[#4DA6FF] to-[#2980b9]"
+        />
       </div>
     </div>
   );
