@@ -31,14 +31,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     <BottomNav />
                 </>
             ) : (
-                <>
+                <div className="bg-[#0F111A] min-h-screen flex flex-col">
                     <Header />
-                    <main className="min-h-screen pb-[80px] min-[1024px]:pb-0">{children}</main>
-                    <ToastContainer position="bottom-right" theme="dark" />
+                    <main className="flex-1">{children}</main>
                     <Footer />
+                    <div className="pb-[80px] min-[1024px]:pb-0 bg-[#0a0c14]" />
+                    <ToastContainer position="bottom-right" theme="dark" />
                     <SettingsPanel />
                     <BottomNav />
-                </>
+                </div>
             )}
         </PreferencesProvider>
     );
