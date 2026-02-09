@@ -1,5 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faFilm, faTv, faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
 
@@ -14,9 +15,32 @@ const navItems = [
 export default function BottomNav() {
     const pathname = usePathname();
     const router = useRouter();
+    const [visible, setVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            // Show when scrolling up, hide when scrolling down
+            if (currentScrollY < lastScrollY || currentScrollY < 100) {
+                setVisible(true);
+            } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                setVisible(false);
+            }
+
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY]);
 
     return (
-        <nav className="bottom-nav min-[1024px]:hidden">
+        <nav
+            className={`bottom-nav min-[1024px]:hidden transition-transform duration-300 ${visible ? "translate-y-0" : "translate-y-full"
+                }`}
+        >
             <div className="flex justify-around items-center">
                 {navItems.map((item) => (
                     <button
@@ -32,3 +56,4 @@ export default function BottomNav() {
         </nav>
     );
 }
+
