@@ -132,8 +132,8 @@ export default function Header() {
               <button
                 onClick={() => setShowCountryDropdown(!showCountryDropdown)}
                 className={`px-[16px] py-[8px] rounded-full text-[14px] cursor-pointer transition-all whitespace-nowrap flex items-center gap-[6px] ${pathname.startsWith("/quoc-gia")
-                    ? "bg-[#FFD875] text-black font-semibold"
-                    : "hover:bg-white/10 text-white/90 hover:text-white"
+                  ? "bg-[#FFD875] text-black font-semibold"
+                  : "hover:bg-white/10 text-white/90 hover:text-white"
                   }`}
               >
                 <FontAwesomeIcon icon={faGlobe} className="text-[12px]" />
@@ -254,6 +254,28 @@ export default function Header() {
                   {item.label}
                 </a>
               ))}
+
+              {/* Country Section for Mobile */}
+              <div className="mt-[8px] pt-[16px] border-t border-white/10">
+                <p className="px-[20px] text-[12px] text-[#888] uppercase tracking-wider mb-[8px] flex items-center gap-[8px]">
+                  <FontAwesomeIcon icon={faGlobe} className="text-[#FFD875]" />
+                  Quốc Gia
+                </p>
+                <div className="grid grid-cols-2 gap-[8px]">
+                  {COUNTRIES.map((country) => (
+                    <a
+                      key={country.slug}
+                      onClick={() => {
+                        router.push(`/quoc-gia/${country.slug}`);
+                        setOpenBarMenu(false);
+                      }}
+                      className="px-[16px] py-[12px] rounded-xl text-[14px] text-white bg-white/5 hover:bg-white/10 cursor-pointer transition-all active:scale-[0.98]"
+                    >
+                      {country.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
           </nav>
         )}
