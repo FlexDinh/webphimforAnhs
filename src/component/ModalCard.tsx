@@ -127,7 +127,7 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
             </div>
           }
         >
-          <div className="pr-[10px] cursor-pointer max-[1024px]:px-[5px] relative movie-card-hover">
+          <div className="pr-[10px] cursor-pointer max-[1024px]:px-[5px] relative movie-card-premium neon-glow">
             <Image
               className="w-full h-auto rounded-[10px] lazy-image"
               unoptimized

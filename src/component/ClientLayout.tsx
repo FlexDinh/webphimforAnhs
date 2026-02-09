@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "@/component/Header";
 import Footer from "@/component/Footer";
+import BottomNav from "@/component/BottomNav";
 import { PreferencesProvider } from "@/lib/usePreferences";
 import { ToastContainer } from "react-toastify";
 import dynamic from "next/dynamic";
@@ -25,14 +26,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     return (
         <PreferencesProvider>
             {pathname === "/" ? (
-                <>{children}</>
+                <>
+                    {children}
+                    <BottomNav />
+                </>
             ) : (
                 <>
                     <Header />
-                    <main className="min-h-screen">{children}</main>
+                    <main className="min-h-screen pb-[80px] min-[1024px]:pb-0">{children}</main>
                     <ToastContainer position="bottom-right" theme="dark" />
                     <Footer />
                     <SettingsPanel />
+                    <BottomNav />
                 </>
             )}
         </PreferencesProvider>

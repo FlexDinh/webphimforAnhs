@@ -2,7 +2,7 @@
 import { faBars, faSearch, faXmark, faFilm, faTv, faPlay, faClapperboard } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import SearchSuggestions from "./SearchSuggestions";
 
 export default function Header() {
@@ -11,6 +11,7 @@ export default function Header() {
   const [openSearch, setOpenSearch] = useState(false);
   const [openBarMenu, setOpenBarMenu] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -20,6 +21,25 @@ export default function Header() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Keyboard shortcuts: "/" to focus search, ESC to close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // "/" to focus search (not when typing in input)
+      if (e.key === "/" && document.activeElement?.tagName !== "INPUT") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setShowSuggestions(true);
+      }
+      // ESC to close suggestions
+      if (e.key === "Escape") {
+        setShowSuggestions(false);
+        searchInputRef.current?.blur();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,7 +63,9 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full px-[16px] z-50 transition-all duration-300 ${scrolled ? "bg-[#0F111A]/95 backdrop-blur-md shadow-lg" : "bg-gradient-to-b from-black/60 to-transparent"
+      className={`fixed top-0 left-0 w-full px-[16px] z-50 transition-all duration-500 ${scrolled
+          ? "header-premium shadow-lg"
+          : "bg-gradient-to-b from-black/80 via-black/40 to-transparent"
         } text-white`}
     >
       <div className="container max-w-[1400px] mx-auto">
@@ -102,6 +124,7 @@ export default function Header() {
                   className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#666] text-[14px]"
                 />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   value={search}
                   onChange={(e) => {
@@ -109,14 +132,14 @@ export default function Header() {
                     setShowSuggestions(true);
                   }}
                   onFocus={() => setShowSuggestions(true)}
-                  placeholder="Tìm phim, diễn viên..."
+                  placeholder="Tìm phim... (nhấn /)"
                   className="w-full pl-[40px] pr-[16px] py-[10px] text-[14px] placeholder-[#666] text-white rounded-full bg-white/10 border border-white/10 focus:bg-white/15 focus:border-[#FFD875]/50 focus:outline-none transition-all"
                 />
               </div>
             </form>
             <SearchSuggestions
               searchValue={search}
-              isOpen={showSuggestions && search.length > 0}
+              isOpen={showSuggestions}
               onClose={() => setShowSuggestions(false)}
             />
           </div>

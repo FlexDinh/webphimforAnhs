@@ -343,27 +343,26 @@ export default function MoviePage() {
                                     <button
                                         key={source.id}
                                         onClick={() => {
-                                            // Use movie slug/name to search or direct embed
                                             const tmdbId = movieData.tmdb?.id || "";
-                                            if (tmdbId) {
-                                                const url = movieData.tmdb?.type === "tv"
+                                            if (tmdbId && source.getMovieUrl) {
+                                                const url = movieData.tmdb?.type === "tv" && source.getTvUrl
                                                     ? source.getTvUrl(tmdbId, 1, 1)
                                                     : source.getMovieUrl(tmdbId);
                                                 setHdSource(url);
-                                            } else {
-                                                // Fallback: use VidSrc search by title
-                                                const searchUrl = `https://vidsrc.xyz/embed/movie?imdb=${movieData.slug}`;
+                                            } else if (source.getMovieUrl) {
+                                                // No TMDB ID - try with slug as fallback
                                                 setHdSource(source.getMovieUrl(movieData.slug));
                                             }
                                             setUseHdSource(true);
                                             window.scrollTo({ top: 0, behavior: "smooth" });
                                         }}
-                                        className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all flex items-center gap-[6px] ${hdSource?.includes(source.id) || hdSource?.includes(source.id.replace("-", ""))
+                                        disabled={!movieData.tmdb?.id}
+                                        className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all flex items-center gap-[6px] disabled:opacity-40 disabled:cursor-not-allowed ${hdSource?.includes(source.id) || hdSource?.includes(source.id.replace("-", ""))
                                             ? "bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black font-semibold"
                                             : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
                                             }`}
                                     >
-                                        <FontAwesomeIcon icon={faGlobe} className="text-[10px]" />
+                                        <span>{source.icon || "🎬"}</span>
                                         {source.name}
                                         <span className={`px-[6px] py-[1px] rounded text-[9px] font-bold ${source.quality.includes("4K")
                                             ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
@@ -374,8 +373,13 @@ export default function MoviePage() {
                                     </button>
                                 ))}
                             </div>
+                            {!movieData.tmdb?.id && (
+                                <p className="text-orange-400 text-[11px] mt-[8px]">
+                                    ⚠️ Phim này không có TMDB ID nên nguồn HD/4K có thể không hoạt động.
+                                </p>
+                            )}
                             <p className="text-[#888] text-[11px] mt-[10px]">
-                                💡 Nguồn HD/4K quốc tế. {movieData.tmdb?.id ? `TMDB ID: ${movieData.tmdb.id}` : "Chất lượng cao, có thể không có phụ đề Việt."}
+                                💡 Nguồn HD/4K quốc tế. {movieData.tmdb?.id ? `TMDB ID: ${movieData.tmdb.id}` : "Dùng nguồn Vietsub bên dưới để xem ổn định hơn."}
                             </p>
                         </div>
 

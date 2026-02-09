@@ -3,16 +3,16 @@ import React from "react";
 
 export default function SkeletonCard() {
     return (
-        <div className="pr-[10px] cursor-pointer max-[1024px]:px-[5px] relative animate-pulse">
+        <div className="pr-[10px] cursor-pointer max-[1024px]:px-[5px] relative">
             {/* Image skeleton */}
-            <div className="w-full h-[162px] rounded-[10px] bg-gradient-to-r from-[#2a2d3e] via-[#3a3d4e] to-[#2a2d3e] skeleton-shimmer"></div>
+            <div className="w-full h-[162px] rounded-[12px] bg-[#1a1c2e] skeleton-premium"></div>
 
             {/* Content skeleton */}
-            <div className="px-[16px] py-[12px]">
+            <div className="px-[8px] py-[12px]">
                 {/* Title skeleton */}
-                <div className="h-[14px] w-[80%] rounded bg-gradient-to-r from-[#2a2d3e] via-[#3a3d4e] to-[#2a2d3e] skeleton-shimmer mb-[8px]"></div>
+                <div className="h-[14px] w-[80%] rounded-full bg-[#1a1c2e] skeleton-premium mb-[8px]"></div>
                 {/* Subtitle skeleton */}
-                <div className="h-[12px] w-[60%] rounded bg-gradient-to-r from-[#2a2d3e] via-[#3a3d4e] to-[#2a2d3e] skeleton-shimmer"></div>
+                <div className="h-[12px] w-[50%] rounded-full bg-[#1a1c2e] skeleton-premium"></div>
             </div>
         </div>
     );
