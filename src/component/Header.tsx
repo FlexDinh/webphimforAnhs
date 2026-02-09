@@ -1,9 +1,20 @@
 "use client";
-import { faBars, faSearch, faXmark, faFilm, faTv, faPlay, faClapperboard } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faSearch, faXmark, faFilm, faTv, faPlay, faClapperboard, faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import SearchSuggestions from "./SearchSuggestions";
+
+const COUNTRIES = [
+  { name: "Hàn Quốc", slug: "han-quoc" },
+  { name: "Trung Quốc", slug: "trung-quoc" },
+  { name: "Âu Mỹ", slug: "au-my" },
+  { name: "Nhật Bản", slug: "nhat-ban" },
+  { name: "Thái Lan", slug: "thai-lan" },
+  { name: "Việt Nam", slug: "viet-nam" },
+  { name: "Đài Loan", slug: "dai-loan" },
+  { name: "Hồng Kông", slug: "hong-kong" },
+];
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -11,6 +22,7 @@ export default function Header() {
   const [openSearch, setOpenSearch] = useState(false);
   const [openBarMenu, setOpenBarMenu] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -35,6 +47,7 @@ export default function Header() {
       // ESC to close suggestions
       if (e.key === "Escape") {
         setShowSuggestions(false);
+        setShowCountryDropdown(false);
         searchInputRef.current?.blur();
       }
     };
@@ -64,8 +77,8 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 left-0 w-full px-[16px] z-50 transition-all duration-500 ${scrolled
-          ? "header-premium shadow-lg"
-          : "bg-gradient-to-b from-black/80 via-black/40 to-transparent"
+        ? "header-premium shadow-lg"
+        : "bg-gradient-to-b from-black/80 via-black/40 to-transparent"
         } text-white`}
     >
       <div className="container max-w-[1400px] mx-auto">
@@ -113,6 +126,43 @@ export default function Header() {
                 {item.label}
               </a>
             ))}
+
+            {/* Country Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                className={`px-[16px] py-[8px] rounded-full text-[14px] cursor-pointer transition-all whitespace-nowrap flex items-center gap-[6px] ${pathname.startsWith("/quoc-gia")
+                    ? "bg-[#FFD875] text-black font-semibold"
+                    : "hover:bg-white/10 text-white/90 hover:text-white"
+                  }`}
+              >
+                <FontAwesomeIcon icon={faGlobe} className="text-[12px]" />
+                Quốc Gia
+              </button>
+
+              {showCountryDropdown && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowCountryDropdown(false)}
+                  />
+                  <div className="absolute top-full left-0 mt-[8px] w-[180px] bg-[#1E2545] rounded-[12px] border border-white/10 shadow-xl z-50 overflow-hidden animate-fade-in">
+                    {COUNTRIES.map((country) => (
+                      <a
+                        key={country.slug}
+                        onClick={() => {
+                          router.push(`/quoc-gia/${country.slug}`);
+                          setShowCountryDropdown(false);
+                        }}
+                        className="block px-[16px] py-[10px] text-[13px] text-white hover:bg-white/10 cursor-pointer transition-colors"
+                      >
+                        {country.name}
+                      </a>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </nav>
 
           {/* Search Bar - Desktop */}
