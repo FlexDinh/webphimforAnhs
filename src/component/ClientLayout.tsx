@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Header from "@/component/Header";
 import Footer from "@/component/Footer";
 import BottomNav from "@/component/BottomNav";
+import ScrollToTop from "@/component/ScrollToTop";
 import { PreferencesProvider } from "@/lib/usePreferences";
 import { ToastContainer } from "react-toastify";
 import dynamic from "next/dynamic";
@@ -25,6 +26,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
     return (
         <PreferencesProvider>
+            <ScrollToTop />
             {pathname === "/" ? (
                 <>
                     {children}
