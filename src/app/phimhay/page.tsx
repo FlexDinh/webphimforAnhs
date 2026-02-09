@@ -11,7 +11,7 @@ import { faPlay, faAngleRight, faFilm, faTv, faClapperboard, faStar } from "@for
 const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => void }) => (
   <div
     onClick={onClick}
-    className="cursor-pointer group movie-card-hover flex-shrink-0 w-[140px] sm:w-[160px]"
+    className="cursor-pointer group movie-card-premium neon-glow flex-shrink-0 w-[140px] sm:w-[160px]"
   >
     <div className="relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e]">
       <Image
