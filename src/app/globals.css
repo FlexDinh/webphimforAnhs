@@ -1170,3 +1170,72 @@ a:focus-visible {
     display: none !important;
   }
 }
+
+/* ======================= */
+/* TẾT ANIMATIONS          */
+/* ======================= */
+
+@keyframes swing {
+  0% {
+    transform: rotate(5deg);
+  }
+
+  50% {
+    transform: rotate(-5deg);
+  }
+
+  100% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes fall {
+  0% {
+    opacity: 0;
+    top: -10%;
+    transform: translateX(0) rotate(0deg);
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  20% {
+    transform: translateX(-20px) rotate(45deg);
+  }
+
+  40% {
+    transform: translateX(-20px) rotate(90deg);
+  }
+
+  60% {
+    transform: translateX(20px) rotate(135deg);
+  }
+
+  80% {
+    transform: translateX(-20px) rotate(180deg);
+  }
+
+  100% {
+    top: 110%;
+    transform: translateX(20px) rotate(225deg);
+  }
+}
+
+.tet-lantern {
+  animation: swing 3s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.tet-petal {
+  position: fixed;
+  top: -10%;
+  pointer-events: none;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.tet-mascot-float {
+  animation: float 6s ease-in-out infinite;
+}

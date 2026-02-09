@@ -20,12 +20,14 @@ import "@ant-design/v5-patch-for-react-19";
 config.autoAddCss = false;
 
 const SettingsPanel = dynamic(() => import("@/component/SettingsPanel"), { ssr: false });
+const TetDecorations = dynamic(() => import("@/component/TetDecorations"), { ssr: false });
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
 
     return (
         <PreferencesProvider>
+            <TetDecorations />
             <ScrollToTop />
             {pathname === "/" ? (
                 <>
