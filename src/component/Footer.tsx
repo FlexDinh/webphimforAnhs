@@ -31,15 +31,15 @@ export default function Footer() {
           {/* Brand */}
           <div className="animate-fade-in">
             <div className="flex items-center gap-[10px] mb-[16px]">
-              <div className="w-[44px] h-[44px] rounded-xl bg-gradient-to-br from-[#C41E3A] to-[#FFD700] flex items-center justify-center glow-gold">
-                <span className="text-white text-[20px]">🧧</span>
+              <div className="w-[44px] h-[44px] rounded-xl bg-gradient-to-br from-[#FFD875] to-[#f0a500] flex items-center justify-center glow-gold">
+                <span className="text-white text-[20px]">🎬</span>
               </div>
               <span className="text-[22px] font-bold text-white">
                 Web<span className="text-[#FFD700] glow-text">ForAnhs</span>
               </span>
             </div>
             <p className="text-[#888] text-[14px] leading-relaxed mb-[8px]">
-              🎊 Chúc Mừng Năm Mới! Xem phim online miễn phí chất lượng cao.
+              Xem phim online miễn phí chất lượng cao, cập nhật nhanh nhất.
             </p>
             <p className="text-[#888] text-[14px] leading-relaxed mb-[20px]">
               Kho phim khổng lồ với hơn 50,000+ phim từ nhiều nguồn API.
@@ -120,7 +120,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/5 mt-[40px] pt-[24px] flex flex-col md:flex-row justify-between items-center gap-[16px]">
           <p className="text-[#666] text-[13px]">
-            © 2025 WebForAnhs. Chúc Mừng Năm Mới 🧧 Tất cả quyền được bảo lưu.
+            © 2025 WebForAnhs. Tất cả quyền được bảo lưu.
           </p>
           <p className="text-[#666] text-[13px] flex items-center gap-[6px]">
             Made with <FontAwesomeIcon icon={faHeart} className="text-[#e74c3c] animate-pulse" /> in Vietnam

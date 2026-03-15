@@ -1,53 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getMovieBySlug, getImageUrl } from "@/lib/ophimApi";
+import { getImageUrl } from "@/lib/ophimApi";
+import { getUnifiedMovieDetail, UnifiedResponse as MovieDetail, UnifiedEpisode as Episode, UnifiedServer as Server } from "@/lib/stableApi";
 import { STREAMING_SOURCES } from "@/lib/streamingApi";
 import { usePreferences } from "@/lib/usePreferences";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faArrowLeft, faServer, faClosedCaptioning, faMicrophone, faCrown, faGlobe, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 
-interface Episode {
-    name: string;
-    slug: string;
-    filename: string;
-    link_embed: string;
-    link_m3u8: string;
-}
 
-interface Server {
-    server_name: string;
-    server_data: Episode[];
-}
-
-interface MovieDetail {
-    status: boolean;
-    movie: {
-        _id: string;
-        name: string;
-        slug: string;
-        origin_name: string;
-        content: string;
-        type: string;
-        status: string;
-        thumb_url: string;
-        poster_url: string;
-        trailer_url: string;
-        time: string;
-        episode_current: string;
-        episode_total: string;
-        quality: string;
-        lang: string;
-        year: number;
-        actor: string[];
-        director: string[];
-        category: { id: string; name: string; slug: string }[];
-        country: { id: string; name: string; slug: string }[];
-        tmdb?: { type: string; id: string };
-    };
-    episodes: Server[];
-}
 
 export default function MoviePage() {
     const params = useParams();
@@ -68,7 +30,7 @@ export default function MoviePage() {
         const fetchMovie = async () => {
             try {
                 setLoading(true);
-                const data = await getMovieBySlug(slug);
+                const data = await getUnifiedMovieDetail(slug);
                 if (!data.status) {
                     setError("Không tìm thấy phim");
                     return;

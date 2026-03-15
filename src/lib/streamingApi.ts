@@ -31,12 +31,28 @@ export const TMDB_SOURCES: StreamingSource[] = [
         getTvUrl: (tmdbId, s, e) => `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=${s}&e=${e}`,
     },
     {
-        id: "embedsu",
-        name: "EmbedSU",
-        quality: "4K HDR",
+        id: "vidsrc-icu",
+        name: "VidSrc ICU",
+        quality: "1080p",
+        icon: "🎥",
+        getMovieUrl: (tmdbId) => `https://vidsrc.icu/embed/movie/${tmdbId}`,
+        getTvUrl: (tmdbId, s, e) => `https://vidsrc.icu/embed/tv/${tmdbId}/${s}/${e}`,
+    },
+    {
+        id: "vidlink",
+        name: "VidLink",
+        quality: "1080p",
+        icon: "🔗",
+        getMovieUrl: (tmdbId) => `https://vidlink.pro/movie/${tmdbId}`,
+        getTvUrl: (tmdbId, s, e) => `https://vidlink.pro/tv/${tmdbId}/${s}/${e}`,
+    },
+    {
+        id: "videasy",
+        name: "Videasy",
+        quality: "4K",
         icon: "✨",
-        getMovieUrl: (tmdbId) => `https://embed.su/embed/movie/${tmdbId}`,
-        getTvUrl: (tmdbId, s, e) => `https://embed.su/embed/tv/${tmdbId}/${s}/${e}`,
+        getMovieUrl: (tmdbId) => `https://player.videasy.net/movie/${tmdbId}`,
+        getTvUrl: (tmdbId, s, e) => `https://player.videasy.net/tv/${tmdbId}/${s}/${e}`,
     },
 ];
 

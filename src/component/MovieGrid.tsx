@@ -21,6 +21,9 @@ export default function MovieGrid({ fetchFunction, title, showFilters = false }:
         const fetchMovies = async () => {
             try {
                 setLoading(true);
+                // Scroll to top on page change
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
                 const data = await fetchFunction(page);
                 setMovies(data.items);
                 setTotalPages(data.pagination.totalPages);

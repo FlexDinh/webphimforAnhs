@@ -4,11 +4,6 @@
   --background: #ffffff;
   --foreground: #171717;
   --accent-color: #FFD700;
-  /* Tet Gold */
-  --tet-red: #C41E3A;
-  --tet-gold: #FFD700;
-  --tet-pink: #FFB7C5;
-  /* Cherry blossom */
 }
 
 @theme inline {
@@ -1220,22 +1215,4 @@ a:focus-visible {
     top: 110%;
     transform: translateX(20px) rotate(225deg);
   }
-}
-
-.tet-lantern {
-  animation: swing 3s ease-in-out infinite;
-  transform-origin: top center;
-}
-
-.tet-petal {
-  position: fixed;
-  top: -10%;
-  pointer-events: none;
-  animation-name: fall;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.tet-mascot-float {
-  animation: float 6s ease-in-out infinite;
 }

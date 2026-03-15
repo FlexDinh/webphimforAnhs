@@ -1,6 +1,6 @@
 // PhimAPI Service - Newer API with 2024-2026 movies
-const PHIMAPI_BASE_URL = "https://phimapi.com";
-const PHIMAPI_IMAGE_BASE = "https://phimimg.com";
+const PHIMAPI_BASE_URL = "https://ophim1.com";
+const PHIMAPI_IMAGE_BASE = "https://img.ophim1.com/uploads/movies";
 
 export interface OPhimMovie {
     _id: string;
@@ -109,11 +109,26 @@ export async function getMovieBySlug(slug: string) {
     }
 }
 
+// Helper to safe parse pagination
+function parsePagination(data: any) {
+    const pagination = data.data?.params?.pagination || { totalItems: 0, totalItemsPerPage: 24, currentPage: 1, totalPages: 1 };
+
+    // Fix missing totalPages
+    if (!pagination.totalPages && pagination.totalItems && pagination.totalItemsPerPage) {
+        pagination.totalPages = Math.ceil(pagination.totalItems / pagination.totalItemsPerPage);
+    }
+
+    // Ensure currentPage is number
+    pagination.currentPage = Number(pagination.currentPage);
+
+    return pagination;
+}
+
 // Get theatrical movies (chiếu rạp)
 export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
     try {
         const response = await fetch(
-            `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-le?page=${page}&sort_field=modified.time&category=&country=&year=2025`,
+            `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-chieu-rap?page=${page}`,
             { next: { revalidate: 300 } }
         );
         if (!response.ok) throw new Error("Failed to fetch theatrical movies");
@@ -122,7 +137,7 @@ export async function getTheatricalMovies(page: number = 1): Promise<OPhimRespon
             status: true,
             msg: "done",
             items: data.data?.items || [],
-            pagination: data.data?.params?.pagination || { totalItems: 0, totalItemsPerPage: 24, currentPage: 1, totalPages: 1 }
+            pagination: parsePagination(data)
         };
     } catch (error) {
         console.error("Error fetching theatrical movies:", error);
@@ -143,7 +158,7 @@ export async function getMoviesByType(type: string, page: number = 1): Promise<O
             status: true,
             msg: "done",
             items: data.data?.items || [],
-            pagination: data.data?.params?.pagination || { totalItems: 0, totalItemsPerPage: 24, currentPage: 1, totalPages: 1 }
+            pagination: parsePagination(data)
         };
     } catch (error) {
         console.error("Error fetching movies by type:", error);
@@ -164,7 +179,7 @@ export async function getMoviesByCategory(category: string, page: number = 1): P
             status: true,
             msg: "done",
             items: data.data?.items || [],
-            pagination: data.data?.params?.pagination || { totalItems: 0, totalItemsPerPage: 24, currentPage: 1, totalPages: 1 }
+            pagination: parsePagination(data)
         };
     } catch (error) {
         console.error("Error fetching category movies:", error);
@@ -185,7 +200,7 @@ export async function getMoviesByCountry(country: string, page: number = 1): Pro
             status: true,
             msg: "done",
             items: data.data?.items || [],
-            pagination: data.data?.params?.pagination || { totalItems: 0, totalItemsPerPage: 24, currentPage: 1, totalPages: 1 }
+            pagination: parsePagination(data)
         };
     } catch (error) {
         console.error("Error fetching country movies:", error);

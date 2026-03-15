@@ -45,16 +45,7 @@ export default function Home() {
           {/* Hero card with glassmorphism */}
           <div className="glass rounded-[40px] flex flex-col items-center justify-center gap-[40px] 2xl:py-[96px] xl:py-[80px] lg:py-[64px] md:py-[48px] sm:py-[40px] py-[50px] 2xl:px-[128px] xl:px-[96px] lg:px-[72px] md:px-[48px] sm:px-[40px] px-[46px] border border-white/10 shadow-2xl">
 
-            {/* Tet Banner */}
-            <div className="animated-text-enter mb-[-20px] relative z-20">
-              <Image
-                src="/tet/banner.png"
-                alt="Chúc Mừng Năm Mới 2026"
-                className="object-contain w-[280px] sm:w-[350px] md:w-[400px] drop-shadow-[0_0_20px_rgba(255,215,0,0.4)] animate-pulse"
-                width={400}
-                height={120}
-              />
-            </div>
+
 
 
             {/* Animated logo */}
@@ -111,10 +102,10 @@ export default function Home() {
             <div className="absolute -inset-4 bg-gradient-to-r from-[#FFD700]/10 via-[#FFB7C5]/10 to-[#FFD700]/10 blur-3xl opacity-50" />
 
             <div className="relative glass rounded-[32px] p-[48px] border border-white/10">
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[48px]">🧧</div>
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[48px]">🎬</div>
 
               <h2 className="gradient-text text-[32px] font-bold mb-[20px] mt-4">
-                Chúc Mừng Năm Mới 2026!
+                Dành Riêng Cho Bé Ánh
               </h2>
               <p className="text-white/80 text-[18px] mb-[12px]">
                 <span className="text-[#FFD700] font-semibold">WebForAnhs</span> được dựng lên dành riêng cho

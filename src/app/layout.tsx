@@ -6,19 +6,19 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#C41E3A', // Tet Red
+  themeColor: '#FFD875',
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://webphimfor-anhs.vercel.app"),
-  title: "WebForAnhs - Xem Phim Online Miễn Phí | Chúc Mừng Năm Mới 🧧",
+  title: "WebForAnhs - Xem Phim Online Miễn Phí | Chất Lượng Cao",
   description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K, Vietsub, thuyết minh.",
   keywords: "xem phim, phim online, phim miễn phí, phim hay, phim HD, phim 4K, phim Vietsub, phim thuyết minh, phim chiếu rạp, phim bộ, phim lẻ, WebForAnhs",
   authors: [{ name: "WebForAnhs" }],
   openGraph: {
     type: "website",
     url: "https://webphimfor-anhs.vercel.app/",
-    title: "WebForAnhs - Xem Phim Online Miễn Phí | Chúc Mừng Năm Mới 🧧",
+    title: "WebForAnhs - Xem Phim Online Miễn Phí | Chất Lượng Cao",
     description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K.",
     images: ["/logo.svg"],
     locale: "vi_VN",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     site: "@WebForAnhs",
-    title: "WebForAnhs - Xem Phim Online Miễn Phí | Chúc Mừng Năm Mới 🧧",
+    title: "WebForAnhs - Xem Phim Online Miễn Phí | Chất Lượng Cao",
     description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K.",
     images: ["/logo.svg"],
   },
@@ -61,7 +61,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://phimimg.com" />
         <link rel="preconnect" href="https://phim.nguonc.com" />
         <link rel="preconnect" href="https://vidsrc.me" />
-        <link rel="preconnect" href="https://embed.su" />
+        <link rel="preconnect" href="https://vidlink.pro" />
 
         {/* DNS Prefetch for faster lookups */}
         <link rel="dns-prefetch" href="https://phimapi.com" />
