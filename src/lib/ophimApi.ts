@@ -1,6 +1,12 @@
-// PhimAPI Service - Newer API with 2024-2026 movies
-const PHIMAPI_BASE_URL = "https://ophim1.com";
+﻿const PHIMAPI_BASE_URL = "https://ophim1.com";
 const PHIMAPI_IMAGE_BASE = "https://img.ophim1.com/uploads/movies";
+
+const DEFAULT_REVALIDATE_SECONDS = 300;
+const DETAIL_REVALIDATE_SECONDS = 3600;
+const DEFAULT_TIMEOUT_MS = 8000;
+const CLIENT_CACHE_TTL_MS = 5 * 60 * 1000;
+const SEARCH_CACHE_TTL_MS = 45 * 1000;
+const MAX_CLIENT_CACHE_ENTRIES = 200;
 
 export interface OPhimMovie {
     _id: string;
@@ -56,192 +62,247 @@ export interface OPhimSearchResponse {
     };
 }
 
-// Get full image URL
+interface CacheEntry<T> {
+    data?: T;
+    expiresAt?: number;
+    promise?: Promise<T>;
+}
+
+interface FetchJsonOptions {
+    revalidateSeconds?: number;
+    timeoutMs?: number;
+    cacheKey?: string;
+    clientCacheTtlMs?: number;
+    useClientCache?: boolean;
+    forceNoStore?: boolean;
+}
+
+const clientCache = new Map<string, CacheEntry<unknown>>();
+
+function trimClientCache() {
+    if (clientCache.size <= MAX_CLIENT_CACHE_ENTRIES) return;
+    const firstKey = clientCache.keys().next().value;
+    if (firstKey) {
+        clientCache.delete(firstKey);
+    }
+}
+
+function isAbortError(error: unknown): boolean {
+    return error instanceof Error && error.name === "AbortError";
+}
+
+async function fetchJsonWithTimeout<T>(
+    url: string,
+    options: FetchJsonOptions = {}
+): Promise<T> {
+    const {
+        revalidateSeconds = DEFAULT_REVALIDATE_SECONDS,
+        timeoutMs = DEFAULT_TIMEOUT_MS,
+        cacheKey = url,
+        clientCacheTtlMs = CLIENT_CACHE_TTL_MS,
+        useClientCache = true,
+        forceNoStore = false,
+    } = options;
+
+    const isClient = typeof window !== "undefined";
+    const now = Date.now();
+    const cached = isClient ? (clientCache.get(cacheKey) as CacheEntry<T> | undefined) : undefined;
+
+    if (isClient && useClientCache) {
+        if (cached?.data && cached.expiresAt && cached.expiresAt > now) {
+            return cached.data;
+        }
+        if (cached?.promise) {
+            return cached.promise;
+        }
+    }
+
+    const requestPromise = (async () => {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+            const init: RequestInit & { next?: { revalidate: number } } = {
+                signal: controller.signal,
+            };
+
+            if (forceNoStore) {
+                init.cache = "no-store";
+            } else if (!isClient && revalidateSeconds > 0) {
+                init.next = { revalidate: revalidateSeconds };
+            }
+
+            const response = await fetch(url, init);
+            if (!response.ok) {
+                throw new Error(`Fetch failed (${response.status}) for ${url}`);
+            }
+            return (await response.json()) as T;
+        } finally {
+            clearTimeout(timer);
+        }
+    })();
+
+    if (isClient && useClientCache) {
+        clientCache.set(cacheKey, { ...cached, promise: requestPromise });
+    }
+
+    try {
+        const data = await requestPromise;
+        if (isClient && useClientCache) {
+            clientCache.set(cacheKey, {
+                data,
+                expiresAt: now + clientCacheTtlMs,
+            });
+            trimClientCache();
+        }
+        return data;
+    } catch (error) {
+        if (isClient && useClientCache) {
+            if (cached?.data) {
+                return cached.data;
+            }
+            clientCache.delete(cacheKey);
+        }
+        throw error;
+    }
+}
+
+function normalizeApiResponse(data: any): OPhimResponse {
+    return {
+        status: true,
+        msg: "done",
+        items: data?.data?.items || [],
+        pagination: parsePagination(data),
+    };
+}
+
+function parsePagination(data: any): OPhimResponse["pagination"] {
+    const fallback = {
+        totalItems: 0,
+        totalItemsPerPage: 24,
+        currentPage: 1,
+        totalPages: 1,
+    };
+
+    const raw = data?.data?.params?.pagination || fallback;
+    const totalItems = Number(raw.totalItems || raw.total_items || fallback.totalItems);
+    const totalItemsPerPage = Number(raw.totalItemsPerPage || raw.items_per_page || fallback.totalItemsPerPage);
+    const currentPage = Number(raw.currentPage || raw.current_page || fallback.currentPage);
+
+    let totalPages = Number(raw.totalPages || raw.total_page || 0);
+    if (!totalPages && totalItemsPerPage > 0) {
+        totalPages = Math.ceil(totalItems / totalItemsPerPage);
+    }
+
+    return {
+        totalItems,
+        totalItemsPerPage,
+        currentPage,
+        totalPages: totalPages || fallback.totalPages,
+    };
+}
+
 export function getImageUrl(path: string): string {
     if (!path) return "/placeholder.jpg";
     if (path.startsWith("http")) return path;
     return `${PHIMAPI_IMAGE_BASE}/${path}`;
 }
 
-// Fetch latest movies
 export async function getLatestMovies(page: number = 1): Promise<OPhimResponse> {
-    try {
-        const response = await fetch(
-            `${PHIMAPI_BASE_URL}/danh-sach/phim-moi-cap-nhat?page=${page}`,
-            { next: { revalidate: 300 } }
-        );
-        if (!response.ok) throw new Error("Failed to fetch movies");
-        return response.json();
-    } catch (error) {
-        console.error("Error fetching latest movies:", error);
-        throw error;
-    }
+    const url = `${PHIMAPI_BASE_URL}/danh-sach/phim-moi-cap-nhat?page=${page}`;
+    return fetchJsonWithTimeout<OPhimResponse>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: `latest:${page}`,
+    });
 }
 
-// Search movies
 export async function searchMovies(keyword: string, limit: number = 10): Promise<OPhimMovie[]> {
+    const query = keyword.trim();
+    if (!query) return [];
+
+    const url = `${PHIMAPI_BASE_URL}/v1/api/tim-kiem?keyword=${encodeURIComponent(query)}&limit=${limit}`;
+    const cacheKey = `search:${query.toLowerCase()}:${limit}`;
+
     try {
-        const response = await fetch(
-            `${PHIMAPI_BASE_URL}/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}&limit=${limit}`,
-            { cache: "no-store" }
-        );
-        if (!response.ok) throw new Error("Failed to search movies");
-        const data: OPhimSearchResponse = await response.json();
+        const data = await fetchJsonWithTimeout<OPhimSearchResponse>(url, {
+            timeoutMs: 6000,
+            cacheKey,
+            clientCacheTtlMs: SEARCH_CACHE_TTL_MS,
+            useClientCache: true,
+            forceNoStore: true,
+        });
         return data.data?.items || [];
     } catch (error) {
-        console.error("Error searching movies:", error);
+        if (!isAbortError(error)) {
+            console.error("Error searching movies:", error);
+        }
         return [];
     }
 }
 
-// Get movie details by slug
 export async function getMovieBySlug(slug: string) {
-    try {
-        const response = await fetch(
-            `${PHIMAPI_BASE_URL}/phim/${slug}`,
-            { next: { revalidate: 3600 } }
-        );
-        if (!response.ok) throw new Error("Failed to fetch movie details");
-        return response.json();
-    } catch (error) {
-        console.error("Error fetching movie details:", error);
-        throw error;
-    }
+    const url = `${PHIMAPI_BASE_URL}/phim/${slug}`;
+    return fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DETAIL_REVALIDATE_SECONDS,
+        cacheKey: `movie:${slug}`,
+        clientCacheTtlMs: DETAIL_REVALIDATE_SECONDS * 1000,
+    });
 }
 
-// Helper to safe parse pagination
-function parsePagination(data: any) {
-    const pagination = data.data?.params?.pagination || { totalItems: 0, totalItemsPerPage: 24, currentPage: 1, totalPages: 1 };
-
-    // Fix missing totalPages
-    if (!pagination.totalPages && pagination.totalItems && pagination.totalItemsPerPage) {
-        pagination.totalPages = Math.ceil(pagination.totalItems / pagination.totalItemsPerPage);
-    }
-
-    // Ensure currentPage is number
-    pagination.currentPage = Number(pagination.currentPage);
-
-    return pagination;
-}
-
-// Get theatrical movies (chiếu rạp)
 export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
-    try {
-        const response = await fetch(
-            `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-chieu-rap?page=${page}`,
-            { next: { revalidate: 300 } }
-        );
-        if (!response.ok) throw new Error("Failed to fetch theatrical movies");
-        const data = await response.json();
-        return {
-            status: true,
-            msg: "done",
-            items: data.data?.items || [],
-            pagination: parsePagination(data)
-        };
-    } catch (error) {
-        console.error("Error fetching theatrical movies:", error);
-        throw error;
-    }
+    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-chieu-rap?page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: `theatrical:${page}`,
+    });
+    return normalizeApiResponse(data);
 }
 
-// Get movies by type (phim-le, phim-bo, hoat-hinh, tv-shows)
 export async function getMoviesByType(type: string, page: number = 1): Promise<OPhimResponse> {
-    try {
-        const response = await fetch(
-            `${PHIMAPI_BASE_URL}/v1/api/danh-sach/${type}?page=${page}`,
-            { next: { revalidate: 300 } }
-        );
-        if (!response.ok) throw new Error("Failed to fetch movies by type");
-        const data = await response.json();
-        return {
-            status: true,
-            msg: "done",
-            items: data.data?.items || [],
-            pagination: parsePagination(data)
-        };
-    } catch (error) {
-        console.error("Error fetching movies by type:", error);
-        throw error;
-    }
+    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/${type}?page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: `type:${type}:${page}`,
+    });
+    return normalizeApiResponse(data);
 }
 
-// Get movies by category
 export async function getMoviesByCategory(category: string, page: number = 1): Promise<OPhimResponse> {
-    try {
-        const response = await fetch(
-            `${PHIMAPI_BASE_URL}/v1/api/the-loai/${category}?page=${page}`,
-            { next: { revalidate: 300 } }
-        );
-        if (!response.ok) throw new Error("Failed to fetch category movies");
-        const data = await response.json();
-        return {
-            status: true,
-            msg: "done",
-            items: data.data?.items || [],
-            pagination: parsePagination(data)
-        };
-    } catch (error) {
-        console.error("Error fetching category movies:", error);
-        throw error;
-    }
+    const url = `${PHIMAPI_BASE_URL}/v1/api/the-loai/${category}?page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: `category:${category}:${page}`,
+    });
+    return normalizeApiResponse(data);
 }
 
-// Get thuyết minh (dubbed) movies
-// Fetches movies and filters for ones with "Thuyết Minh" in the lang field
 export async function getThuyetMinhMovies(page: number = 1): Promise<OPhimResponse> {
-    try {
-        // OPhim API doesn't have a direct thuyết minh endpoint,
-        // so we fetch by type and filter. We fetch more pages to ensure enough results.
-        const response = await fetch(
-            `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`,
-            { next: { revalidate: 300 } }
-        );
-        if (!response.ok) throw new Error("Failed to fetch movies");
-        const data = await response.json();
-        
-        // Filter for thuyết minh movies
-        const allItems = data.data?.items || [];
-        const tmItems = allItems.filter((movie: OPhimMovie) => {
-            const lang = (movie.lang || "").toLowerCase();
-            return lang.includes("thuyết minh") || lang.includes("thuyet minh") || lang.includes("lồng tiếng");
-        });
-        
-        const pagination = data.data?.params?.pagination || { totalItems: 0, totalItemsPerPage: 24, currentPage: 1, totalPages: 1 };
-        if (!pagination.totalPages && pagination.totalItems && pagination.totalItemsPerPage) {
-            pagination.totalPages = Math.ceil(pagination.totalItems / pagination.totalItemsPerPage);
-        }
-        pagination.currentPage = Number(pagination.currentPage);
+    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: `thuyet-minh:${page}`,
+    });
 
-        return {
-            status: true,
-            msg: "done",
-            items: tmItems.length > 0 ? tmItems : allItems.slice(0, 12),
-            pagination: pagination
-        };
-    } catch (error) {
-        console.error("Error fetching thuyết minh movies:", error);
-        throw error;
-    }
+    const allItems: OPhimMovie[] = data?.data?.items || [];
+    const tmItems = allItems.filter((movie) => {
+        const lang = (movie.lang || "").toLowerCase();
+        return lang.includes("thuyet minh") || lang.includes("long tieng");
+    });
+
+    return {
+        status: true,
+        msg: "done",
+        items: tmItems.length > 0 ? tmItems : allItems.slice(0, 12),
+        pagination: parsePagination(data),
+    };
 }
 
-// Get movies by country
 export async function getMoviesByCountry(country: string, page: number = 1): Promise<OPhimResponse> {
-    try {
-        const response = await fetch(
-            `${PHIMAPI_BASE_URL}/v1/api/quoc-gia/${country}?page=${page}`,
-            { next: { revalidate: 300 } }
-        );
-        if (!response.ok) throw new Error("Failed to fetch country movies");
-        const data = await response.json();
-        return {
-            status: true,
-            msg: "done",
-            items: data.data?.items || [],
-            pagination: parsePagination(data)
-        };
-    } catch (error) {
-        console.error("Error fetching country movies:", error);
-        throw error;
-    }
+    const url = `${PHIMAPI_BASE_URL}/v1/api/quoc-gia/${country}?page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: `country:${country}:${page}`,
+    });
+    return normalizeApiResponse(data);
 }
+

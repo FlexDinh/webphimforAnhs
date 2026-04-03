@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay, faAngleRight, faFilm, faTv, faClapperboard,
   faStar, faGlobe, faMicrophone, faFire, faChevronLeft,
-  faChevronRight, faCircle
+  faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import ContinueWatching from "@/component/ContinueWatching";
 
@@ -68,27 +68,66 @@ const MovieSection = memo(({
   icon,
   fetchFn,
   viewAllPath,
-  gradient
+  gradient,
+  lazy = true,
 }: {
   title: string;
   icon: any;
   fetchFn: () => Promise<OPhimMovie[]>;
   viewAllPath: string;
   gradient: string;
+  lazy?: boolean;
 }) => {
   const [movies, setMovies] = useState<OPhimMovie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [shouldLoad, setShouldLoad] = useState(!lazy);
+  const fetchFnRef = useRef(fetchFn);
+  const hasFetchedRef = useRef(false);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    fetchFn().then(data => {
-      setMovies(data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    fetchFnRef.current = fetchFn;
   }, [fetchFn]);
 
+  useEffect(() => {
+    if (shouldLoad || !lazy) return;
+    if (!sectionRef.current || typeof IntersectionObserver === "undefined") {
+      setShouldLoad(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setShouldLoad(true);
+        observer.disconnect();
+      },
+      { rootMargin: "300px 0px" }
+    );
+
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, [lazy, shouldLoad]);
+
+  useEffect(() => {
+    if (!shouldLoad || hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+
+    fetchFnRef.current()
+      .then((data) => {
+        setMovies(data);
+      })
+      .catch(() => {
+        setMovies([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [shouldLoad]);
+
   return (
-    <div className="mb-[40px]">
+    <div ref={sectionRef} className="mb-[40px]">
       <div className="flex items-center justify-between mb-[16px]">
         <div className="flex items-center gap-[10px]">
           <div className={`w-[36px] h-[36px] rounded-lg ${gradient} flex items-center justify-center`}>
@@ -375,25 +414,28 @@ TrendingSection.displayName = 'TrendingSection';
 export default function PhimHay() {
   const [heroMovies, setHeroMovies] = useState<OPhimMovie[]>([]);
   const [trendingMovies, setTrendingMovies] = useState<OPhimMovie[]>([]);
-  const router = useRouter();
   const { preferences } = usePreferences();
   const { hiddenSections } = preferences;
 
-  // Load hero movies for carousel
-  useEffect(() => {
-    getLatestMovies(1).then(data => {
-      setHeroMovies(data.items.slice(0, 8));
-    });
-  }, []);
+  const fetchLatestSection = useCallback(async () => (await getLatestMovies(1)).items.slice(0, 12), []);
+  const fetchPhimLeSection = useCallback(async () => (await getMoviesByType("phim-le", 1)).items.slice(0, 12), []);
+  const fetchPhimBoSection = useCallback(async () => (await getMoviesByType("phim-bo", 1)).items.slice(0, 12), []);
+  const fetchAnimeSection = useCallback(async () => (await getMoviesByType("hoat-hinh", 1)).items.slice(0, 12), []);
+  const fetchThuyetMinhSection = useCallback(async () => (await getThuyetMinhMovies(1)).items.slice(0, 12), []);
+  const fetchHanQuocSection = useCallback(async () => (await getMoviesByCountry("han-quoc", 1)).items.slice(0, 12), []);
+  const fetchTrungQuocSection = useCallback(async () => (await getMoviesByCountry("trung-quoc", 1)).items.slice(0, 12), []);
+  const fetchAuMySection = useCallback(async () => (await getMoviesByCountry("au-my", 1)).items.slice(0, 12), []);
 
-  // Load trending from multiple pages for variety
   useEffect(() => {
     Promise.all([
       getLatestMovies(1),
       getLatestMovies(2),
     ]).then(([p1, p2]) => {
-      const all = [...p1.items, ...p2.items];
-      setTrendingMovies(all);
+      setHeroMovies(p1.items.slice(0, 8));
+      setTrendingMovies([...p1.items, ...p2.items]);
+    }).catch(() => {
+      setHeroMovies([]);
+      setTrendingMovies([]);
     });
   }, []);
 
@@ -415,9 +457,10 @@ export default function PhimHay() {
           <MovieSection
             title="Phim Mới"
             icon={faStar}
-            fetchFn={async () => (await getLatestMovies(1)).items.slice(0, 12)}
+            fetchFn={fetchLatestSection}
             viewAllPath="/phim-moi"
             gradient="bg-gradient-to-br from-[var(--accent-color)] to-[#f0a500]"
+            lazy={false}
           />
         )}
 
@@ -425,7 +468,7 @@ export default function PhimHay() {
           <MovieSection
             title="Phim Lẻ"
             icon={faFilm}
-            fetchFn={async () => (await getMoviesByType("phim-le", 1)).items.slice(0, 12)}
+            fetchFn={fetchPhimLeSection}
             viewAllPath="/phim-le"
             gradient="bg-gradient-to-br from-[#e74c3c] to-[#c0392b]"
           />
@@ -435,7 +478,7 @@ export default function PhimHay() {
           <MovieSection
             title="Phim Bộ"
             icon={faTv}
-            fetchFn={async () => (await getMoviesByType("phim-bo", 1)).items.slice(0, 12)}
+            fetchFn={fetchPhimBoSection}
             viewAllPath="/phim-bo"
             gradient="bg-gradient-to-br from-[#3498db] to-[#2980b9]"
           />
@@ -445,7 +488,7 @@ export default function PhimHay() {
           <MovieSection
             title="Anime"
             icon={faClapperboard}
-            fetchFn={async () => (await getMoviesByType("hoat-hinh", 1)).items.slice(0, 12)}
+            fetchFn={fetchAnimeSection}
             viewAllPath="/anime"
             gradient="bg-gradient-to-br from-[#9b59b6] to-[#8e44ad]"
           />
@@ -455,7 +498,7 @@ export default function PhimHay() {
           <MovieSection
             title="Phim Thuyết Minh"
             icon={faMicrophone}
-            fetchFn={async () => (await getThuyetMinhMovies(1)).items.slice(0, 12)}
+            fetchFn={fetchThuyetMinhSection}
             viewAllPath="/thuyet-minh"
             gradient="bg-gradient-to-br from-[#e67e22] to-[#d35400]"
           />
@@ -465,7 +508,7 @@ export default function PhimHay() {
         <MovieSection
           title="Phim Hàn Quốc"
           icon={faGlobe}
-          fetchFn={async () => (await getMoviesByCountry("han-quoc", 1)).items.slice(0, 12)}
+          fetchFn={fetchHanQuocSection}
           viewAllPath="/quoc-gia/han-quoc"
           gradient="bg-gradient-to-br from-[#FF6B9D] to-[#C44569]"
         />
@@ -473,7 +516,7 @@ export default function PhimHay() {
         <MovieSection
           title="Phim Trung Quốc"
           icon={faGlobe}
-          fetchFn={async () => (await getMoviesByCountry("trung-quoc", 1)).items.slice(0, 12)}
+          fetchFn={fetchTrungQuocSection}
           viewAllPath="/quoc-gia/trung-quoc"
           gradient="bg-gradient-to-br from-[#e74c3c] to-[#c0392b]"
         />
@@ -481,7 +524,7 @@ export default function PhimHay() {
         <MovieSection
           title="Phim Âu Mỹ"
           icon={faGlobe}
-          fetchFn={async () => (await getMoviesByCountry("au-my", 1)).items.slice(0, 12)}
+          fetchFn={fetchAuMySection}
           viewAllPath="/quoc-gia/au-my"
           gradient="bg-gradient-to-br from-[#4DA6FF] to-[#2980b9]"
         />

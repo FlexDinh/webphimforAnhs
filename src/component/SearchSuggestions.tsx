@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -54,27 +54,40 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
         setHistory(getSearchHistory());
     }, [isOpen]);
 
-    // Debounce search with real API
+    // Debounced search with small guard to avoid unnecessary API requests.
     useEffect(() => {
-        if (!searchValue.trim()) {
+        const query = searchValue.trim();
+        if (query.length < 2) {
             setSuggestions([]);
+            setIsLoading(false);
             return;
         }
 
+        let cancelled = false;
         const timer = setTimeout(async () => {
+            if (cancelled) return;
             setIsLoading(true);
             try {
-                const results = await searchMovies(searchValue, 6);
-                setSuggestions(results);
+                const results = await searchMovies(query, 6);
+                if (!cancelled) {
+                    setSuggestions(results);
+                }
             } catch (error) {
-                console.error("Search error:", error);
-                setSuggestions([]);
+                if (!cancelled) {
+                    console.error("Search error:", error);
+                    setSuggestions([]);
+                }
             } finally {
-                setIsLoading(false);
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
             }
-        }, 300); // Reduced debounce for faster response
+        }, 250);
 
-        return () => clearTimeout(timer);
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
     }, [searchValue]);
 
     // Close on click outside
@@ -125,12 +138,14 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
 
     if (!isOpen) return null;
 
-    const showHistory = !searchValue.trim() && history.length > 0;
+    const trimmedQuery = searchValue.trim();
+    const isShortQuery = trimmedQuery.length > 0 && trimmedQuery.length < 2;
+    const showHistory = !trimmedQuery && history.length > 0;
 
     return (
         <div
             ref={containerRef}
-            className="search-suggestions absolute top-full left-0 right-0 mt-[8px] bg-[#1E2030] rounded-[16px] border border-[#ffffff15] shadow-2xl overflow-hidden z-[9999] animate__animated animate__fadeIn animate__faster"
+            className="search-suggestions absolute top-full left-0 right-0 mt-[8px] bg-[#1E2030] rounded-[16px] border border-[#ffffff15] shadow-2xl overflow-hidden z-[9999] animate-fade-in"
             style={{ touchAction: 'manipulation' }}
         >
             <div className="p-[8px] max-h-[70vh] overflow-y-auto">
@@ -140,13 +155,13 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                         <div className="flex items-center justify-between px-[12px] py-[8px]">
                             <p className="text-[12px] text-[#888] uppercase tracking-wider flex items-center gap-[6px]">
                                 <FontAwesomeIcon icon={faHistory} className="text-[10px]" />
-                                Tìm kiếm gần đây
+                                TĂ¬m kiáº¿m gáº§n Ä‘Ă¢y
                             </p>
                             <button
                                 onClick={handleClearHistory}
                                 className="text-[11px] text-red-400 hover:text-red-300 px-[8px] py-[4px] rounded"
                             >
-                                Xóa tất cả
+                                XĂ³a táº¥t cáº£
                             </button>
                         </div>
                         <div className="flex flex-wrap gap-[8px] px-[12px] pb-[12px]">
@@ -165,9 +180,9 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                 )}
 
                 {/* Title */}
-                {searchValue.trim() && (
+                {trimmedQuery && (
                     <p className="text-[12px] text-[#888] uppercase tracking-wider px-[12px] py-[8px]">
-                        {isLoading ? "Đang tìm kiếm..." : `Kết quả cho "${searchValue}"`}
+                        {isShortQuery ? "Nhap du 2 ky tu de tim" : isLoading ? "Dang tim kiem..." : `Ket qua cho "${searchValue}"`}
                     </p>
                 )}
 
@@ -179,9 +194,9 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                 )}
 
                 {/* No results */}
-                {!isLoading && suggestions.length === 0 && searchValue.trim() && (
+                {!isLoading && !isShortQuery && suggestions.length === 0 && trimmedQuery && (
                     <div className="text-center py-[24px] text-[#888] text-[14px]">
-                        Không tìm thấy phim nào
+                        KhĂ´ng tĂ¬m tháº¥y phim nĂ o
                     </div>
                 )}
 
@@ -220,7 +235,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                                 )}
                                 {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
                                     <span className="text-[11px] text-[#FFD875]">
-                                        ⭐ {movie.tmdb.vote_average.toFixed(1)}
+                                        â­ {movie.tmdb.vote_average.toFixed(1)}
                                     </span>
                                 )}
                                 <span className="text-[11px] text-[#888]">
@@ -243,10 +258,11 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                         }}
                         className="w-full text-center text-[14px] text-[#FFD875] font-medium py-[10px] rounded-xl hover:bg-[#FFD87510] active:bg-[#FFD87520] transition-colors min-h-[48px]"
                     >
-                        Xem tất cả kết quả cho &quot;{searchValue}&quot;
+                        Xem táº¥t cáº£ káº¿t quáº£ cho &quot;{searchValue}&quot;
                     </button>
                 </div>
             )}
         </div>
     );
 }
+

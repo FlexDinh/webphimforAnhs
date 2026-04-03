@@ -1,8 +1,8 @@
-// KKPhim API Service
-const KKPHIM_BASE_URL = "https://phimapi.com"; // KKPhim uses similar structure to PhimAPI, let's try their specific endpoint if available, but for now stick to known reliable ones or try to find their specific domain.
-// Actually, based on search, kkphim.vip is the domain. Let's try to infer their API structure or use a known stable one.
-// The search result mentioned "kkphim.com" and "kkphim.vip".
-// Let's create a robust multi-source fetcher that tries multiple Vietnamese APIs.
+﻿const KKPHIM_BASE_URL = "https://phimapi.com";
+
+const DETAIL_CACHE_TTL_MS = 10 * 60 * 1000;
+const DETAIL_REVALIDATE_SECONDS = 300;
+const REQUEST_TIMEOUT_MS = 6000;
 
 export interface VNMovieSimple {
     name: string;
@@ -13,92 +13,27 @@ export interface VNMovieSimple {
     type: string;
 }
 
-// KKPhim and NguonC are often similar.
-// Let's define a service that aggregates stable links.
-
 export const STABLE_PROVIDERS = [
     {
         name: "KKPhim",
-        url: "https://phimapi.com", // PhimAPI is actually very stable and often used by these sites
-        image_url: "https://phimimg.com"
+        url: "https://phimapi.com",
+        image_url: "https://phimimg.com",
     },
     {
         name: "NguonC",
         url: "https://phim.nguonc.com/api",
-        image_url: "https://phim.nguonc.com/public/images"
+        image_url: "https://phim.nguonc.com/public/images",
     },
     {
         name: "OPhim",
         url: "https://ophim1.com",
-        image_url: "https://img.ophim1.com/uploads/movies"
-    }
+        image_url: "https://img.ophim1.com/uploads/movies",
+    },
 ];
 
-// Function to get high quality stream from best available Vietnamese source
-export async function getBestStream(slug: string) {
-    // 1. Try OPhim (Main Source - often fastest update)
-    try {
-        const res = await fetch(`https://ophim1.com/phim/${slug}`);
-        const data = await res.json();
-        if (data.status && data.episodes?.[0]?.server_data?.[0]?.link_m3u8) {
-            // Validate m3u8 link is not empty
-            const m3u8 = data.episodes[0].server_data[0].link_m3u8;
-            if (m3u8) {
-                return {
-                    type: 'm3u8',
-                    url: m3u8,
-                    source: 'OPhim'
-                };
-            }
-        }
-    } catch (e) {
-        console.error("OPhim failed", e);
-    }
-
-    // 2. Try NguonC (Good secondary source)
-    try {
-        const res = await fetch(`https://phim.nguonc.com/api/film/${slug}`);
-        const data = await res.json();
-        if (data.status === 'success' && data.movie?.episodes?.[0]?.items?.[0]?.m3u8) {
-            const m3u8 = data.movie.episodes[0].items[0].m3u8;
-            if (m3u8) {
-                return {
-                    type: 'm3u8',
-                    url: m3u8,
-                    source: 'NguonC'
-                };
-            }
-        }
-    } catch (e) {
-        console.error("NguonC failed", e);
-    }
-
-    // 3. Try KKPhim (PhimAPI - as backup)
-    try {
-        // Note: KKPhim sometimes has different slugs, but often they match
-        const res = await fetch(`https://phimapi.com/phim/${slug}`);
-        const data = await res.json();
-        if (data.status && data.episodes?.[0]?.server_data?.[0]?.link_m3u8) {
-            const m3u8 = data.episodes[0].server_data[0].link_m3u8;
-            if (m3u8) {
-                return {
-                    type: 'm3u8',
-                    url: m3u8,
-                    source: 'KKPhim'
-                };
-            }
-        }
-    } catch (e) {
-        console.error("KKPhim (PhimAPI) failed", e);
-    }
-
-    return null;
-}
-
-// Unified Movie Types
 export interface UnifiedMovie {
     id: string;
-    _id: string; // Keep for compatibility
+    _id: string;
     name: string;
     slug: string;
     origin_name: string;
@@ -140,7 +75,14 @@ export interface UnifiedResponse {
     episodes: UnifiedServer[];
 }
 
-// Helper to normalize OPhim/KKPhim data
+interface CacheEntry<T> {
+    data?: T;
+    expiresAt?: number;
+    promise?: Promise<T>;
+}
+
+const detailCache = new Map<string, CacheEntry<UnifiedResponse>>();
+
 function normalizeOPhim(data: any): UnifiedResponse {
     return {
         status: data.status,
@@ -148,30 +90,27 @@ function normalizeOPhim(data: any): UnifiedResponse {
             ...data.movie,
             id: data.movie._id,
             _id: data.movie._id,
-            tmdb: data.movie.tmdb ? { type: data.movie.tmdb.type, id: data.movie.tmdb.id } : undefined
+            tmdb: data.movie.tmdb ? { type: data.movie.tmdb.type, id: data.movie.tmdb.id } : undefined,
         },
-        episodes: data.episodes || []
+        episodes: data.episodes || [],
     };
 }
 
-// Helper to normalize NguonC data
 function normalizeNguonC(data: any): UnifiedResponse {
     const movie = data.movie;
-    // NguonC episodes structure is different [ { server_name, items: [ { name, slug, embed, m3u8 } ] } ]
-    // We map it to OPhim structure
-    const episodes = movie.episodes.map((server: any) => ({
+    const episodes = (movie.episodes || []).map((server: any) => ({
         server_name: server.server_name,
-        server_data: server.items.map((item: any) => ({
+        server_data: (server.items || []).map((item: any) => ({
             name: item.name,
             slug: item.slug,
-            filename: item.name, // NguonC doesn't have filename, use name
+            filename: item.name,
             link_embed: item.embed,
-            link_m3u8: item.m3u8
-        }))
+            link_m3u8: item.m3u8,
+        })),
     }));
 
     return {
-        status: data.status === 'success',
+        status: data.status === "success",
         movie: {
             id: movie.id,
             _id: movie.id,
@@ -179,64 +118,210 @@ function normalizeNguonC(data: any): UnifiedResponse {
             slug: movie.slug,
             origin_name: movie.original_name,
             content: movie.description,
-            type: 'movie', // Infer or default
+            type: "movie",
             status: movie.current_episode,
             thumb_url: movie.thumb_url,
             poster_url: movie.poster_url,
-            trailer_url: "", // NguonC often doesn't have this in simple detail, need validation
+            trailer_url: "",
             time: movie.time,
             episode_current: movie.current_episode,
-            episode_total: String(movie.total_episodes),
+            episode_total: String(movie.total_episodes || ""),
             quality: movie.quality,
             lang: movie.language,
-            year: 2024,
-            actor: movie.casts ? movie.casts.split(', ') : [],
-            director: movie.director ? movie.director.split(', ') : [],
+            year: Number(movie.year) || new Date().getFullYear(),
+            actor: movie.casts ? String(movie.casts).split(", ") : [],
+            director: movie.director ? String(movie.director).split(", ") : [],
             category: [],
             country: [],
-            tmdb: undefined
+            tmdb: undefined,
         },
-        episodes: episodes
+        episodes,
     };
 }
 
+function isUsableDetail(data: UnifiedResponse | null | undefined): data is UnifiedResponse {
+    if (!data) return false;
+    if (!data.status) return false;
+    if (!data.movie?.slug) return false;
+    return Array.isArray(data.episodes);
+}
+
+async function fetchJsonWithTimeout<T>(
+    url: string,
+    timeoutMs: number = REQUEST_TIMEOUT_MS,
+    revalidateSeconds: number = DETAIL_REVALIDATE_SECONDS
+): Promise<T> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const init: RequestInit & { next?: { revalidate: number } } = {
+            signal: controller.signal,
+        };
+
+        if (typeof window === "undefined" && revalidateSeconds > 0) {
+            init.next = { revalidate: revalidateSeconds };
+        }
+
+        const res = await fetch(url, init);
+        if (!res.ok) {
+            throw new Error(`Fetch failed (${res.status}) for ${url}`);
+        }
+
+        return (await res.json()) as T;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+function getCachedDetail(slug: string): UnifiedResponse | null {
+    const cached = detailCache.get(slug);
+    if (!cached?.data || !cached.expiresAt) return null;
+    if (cached.expiresAt < Date.now()) return null;
+    return cached.data;
+}
+
+function setCachedDetail(slug: string, data: UnifiedResponse) {
+    detailCache.set(slug, {
+        data,
+        expiresAt: Date.now() + DETAIL_CACHE_TTL_MS,
+    });
+}
+
+async function fetchFromOPhim(slug: string): Promise<UnifiedResponse> {
+    const data = await fetchJsonWithTimeout<any>(`https://ophim1.com/phim/${slug}`, 4200);
+    if (!data?.status) {
+        throw new Error("OPhim returned invalid payload");
+    }
+    const normalized = normalizeOPhim(data);
+    if (!isUsableDetail(normalized)) {
+        throw new Error("OPhim normalized payload is not usable");
+    }
+    return normalized;
+}
+
+async function fetchFromNguonC(slug: string): Promise<UnifiedResponse> {
+    const data = await fetchJsonWithTimeout<any>(`https://phim.nguonc.com/api/film/${slug}`, 5000);
+    if (data?.status !== "success") {
+        throw new Error("NguonC returned invalid payload");
+    }
+    const normalized = normalizeNguonC(data);
+    if (!isUsableDetail(normalized)) {
+        throw new Error("NguonC normalized payload is not usable");
+    }
+    return normalized;
+}
+
+async function fetchFromKkPhim(slug: string): Promise<UnifiedResponse> {
+    const data = await fetchJsonWithTimeout<any>(`${KKPHIM_BASE_URL}/phim/${slug}`, 5000);
+    if (!data?.status) {
+        throw new Error("KKPhim returned invalid payload");
+    }
+    const normalized = normalizeOPhim(data);
+    if (!isUsableDetail(normalized)) {
+        throw new Error("KKPhim normalized payload is not usable");
+    }
+    return normalized;
+}
+
+export async function getBestStream(slug: string) {
+    try {
+        const ophimData = await fetchJsonWithTimeout<any>(`https://ophim1.com/phim/${slug}`, 4000, 120);
+        const oPhimM3u8 = ophimData?.episodes?.[0]?.server_data?.[0]?.link_m3u8;
+        if (oPhimM3u8) {
+            return {
+                type: "m3u8",
+                url: oPhimM3u8,
+                source: "OPhim",
+            };
+        }
+    } catch {
+        // Continue to fallback providers.
+    }
+
+    try {
+        return await Promise.any([
+            (async () => {
+                const data = await fetchJsonWithTimeout<any>(`https://phim.nguonc.com/api/film/${slug}`, 5000, 120);
+                const m3u8 = data?.movie?.episodes?.[0]?.items?.[0]?.m3u8;
+                if (!m3u8) throw new Error("NguonC stream not found");
+                return {
+                    type: "m3u8",
+                    url: m3u8,
+                    source: "NguonC",
+                };
+            })(),
+            (async () => {
+                const data = await fetchJsonWithTimeout<any>(`${KKPHIM_BASE_URL}/phim/${slug}`, 5000, 120);
+                const m3u8 = data?.episodes?.[0]?.server_data?.[0]?.link_m3u8;
+                if (!m3u8) throw new Error("KKPhim stream not found");
+                return {
+                    type: "m3u8",
+                    url: m3u8,
+                    source: "KKPhim",
+                };
+            })(),
+        ]);
+    } catch {
+        return null;
+    }
+}
+
 export async function getUnifiedMovieDetail(slug: string): Promise<UnifiedResponse> {
-    // 1. Try OPhim
-    try {
-        const res = await fetch(`https://ophim1.com/phim/${slug}`, { next: { revalidate: 300 } });
-        const data = await res.json();
-        if (data.status) {
-            return normalizeOPhim(data);
-        }
-    } catch (e) {
-        console.error("OPhim fetch failed", e);
+    const freshCached = getCachedDetail(slug);
+    if (freshCached) {
+        return freshCached;
     }
 
-    // 2. Try NguonC
-    try {
-        const res = await fetch(`https://phim.nguonc.com/api/film/${slug}`, { next: { revalidate: 300 } });
-        const data = await res.json();
-        if (data.status === 'success') {
-            return normalizeNguonC(data);
-        }
-    } catch (e) {
-        console.error("NguonC fetch failed", e);
+    const existingPromise = detailCache.get(slug)?.promise;
+    if (existingPromise) {
+        return existingPromise;
     }
 
-    // 3. Try KKPhim
-    try {
-        const res = await fetch(`https://phimapi.com/phim/${slug}`, { next: { revalidate: 300 } });
-        const data = await res.json();
-        if (data.status) {
-            return normalizeOPhim(data);
+    const task = (async (): Promise<UnifiedResponse> => {
+        try {
+            const primary = await fetchFromOPhim(slug);
+            setCachedDetail(slug, primary);
+            return primary;
+        } catch {
+            // Continue to backup providers.
         }
-    } catch (e) {
-        console.error("KKPhim fetch failed", e);
-    }
 
-    return {
-        status: false,
-        movie: {} as any,
-        episodes: []
-    };
+        try {
+            const fallback = await Promise.any([
+                fetchFromNguonC(slug),
+                fetchFromKkPhim(slug),
+            ]);
+            setCachedDetail(slug, fallback);
+            return fallback;
+        } catch (error) {
+            const stale = detailCache.get(slug)?.data;
+            if (stale) {
+                return stale;
+            }
+            console.error("All providers failed for movie slug:", slug, error);
+            return {
+                status: false,
+                movie: {} as UnifiedMovie,
+                episodes: [],
+            };
+        }
+    })();
+
+    detailCache.set(slug, {
+        ...detailCache.get(slug),
+        promise: task,
+    });
+
+    try {
+        return await task;
+    } finally {
+        const current = detailCache.get(slug);
+        if (current?.promise) {
+            detailCache.set(slug, {
+                data: current.data,
+                expiresAt: current.expiresAt,
+            });
+        }
+    }
 }
