@@ -88,8 +88,8 @@ export default function MovieGrid({ fetchFunction, title, showFilters = false }:
                                     </span>
                                 )}
                                 {movie.lang && typeof movie.lang === 'string' && movie.lang.includes("Thuyết Minh") && (
-                                    <span className="px-[6px] py-[2px] bg-[#e74c3c] text-white text-[10px] font-semibold rounded">
-                                        TM
+                                    <span className="px-[6px] py-[2px] bg-gradient-to-r from-[#e67e22] to-[#d35400] text-white text-[10px] font-semibold rounded flex items-center gap-[2px]">
+                                        🎙️ TM
                                     </span>
                                 )}
                             </div>

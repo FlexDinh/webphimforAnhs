@@ -54,6 +54,38 @@ export const TMDB_SOURCES: StreamingSource[] = [
         getMovieUrl: (tmdbId) => `https://player.videasy.net/movie/${tmdbId}`,
         getTvUrl: (tmdbId, s, e) => `https://player.videasy.net/tv/${tmdbId}/${s}/${e}`,
     },
+    {
+        id: "autoembed",
+        name: "AutoEmbed",
+        quality: "1080p",
+        icon: "🎯",
+        getMovieUrl: (tmdbId) => `https://autoembed.co/movie/tmdb/${tmdbId}`,
+        getTvUrl: (tmdbId, s, e) => `https://autoembed.co/tv/tmdb/${tmdbId}-${s}-${e}`,
+    },
+    {
+        id: "moviesapi",
+        name: "MoviesAPI",
+        quality: "1080p",
+        icon: "🎞️",
+        getMovieUrl: (tmdbId) => `https://moviesapi.club/movie/${tmdbId}`,
+        getTvUrl: (tmdbId, s, e) => `https://moviesapi.club/tv/${tmdbId}-${s}-${e}`,
+    },
+    {
+        id: "vidsrc-vip",
+        name: "VidSrc VIP",
+        quality: "4K",
+        icon: "💎",
+        getMovieUrl: (tmdbId) => `https://vidsrc.vip/embed/movie/${tmdbId}`,
+        getTvUrl: (tmdbId, s, e) => `https://vidsrc.vip/embed/tv/${tmdbId}/${s}/${e}`,
+    },
+    {
+        id: "nontongo",
+        name: "NontonGo",
+        quality: "1080p",
+        icon: "🌏",
+        getMovieUrl: (tmdbId) => `https://www.nontongo.win/embed/movie/${tmdbId}`,
+        getTvUrl: (tmdbId, s, e) => `https://www.nontongo.win/embed/tv/${tmdbId}/${s}/${e}`,
+    },
 ];
 
 // Source priority system

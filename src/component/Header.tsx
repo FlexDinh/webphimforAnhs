@@ -1,5 +1,5 @@
 "use client";
-import { faBars, faSearch, faXmark, faFilm, faTv, faPlay, faClapperboard, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faSearch, faXmark, faFilm, faTv, faPlay, faClapperboard, faGlobe, faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
@@ -70,6 +70,7 @@ export default function Header() {
     { label: "Phim Bộ", path: "/phim-bo", icon: faTv },
     { label: "Thể Loại", path: "/the-loai", icon: null },
     { label: "Chiếu Rạp", path: "/chieu-rap", icon: faClapperboard },
+    { label: "Thuyết Minh", path: "/thuyet-minh", icon: faMicrophone },
     { label: "Anime", path: "/anime", icon: null },
   ];
 

@@ -13,6 +13,7 @@ export default function SettingsPanel() {
         { id: "phim-le", name: "Phim Lẻ" },
         { id: "phim-bo", name: "Phim Bộ" },
         { id: "anime", name: "Anime" },
+        { id: "thuyet-minh", name: "Phim Thuyết Minh" },
     ];
 
     return (

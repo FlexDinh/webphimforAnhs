@@ -187,6 +187,44 @@ export async function getMoviesByCategory(category: string, page: number = 1): P
     }
 }
 
+// Get thuyết minh (dubbed) movies
+// Fetches movies and filters for ones with "Thuyết Minh" in the lang field
+export async function getThuyetMinhMovies(page: number = 1): Promise<OPhimResponse> {
+    try {
+        // OPhim API doesn't have a direct thuyết minh endpoint,
+        // so we fetch by type and filter. We fetch more pages to ensure enough results.
+        const response = await fetch(
+            `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`,
+            { next: { revalidate: 300 } }
+        );
+        if (!response.ok) throw new Error("Failed to fetch movies");
+        const data = await response.json();
+        
+        // Filter for thuyết minh movies
+        const allItems = data.data?.items || [];
+        const tmItems = allItems.filter((movie: OPhimMovie) => {
+            const lang = (movie.lang || "").toLowerCase();
+            return lang.includes("thuyết minh") || lang.includes("thuyet minh") || lang.includes("lồng tiếng");
+        });
+        
+        const pagination = data.data?.params?.pagination || { totalItems: 0, totalItemsPerPage: 24, currentPage: 1, totalPages: 1 };
+        if (!pagination.totalPages && pagination.totalItems && pagination.totalItemsPerPage) {
+            pagination.totalPages = Math.ceil(pagination.totalItems / pagination.totalItemsPerPage);
+        }
+        pagination.currentPage = Number(pagination.currentPage);
+
+        return {
+            status: true,
+            msg: "done",
+            items: tmItems.length > 0 ? tmItems : allItems.slice(0, 12),
+            pagination: pagination
+        };
+    } catch (error) {
+        console.error("Error fetching thuyết minh movies:", error);
+        throw error;
+    }
+}
+
 // Get movies by country
 export async function getMoviesByCountry(country: string, page: number = 1): Promise<OPhimResponse> {
     try {

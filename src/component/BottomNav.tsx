@@ -2,14 +2,14 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faFilm, faTv, faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faFilm, faTv, faSearch, faBookmark } from "@fortawesome/free-solid-svg-icons";
 
 const navItems = [
     { icon: faHome, label: "Trang chủ", path: "/" },
     { icon: faFilm, label: "Phim lẻ", path: "/phim-le" },
     { icon: faSearch, label: "Tìm kiếm", path: "/the-loai" },
     { icon: faTv, label: "Phim bộ", path: "/phim-bo" },
-    { icon: faUser, label: "Cá nhân", path: "/phimhay" },
+    { icon: faBookmark, label: "Xem sau", path: "/watchlist" },
 ];
 
 export default function BottomNav() {
