@@ -1,6 +1,5 @@
 import {
     dedupeMovies,
-    isTheatricalMovie,
     isThuyetMinhMovie,
     matchesMovieType,
 } from "./movieClassification";
@@ -320,11 +319,12 @@ async function buildDerivedListing(
 }
 
 export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
-    return buildDerivedListing(
-        page,
-        (sourcePage) => getMoviesByType("phim-le", sourcePage),
-        isTheatricalMovie
-    );
+    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-chieu-rap?page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: `chieu-rap:${page}`,
+    });
+    return normalizeApiResponse(data);
 }
 
 export async function getMoviesByType(type: string, page: number = 1): Promise<OPhimResponse> {
