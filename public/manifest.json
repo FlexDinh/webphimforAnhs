@@ -1,28 +1,28 @@
 {
-    "name": "WebForAnhs - Xem Phim Online",
-    "short_name": "WebForAnhs",
-    "description": "Xem phim online miễn phí, chất lượng cao HD/4K, vietsub, thuyết minh",
-    "start_url": "/phimhay",
-    "display": "standalone",
-    "background_color": "#0F111A",
-    "theme_color": "#FFD875",
-    "orientation": "any",
-    "categories": ["entertainment", "video"],
-    "lang": "vi",
-    "icons": [
-        {
-            "src": "/icons/icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icons/icon-512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
-        }
-    ],
-    "screenshots": [],
-    "prefer_related_applications": false
+  "name": "RoPhim - Xem Phim Online",
+  "short_name": "RoPhim",
+  "description": "Xem phim online miễn phí, chất lượng cao HD/4K, Vietsub và Thuyết minh",
+  "start_url": "/phimhay",
+  "display": "standalone",
+  "background_color": "#0F111A",
+  "theme_color": "#FFD875",
+  "orientation": "any",
+  "categories": ["entertainment", "video"],
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }

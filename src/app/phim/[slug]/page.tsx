@@ -236,7 +236,7 @@ export default function MoviePage() {
             try {
                 await navigator.share({
                     title: movie?.movie.name || "Xem phim",
-                    text: `Xem ${movie?.movie.name} trên WebForAnhs`,
+                    text: `Xem ${movie?.movie.name} trên RoPhim`,
                     url
                 });
             } catch { }

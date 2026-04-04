@@ -35,14 +35,14 @@ export default function Footer() {
                 <span className="text-white text-[20px]">🎬</span>
               </div>
               <span className="text-[22px] font-bold text-white">
-                Web<span className="text-[#FFD700] glow-text">ForAnhs</span>
+                Ro<span className="text-[#FFD700] glow-text">Phim</span>
               </span>
             </div>
             <p className="text-[#888] text-[14px] leading-relaxed mb-[8px]">
-              Xem phim online miễn phí chất lượng cao, cập nhật nhanh nhất.
+              Xem phim online miễn phí với giao diện gọn, tải nhanh và tối ưu tốt hơn cho mobile.
             </p>
             <p className="text-[#888] text-[14px] leading-relaxed mb-[20px]">
-              Kho phim khổng lồ với hơn 50,000+ phim từ nhiều nguồn API.
+              Khám phá phim mới, phim lẻ, phim bộ và danh mục theo quốc gia từ nhiều nguồn API.
             </p>
             <div className="flex gap-[12px]">
               <a className="w-[40px] h-[40px] rounded-full glass flex items-center justify-center hover:bg-[#FFD875] hover:text-black hover:glow-gold transition-all cursor-pointer haptic">
@@ -111,7 +111,7 @@ export default function Footer() {
             </div>
             <div className="mt-[20px] p-[16px] glass rounded-xl">
               <p className="text-[12px] text-[#888]">
-                ⚠️ Website không lưu trữ phim trên server. Mọi nội dung được thu thập từ các nguồn API công khai.
+                ⚠️ RoPhim không lưu trữ nội dung phim trên máy chủ. Dữ liệu được tổng hợp từ các nguồn API công khai.
               </p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/5 mt-[40px] pt-[24px] flex flex-col md:flex-row justify-between items-center gap-[16px]">
           <p className="text-[#666] text-[13px]">
-            © 2025 WebForAnhs. Tất cả quyền được bảo lưu.
+            © 2025 RoPhim. Tất cả quyền được bảo lưu.
           </p>
           <p className="text-[#666] text-[13px] flex items-center gap-[6px]">
             Made with <FontAwesomeIcon icon={faHeart} className="text-[#e74c3c] animate-pulse" /> in Vietnam

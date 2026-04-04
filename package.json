@@ -9,7 +9,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "tsc --noEmit -p tsconfig.check.json",
     "test": "echo \"Skip test (no tests defined)\" && exit 0"
   },
   "dependencies": {

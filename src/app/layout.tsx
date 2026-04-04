@@ -11,29 +11,29 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://webphimfor-anhs.vercel.app"),
-  title: "WebForAnhs - Xem Phim Online Miễn Phí | Chất Lượng Cao",
-  description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K, Vietsub, thuyết minh.",
-  keywords: "xem phim, phim online, phim miễn phí, phim hay, phim HD, phim 4K, phim Vietsub, phim thuyết minh, phim chiếu rạp, phim bộ, phim lẻ, WebForAnhs",
-  authors: [{ name: "WebForAnhs" }],
+  title: "RoPhim - Xem Phim Online Miễn Phí | Phim Mới, Vietsub, Thuyết Minh",
+  description: "RoPhim là trang xem phim online miễn phí với phim mới cập nhật nhanh, giao diện gọn, hỗ trợ Vietsub và Thuyết minh trên điện thoại lẫn desktop.",
+  keywords: "rophim, xem phim, phim online, phim miễn phí, phim mới, phim hay, phim HD, phim 4K, phim Vietsub, phim thuyết minh, phim chiếu rạp, phim bộ, phim lẻ",
+  authors: [{ name: "RoPhim" }],
   openGraph: {
     type: "website",
     url: "https://webphimfor-anhs.vercel.app/",
-    title: "WebForAnhs - Xem Phim Online Miễn Phí | Chất Lượng Cao",
-    description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K.",
-    images: ["/logo.svg"],
+    title: "RoPhim - Xem Phim Online Miễn Phí | Phim Mới, Vietsub, Thuyết Minh",
+    description: "RoPhim giúp xem phim nhanh hơn với giao diện tối ưu cho mobile, danh mục rõ ràng và kho phim cập nhật liên tục.",
+    images: ["/icons/icon-512.png"],
     locale: "vi_VN",
-    siteName: "WebForAnhs",
+    siteName: "RoPhim",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@WebForAnhs",
-    title: "WebForAnhs - Xem Phim Online Miễn Phí | Chất Lượng Cao",
-    description: "WebForAnhs - Trang xem phim online chất lượng cao miễn phí. Kho phim khổng lồ: phim chiếu rạp, phim bộ, phim lẻ HD 4K.",
-    images: ["/logo.svg"],
+    site: "@RoPhim",
+    title: "RoPhim - Xem Phim Online Miễn Phí | Phim Mới, Vietsub, Thuyết Minh",
+    description: "RoPhim là nơi xem phim trực tuyến gọn, nhanh và tối ưu cho cả mobile lẫn desktop.",
+    images: ["/icons/icon-512.png"],
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "/logo.svg",
+    apple: "/icons/icon-192.png",
   },
   robots: {
     index: true,
@@ -73,11 +73,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
         {/* Apple Touch Icon */}
-        <link rel="apple-touch-icon" href="/logo.svg" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
         {/* PWA */}
         <link rel="manifest" href="/manifest.json" />
-        <meta name="apple-mobile-web-app-title" content="WebForAnhs" />
+        <meta name="apple-mobile-web-app-title" content="RoPhim" />
 
         {/* Service Worker Registration */}
         <script

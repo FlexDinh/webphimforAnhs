@@ -1,169 +1,168 @@
 "use client";
-import { useEffect, useState, useCallback, memo, useRef } from "react";
+
+import { useCallback, useEffect, useRef, useState, memo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getLatestMovies, getMoviesByType, getMoviesByCountry, getThuyetMinhMovies, getImageUrl, OPhimMovie } from "@/lib/ophimApi";
+import {
+  getImageUrl,
+  getLatestMovies,
+  getMoviesByCountry,
+  getMoviesByType,
+  getThuyetMinhMovies,
+  OPhimMovie,
+} from "@/lib/ophimApi";
 import { usePreferences } from "@/lib/usePreferences";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPlay, faAngleRight, faFilm, faTv, faClapperboard,
-  faStar, faGlobe, faMicrophone, faFire, faChevronLeft,
-  faChevronRight
+  faAngleRight,
+  faChevronLeft,
+  faChevronRight,
+  faClapperboard,
+  faFilm,
+  faFire,
+  faGlobe,
+  faMicrophone,
+  faPlay,
+  faStar,
+  faTv,
 } from "@fortawesome/free-solid-svg-icons";
 import ContinueWatching from "@/component/ContinueWatching";
 
-// Memoized MovieCard for performance
 const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => void }) => (
-  <div
+  <button
     onClick={onClick}
-    className="cursor-pointer group movie-card-premium neon-glow flex-shrink-0 w-[140px] sm:w-[160px]"
+    className="movie-card-premium neon-glow group w-[140px] flex-shrink-0 cursor-pointer text-left sm:w-[160px]"
   >
-    <div className="relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e]">
+    <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
       <Image
         src={getImageUrl(movie.poster_url || movie.thumb_url)}
-        alt={typeof movie.name === 'string' ? movie.name : "Movie"}
+        alt={typeof movie.name === "string" ? movie.name : "Movie"}
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
         sizes="(max-width: 640px) 140px, 160px"
         loading="lazy"
         unoptimized
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-[16px]">
-        <div className="w-[36px] h-[36px] rounded-full bg-[#FFD875] flex items-center justify-center">
-          <FontAwesomeIcon icon={faPlay} className="text-black text-[12px] ml-[2px]" />
+      <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#FFD875]">
+          <FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[12px] text-black" />
         </div>
       </div>
-      {typeof movie.quality === 'string' && movie.quality && (
-        <span className="absolute top-[6px] left-[6px] px-[5px] py-[2px] bg-[#FFD875] text-black text-[9px] font-semibold rounded">
+      {movie.quality && (
+        <span className="absolute left-[6px] top-[6px] rounded bg-[#FFD875] px-[5px] py-[2px] text-[9px] font-semibold text-black">
           {movie.quality}
         </span>
       )}
       {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
-        <span className="absolute top-[6px] right-[6px] px-[5px] py-[2px] bg-black/70 text-[#FFD875] text-[9px] font-bold rounded flex items-center gap-[2px]">
-          ⭐ {movie.tmdb.vote_average.toFixed(1)}
+        <span className="absolute right-[6px] top-[6px] flex items-center gap-[2px] rounded bg-black/70 px-[5px] py-[2px] text-[9px] font-bold text-[#FFD875]">
+          ★ {movie.tmdb.vote_average.toFixed(1)}
         </span>
       )}
     </div>
-    <h3 className="mt-[8px] text-white text-[12px] font-medium truncate group-hover:text-[#FFD875] transition-colors">
-      {typeof movie.name === 'string' ? movie.name : ""}
+    <h3 className="mt-[8px] truncate text-[12px] font-medium text-white transition-colors group-hover:text-[#FFD875]">
+      {typeof movie.name === "string" ? movie.name : ""}
     </h3>
-    <p className="text-white/40 text-[10px] truncate">
-      {typeof movie.origin_name === 'string' ? movie.origin_name : ""}
-    </p>
-  </div>
+    <p className="truncate text-[10px] text-white/40">{typeof movie.origin_name === "string" ? movie.origin_name : ""}</p>
+  </button>
 ));
-MovieCard.displayName = 'MovieCard';
+MovieCard.displayName = "MovieCard";
 
-// Skeleton for fast initial render
 const SkeletonCard = () => (
-  <div className="flex-shrink-0 w-[140px] sm:w-[160px]">
+  <div className="w-[140px] flex-shrink-0 sm:w-[160px]">
     <div className="aspect-[2/3] rounded-[12px] bg-[#2a2d3e] animate-pulse" />
-    <div className="mt-[8px] h-[14px] bg-[#2a2d3e] rounded animate-pulse w-3/4" />
+    <div className="mt-[8px] h-[14px] w-3/4 rounded bg-[#2a2d3e] animate-pulse" />
   </div>
 );
 
-// Individual section that loads independently
-const MovieSection = memo(({
-  title,
-  icon,
-  fetchFn,
-  viewAllPath,
-  gradient,
-  lazy = true,
-}: {
-  title: string;
-  icon: any;
-  fetchFn: () => Promise<OPhimMovie[]>;
-  viewAllPath: string;
-  gradient: string;
-  lazy?: boolean;
-}) => {
-  const [movies, setMovies] = useState<OPhimMovie[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [shouldLoad, setShouldLoad] = useState(!lazy);
-  const fetchFnRef = useRef(fetchFn);
-  const hasFetchedRef = useRef(false);
-  const sectionRef = useRef<HTMLDivElement | null>(null);
-  const router = useRouter();
+const MovieSection = memo(
+  ({
+    title,
+    icon,
+    fetchFn,
+    viewAllPath,
+    gradient,
+    lazy = true,
+  }: {
+    title: string;
+    icon: typeof faStar;
+    fetchFn: () => Promise<OPhimMovie[]>;
+    viewAllPath: string;
+    gradient: string;
+    lazy?: boolean;
+  }) => {
+    const [movies, setMovies] = useState<OPhimMovie[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [shouldLoad, setShouldLoad] = useState(!lazy);
+    const fetchFnRef = useRef(fetchFn);
+    const hasFetchedRef = useRef(false);
+    const sectionRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
 
-  useEffect(() => {
-    fetchFnRef.current = fetchFn;
-  }, [fetchFn]);
+    useEffect(() => {
+      fetchFnRef.current = fetchFn;
+    }, [fetchFn]);
 
-  useEffect(() => {
-    if (shouldLoad || !lazy) return;
-    if (!sectionRef.current || typeof IntersectionObserver === "undefined") {
-      setShouldLoad(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
+    useEffect(() => {
+      if (shouldLoad || !lazy) return;
+      if (!sectionRef.current || typeof IntersectionObserver === "undefined") {
         setShouldLoad(true);
-        observer.disconnect();
-      },
-      { rootMargin: "300px 0px" }
-    );
+        return;
+      }
 
-    observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, [lazy, shouldLoad]);
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          setShouldLoad(true);
+          observer.disconnect();
+        },
+        { rootMargin: "300px 0px" }
+      );
 
-  useEffect(() => {
-    if (!shouldLoad || hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+      observer.observe(sectionRef.current);
+      return () => observer.disconnect();
+    }, [lazy, shouldLoad]);
 
-    fetchFnRef.current()
-      .then((data) => {
-        setMovies(data);
-      })
-      .catch(() => {
-        setMovies([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [shouldLoad]);
+    useEffect(() => {
+      if (!shouldLoad || hasFetchedRef.current) return;
+      hasFetchedRef.current = true;
 
-  return (
-    <div ref={sectionRef} className="mb-[40px]">
-      <div className="flex items-center justify-between mb-[16px]">
-        <div className="flex items-center gap-[10px]">
-          <div className={`w-[36px] h-[36px] rounded-lg ${gradient} flex items-center justify-center`}>
-            <FontAwesomeIcon icon={icon} className="text-white text-[14px]" />
+      fetchFnRef.current()
+        .then((data) => setMovies(data))
+        .catch(() => setMovies([]))
+        .finally(() => setLoading(false));
+    }, [shouldLoad]);
+
+    return (
+      <section ref={sectionRef} className="mb-[40px]">
+        <div className="mb-[16px] flex items-center justify-between">
+          <div className="flex items-center gap-[10px]">
+            <div className={`flex h-[36px] w-[36px] items-center justify-center rounded-lg ${gradient}`}>
+              <FontAwesomeIcon icon={icon} className="text-[14px] text-white" />
+            </div>
+            <h2 className="text-[18px] font-bold text-white">{title}</h2>
           </div>
-          <h2 className="text-[18px] font-bold text-white">{title}</h2>
+          <button
+            onClick={() => router.push(viewAllPath)}
+            className="flex items-center gap-[4px] text-[12px] text-white/60 transition-colors hover:text-[#FFD875]"
+          >
+            Xem tất cả
+            <FontAwesomeIcon icon={faAngleRight} className="text-[10px]" />
+          </button>
         </div>
-        <button
-          onClick={() => router.push(viewAllPath)}
-          className="flex items-center gap-[4px] text-[12px] text-white/60 hover:text-[#FFD875] transition-colors"
-        >
-          Xem tất cả
-          <FontAwesomeIcon icon={faAngleRight} className="text-[10px]" />
-        </button>
-      </div>
-      <div className="flex gap-[12px] overflow-x-auto pb-[8px] scrollbar-hide">
-        {loading ? (
-          [...Array(6)].map((_, i) => <SkeletonCard key={i} />)
-        ) : (
-          movies.map((movie) => (
-            <MovieCard
-              key={movie._id}
-              movie={movie}
-              onClick={() => router.push(`/phim/${movie.slug}`)}
-            />
-          ))
-        )}
-      </div>
-    </div>
-  );
-});
-MovieSection.displayName = 'MovieSection';
 
-// =============================================
-// HERO CAROUSEL COMPONENT
-// =============================================
+        <div className="scrollbar-hide flex gap-[12px] overflow-x-auto pb-[8px]">
+          {loading
+            ? [...Array(6)].map((_, index) => <SkeletonCard key={index} />)
+            : movies.map((movie) => (
+                <MovieCard key={movie._id} movie={movie} onClick={() => router.push(`/phim/${movie.slug}`)} />
+              ))}
+        </div>
+      </section>
+    );
+  }
+);
+MovieSection.displayName = "MovieSection";
+
 function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -171,119 +170,123 @@ function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
   const router = useRouter();
   const heroMovies = movies.slice(0, 6);
 
-  const goToSlide = useCallback((idx: number) => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrentSlide(idx);
-    setTimeout(() => setIsTransitioning(false), 600);
-  }, [isTransitioning]);
+  const goToSlide = useCallback(
+    (index: number) => {
+      if (isTransitioning || heroMovies.length === 0) return;
+      setIsTransitioning(true);
+      setCurrentSlide(index);
+      setTimeout(() => setIsTransitioning(false), 600);
+    },
+    [heroMovies.length, isTransitioning]
+  );
 
   const nextSlide = useCallback(() => {
+    if (heroMovies.length === 0) return;
     goToSlide((currentSlide + 1) % heroMovies.length);
-  }, [currentSlide, heroMovies.length, goToSlide]);
+  }, [currentSlide, goToSlide, heroMovies.length]);
 
   const prevSlide = useCallback(() => {
+    if (heroMovies.length === 0) return;
     goToSlide((currentSlide - 1 + heroMovies.length) % heroMovies.length);
-  }, [currentSlide, heroMovies.length, goToSlide]);
+  }, [currentSlide, goToSlide, heroMovies.length]);
 
-  // Auto advance slides
   useEffect(() => {
+    if (heroMovies.length === 0) return;
     timerRef.current = setInterval(nextSlide, 6000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [nextSlide]);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [heroMovies.length, nextSlide]);
 
-  // Pause on hover
-  const pauseTimer = () => { if (timerRef.current) clearInterval(timerRef.current); };
-  const resumeTimer = () => { timerRef.current = setInterval(nextSlide, 6000); };
+  const pauseTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  const resumeTimer = () => {
+    if (heroMovies.length === 0) return;
+    timerRef.current = setInterval(nextSlide, 6000);
+  };
 
   if (heroMovies.length === 0) {
-    return <div className="w-full h-[60vh] min-h-[400px] bg-gradient-to-br from-[#1a1c2e] to-[#0F111A] animate-pulse" />;
+    return <div className="h-[60vh] min-h-[400px] w-full animate-pulse bg-gradient-to-br from-[#1a1c2e] to-[#0F111A]" />;
   }
 
   const current = heroMovies[currentSlide];
 
   return (
-    <div
-      className="relative h-[65vh] min-h-[420px] max-h-[700px] overflow-hidden"
-      onMouseEnter={pauseTimer}
-      onMouseLeave={resumeTimer}
-    >
-      {/* Background Images — all preloaded, only current visible */}
-      {heroMovies.map((movie, idx) => (
+    <div className="relative h-[65vh] min-h-[420px] max-h-[700px] overflow-hidden" onMouseEnter={pauseTimer} onMouseLeave={resumeTimer}>
+      {heroMovies.map((movie, index) => (
         <div
           key={movie._id}
-          className={`absolute inset-0 transition-opacity duration-700 ${idx === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 transition-opacity duration-700 ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
         >
           <Image
             src={getImageUrl(movie.poster_url || movie.thumb_url)}
             alt={movie.name}
             fill
             className="object-cover"
-            priority={idx === 0}
+            priority={index === 0}
             sizes="100vw"
             unoptimized
           />
         </div>
       ))}
 
-      {/* Gradient Overlays */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#0F111A] via-[#0F111A]/60 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0F111A] via-transparent to-[#0F111A]/30" />
 
-      {/* Slide Content */}
-      <div className="absolute bottom-[60px] left-0 right-0 px-[16px] z-10">
-        <div className="container max-w-[1400px] mx-auto">
+      <div className="absolute bottom-[60px] left-0 right-0 z-10 px-[16px]">
+        <div className="container mx-auto max-w-[1400px]">
           <div className="max-w-[550px]">
-            {/* Badges */}
-            <div className={`flex items-center gap-[8px] mb-[12px] transition-all duration-500 ${isTransitioning ? 'opacity-0 translate-y-[10px]' : 'opacity-100 translate-y-0'}`}>
+            <div className={`mb-[12px] flex items-center gap-[8px] transition-all duration-500 ${isTransitioning ? "translate-y-[10px] opacity-0" : "translate-y-0 opacity-100"}`}>
               {current.quality && (
-                <span className="px-[10px] py-[4px] bg-[#FFD875] text-black text-[11px] font-semibold rounded-full">
+                <span className="rounded-full bg-[#FFD875] px-[10px] py-[4px] text-[11px] font-semibold text-black">
                   {current.quality}
                 </span>
               )}
-              <span className="px-[10px] py-[4px] bg-white/10 text-white text-[11px] rounded-full backdrop-blur-sm">
+              <span className="rounded-full bg-white/10 px-[10px] py-[4px] text-[11px] text-white backdrop-blur-sm">
                 {String(current.year || "")}
               </span>
               {current.tmdb?.vote_average && current.tmdb.vote_average > 0 && (
-                <span className="px-[10px] py-[4px] bg-[#FFD875]/20 text-[#FFD875] text-[11px] font-semibold rounded-full backdrop-blur-sm">
-                  ⭐ {current.tmdb.vote_average.toFixed(1)}
+                <span className="rounded-full bg-[#FFD875]/20 px-[10px] py-[4px] text-[11px] font-semibold text-[#FFD875] backdrop-blur-sm">
+                  ★ {current.tmdb.vote_average.toFixed(1)}
                 </span>
               )}
               {current.lang && (
-                <span className="px-[10px] py-[4px] bg-white/10 text-white text-[11px] rounded-full backdrop-blur-sm">
+                <span className="rounded-full bg-white/10 px-[10px] py-[4px] text-[11px] text-white backdrop-blur-sm">
                   {current.lang}
                 </span>
               )}
             </div>
 
-            {/* Title */}
-            <h1 className={`text-[28px] lg:text-[40px] font-bold text-white mb-[6px] leading-tight transition-all duration-500 ${isTransitioning ? 'opacity-0 translate-y-[15px]' : 'opacity-100 translate-y-0'}`}
-              style={{ transitionDelay: '0.05s' }}
+            <h1
+              className={`mb-[6px] text-[28px] font-bold leading-tight text-white transition-all duration-500 lg:text-[40px] ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
+              style={{ transitionDelay: "0.05s" }}
             >
               {String(current.name || "")}
             </h1>
 
-            {/* Origin name */}
-            <p className={`text-[14px] lg:text-[16px] text-[#FFD875] mb-[20px] transition-all duration-500 ${isTransitioning ? 'opacity-0 translate-y-[15px]' : 'opacity-100 translate-y-0'}`}
-              style={{ transitionDelay: '0.1s' }}
+            <p
+              className={`mb-[20px] text-[14px] text-[#FFD875] transition-all duration-500 lg:text-[16px] ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
+              style={{ transitionDelay: "0.1s" }}
             >
               {String(current.origin_name || "")}
             </p>
 
-            {/* CTA Buttons */}
-            <div className={`flex items-center gap-[12px] transition-all duration-500 ${isTransitioning ? 'opacity-0 translate-y-[15px]' : 'opacity-100 translate-y-0'}`}
-              style={{ transitionDelay: '0.15s' }}
+            <div
+              className={`flex items-center gap-[12px] transition-all duration-500 ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
+              style={{ transitionDelay: "0.15s" }}
             >
               <button
                 onClick={() => router.push(`/phim/${current.slug}`)}
-                className="flex items-center gap-[8px] px-[28px] py-[14px] bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black font-semibold rounded-full hover:shadow-lg hover:shadow-[#FFD875]/30 transition-all text-[14px] hover:scale-105 active:scale-95"
+                className="flex items-center gap-[8px] rounded-full bg-gradient-to-r from-[#FFD875] to-[#f0a500] px-[28px] py-[14px] text-[14px] font-semibold text-black transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#FFD875]/30 active:scale-95"
               >
                 <FontAwesomeIcon icon={faPlay} className="text-[12px]" />
-                Xem Ngay
+                Xem ngay
               </button>
               <button
                 onClick={() => router.push(`/phim/${current.slug}`)}
-                className="flex items-center gap-[8px] px-[24px] py-[14px] bg-white/10 text-white rounded-full hover:bg-white/20 transition-all text-[14px] backdrop-blur-sm border border-white/10"
+                className="flex items-center gap-[8px] rounded-full border border-white/10 bg-white/10 px-[24px] py-[14px] text-[14px] text-white backdrop-blur-sm transition-all hover:bg-white/20"
               >
                 Chi tiết
               </button>
@@ -292,41 +295,37 @@ function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
         </div>
       </div>
 
-      {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-[16px] top-1/2 -translate-y-1/2 w-[44px] h-[44px] rounded-full bg-black/40 text-white hover:bg-black/60 transition-all z-10 flex items-center justify-center backdrop-blur-sm opacity-0 hover:opacity-100 group-hover:opacity-100 sm:opacity-60"
+        className="absolute left-[16px] top-1/2 z-10 flex h-[44px] w-[44px] -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-all hover:bg-black/60 hover:opacity-100 sm:opacity-60"
       >
         <FontAwesomeIcon icon={faChevronLeft} className="text-[14px]" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[44px] h-[44px] rounded-full bg-black/40 text-white hover:bg-black/60 transition-all z-10 flex items-center justify-center backdrop-blur-sm opacity-0 hover:opacity-100 group-hover:opacity-100 sm:opacity-60"
+        className="absolute right-[16px] top-1/2 z-10 flex h-[44px] w-[44px] -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-all hover:bg-black/60 hover:opacity-100 sm:opacity-60"
       >
         <FontAwesomeIcon icon={faChevronRight} className="text-[14px]" />
       </button>
 
-      {/* Slide Indicators */}
-      <div className="absolute bottom-[20px] left-1/2 -translate-x-1/2 flex items-center gap-[8px] z-10">
-        {heroMovies.map((_, idx) => (
+      <div className="absolute bottom-[20px] left-1/2 z-10 flex -translate-x-1/2 items-center gap-[8px]">
+        {heroMovies.map((_, index) => (
           <button
-            key={idx}
-            onClick={() => goToSlide(idx)}
-            className={`transition-all duration-300 rounded-full ${idx === currentSlide
-              ? 'w-[24px] h-[8px] bg-[#FFD875]'
-              : 'w-[8px] h-[8px] bg-white/30 hover:bg-white/50'
-              }`}
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`rounded-full transition-all duration-300 ${
+              index === currentSlide ? "h-[8px] w-[24px] bg-[#FFD875]" : "h-[8px] w-[8px] bg-white/30 hover:bg-white/50"
+            }`}
           />
         ))}
       </div>
 
-      {/* Progress bar for current slide */}
-      <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/10 z-10">
+      <div className="absolute bottom-0 left-0 right-0 z-10 h-[3px] bg-white/10">
         <div
           className="h-full bg-[#FFD875] transition-all"
           style={{
             width: `${((currentSlide + 1) / heroMovies.length) * 100}%`,
-            transition: 'width 0.5s ease'
+            transition: "width 0.5s ease",
           }}
         />
       </div>
@@ -334,47 +333,44 @@ function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
   );
 }
 
-// =============================================
-// TRENDING SECTION COMPONENT
-// =============================================
 const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
   const router = useRouter();
 
-  // Sort by TMDB rating for "trending" effect
   const trendingMovies = [...movies]
-    .filter(m => m.tmdb?.vote_average && m.tmdb.vote_average > 0)
+    .filter((movie) => movie.tmdb?.vote_average && movie.tmdb.vote_average > 0)
     .sort((a, b) => (b.tmdb?.vote_average || 0) - (a.tmdb?.vote_average || 0))
     .slice(0, 10);
 
   if (trendingMovies.length === 0) return null;
 
   return (
-    <div className="mb-[40px]">
-      <div className="flex items-center gap-[10px] mb-[16px]">
-        <div className="w-[36px] h-[36px] rounded-lg bg-gradient-to-br from-[#FF6B6B] to-[#ee5a24] flex items-center justify-center">
-          <FontAwesomeIcon icon={faFire} className="text-white text-[14px]" />
+    <section className="mb-[40px]">
+      <div className="mb-[16px] flex items-center gap-[10px]">
+        <div className="flex h-[36px] w-[36px] items-center justify-center rounded-lg bg-gradient-to-br from-[#FF6B6B] to-[#ee5a24]">
+          <FontAwesomeIcon icon={faFire} className="text-[14px] text-white" />
         </div>
         <h2 className="text-[18px] font-bold text-white">Trending 🔥</h2>
-        <span className="px-[8px] py-[2px] bg-red-500/20 text-red-400 text-[10px] font-bold rounded-full uppercase tracking-wider">Hot</span>
+        <span className="rounded-full bg-red-500/20 px-[8px] py-[2px] text-[10px] font-bold uppercase tracking-wider text-red-400">
+          Hot
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-[12px]">
+      <div className="grid grid-cols-1 gap-[12px] sm:grid-cols-2 lg:grid-cols-5">
         {trendingMovies.map((movie, index) => (
-          <div
+          <button
             key={movie._id}
             onClick={() => router.push(`/phim/${movie.slug}`)}
-            className="flex items-center gap-[12px] p-[12px] rounded-[12px] bg-white/5 hover:bg-white/10 cursor-pointer transition-all group"
+            className="group flex items-center gap-[12px] rounded-[12px] bg-white/5 p-[12px] text-left transition-all hover:bg-white/10"
           >
-            {/* Rank Number */}
-            <span className={`text-[28px] font-black min-w-[36px] text-center ${index < 3
-              ? 'bg-gradient-to-b from-[#FFD875] to-[#f0a500] bg-clip-text text-transparent'
-              : 'text-white/20'
-              }`}>
+            <span
+              className={`min-w-[36px] text-center text-[28px] font-black ${
+                index < 3 ? "bg-gradient-to-b from-[#FFD875] to-[#f0a500] bg-clip-text text-transparent" : "text-white/20"
+              }`}
+            >
               {index + 1}
             </span>
 
-            {/* Poster */}
-            <div className="w-[45px] h-[65px] rounded-[8px] overflow-hidden flex-shrink-0 relative bg-[#2a2d3e]">
+            <div className="relative h-[65px] w-[45px] flex-shrink-0 overflow-hidden rounded-[8px] bg-[#2a2d3e]">
               <Image
                 src={getImageUrl(movie.poster_url || movie.thumb_url)}
                 alt={movie.name}
@@ -385,32 +381,25 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
               />
             </div>
 
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              <h4 className="text-white text-[13px] font-medium truncate group-hover:text-[#FFD875] transition-colors">
+            <div className="min-w-0 flex-1">
+              <h4 className="truncate text-[13px] font-medium text-white transition-colors group-hover:text-[#FFD875]">
                 {String(movie.name || "")}
               </h4>
-              <p className="text-white/40 text-[11px] truncate">{String(movie.origin_name || "")}</p>
-              <div className="flex items-center gap-[6px] mt-[4px]">
-                <span className="text-[#FFD875] text-[11px] font-semibold">
-                  ⭐ {movie.tmdb?.vote_average?.toFixed(1)}
-                </span>
-                <span className="text-white/30 text-[10px]">•</span>
-                <span className="text-white/40 text-[10px]">{String(movie.year || "")}</span>
+              <p className="truncate text-[11px] text-white/40">{String(movie.origin_name || "")}</p>
+              <div className="mt-[4px] flex items-center gap-[6px]">
+                <span className="text-[11px] font-semibold text-[#FFD875]">★ {movie.tmdb?.vote_average?.toFixed(1)}</span>
+                <span className="text-[10px] text-white/30">•</span>
+                <span className="text-[10px] text-white/40">{String(movie.year || "")}</span>
               </div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
-    </div>
+    </section>
   );
 });
-TrendingSection.displayName = 'TrendingSection';
+TrendingSection.displayName = "TrendingSection";
 
-
-// =============================================
-// MAIN PAGE
-// =============================================
 export default function PhimHay() {
   const [heroMovies, setHeroMovies] = useState<OPhimMovie[]>([]);
   const [trendingMovies, setTrendingMovies] = useState<OPhimMovie[]>([]);
@@ -427,35 +416,58 @@ export default function PhimHay() {
   const fetchAuMySection = useCallback(async () => (await getMoviesByCountry("au-my", 1)).items.slice(0, 12), []);
 
   useEffect(() => {
-    Promise.all([
-      getLatestMovies(1),
-      getLatestMovies(2),
-    ]).then(([p1, p2]) => {
-      setHeroMovies(p1.items.slice(0, 8));
-      setTrendingMovies([...p1.items, ...p2.items]);
-    }).catch(() => {
-      setHeroMovies([]);
-      setTrendingMovies([]);
-    });
+    Promise.all([getLatestMovies(1), getLatestMovies(2)])
+      .then(([pageOne, pageTwo]) => {
+        setHeroMovies(pageOne.items.slice(0, 8));
+        setTrendingMovies([...pageOne.items, ...pageTwo.items]);
+      })
+      .catch(() => {
+        setHeroMovies([]);
+        setTrendingMovies([]);
+      });
   }, []);
 
   return (
     <div className="min-h-screen bg-[#0F111A]">
-      {/* Hero Carousel */}
       <HeroCarousel movies={heroMovies} />
 
-      {/* Content Sections */}
-      <div className="container max-w-[1400px] mx-auto px-[16px] py-[30px]">
+      <div className="container mx-auto max-w-[1400px] px-[16px] py-[30px]">
+        <section className="mb-[28px] grid gap-[14px] lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="rounded-[28px] border border-white/8 bg-[linear-gradient(135deg,rgba(255,216,117,0.1),rgba(255,255,255,0.03))] px-[20px] py-[22px]">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#FFD875]">Khám phá nhanh</p>
+            <h2 className="mt-[8px] text-[28px] font-semibold text-white">
+              Phim mới, xu hướng và các nhóm nội dung theo quốc gia.
+            </h2>
+            <p className="mt-[8px] max-w-[760px] text-[14px] leading-6 text-white/58">
+              Trang này đã được dọn lại theo hướng ưu tiên nội dung: hero nổi bật ở trên, xu hướng ngay bên dưới, rồi tới các hàng phim theo từng nhóm dễ quét hơn trên cả điện thoại và desktop.
+            </p>
+          </div>
 
-        {/* Continue Watching — shows only if user has history */}
+          <div className="rounded-[28px] border border-white/8 bg-white/[0.03] px-[20px] py-[22px]">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-white/40">API trạng thái</p>
+            <div className="mt-[12px] space-y-[10px] text-[14px] text-white/72">
+              <p className="flex items-center justify-between gap-[16px]">
+                <span>OPhim latest</span>
+                <span className="text-[#7dffa6]">OK</span>
+              </p>
+              <p className="flex items-center justify-between gap-[16px]">
+                <span>Nguồn C latest</span>
+                <span className="text-[#7dffa6]">OK</span>
+              </p>
+              <p className="flex items-center justify-between gap-[16px]">
+                <span>Chiếu rạp</span>
+                <span className="text-[#FFD875]">Đã sửa endpoint</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
         <ContinueWatching />
-
-        {/* Trending Section */}
         <TrendingSection movies={trendingMovies} />
 
         {!hiddenSections.includes("phim-moi") && (
           <MovieSection
-            title="Phim Mới"
+            title="Phim mới"
             icon={faStar}
             fetchFn={fetchLatestSection}
             viewAllPath="/phim-moi"
@@ -466,7 +478,7 @@ export default function PhimHay() {
 
         {!hiddenSections.includes("phim-le") && (
           <MovieSection
-            title="Phim Lẻ"
+            title="Phim lẻ"
             icon={faFilm}
             fetchFn={fetchPhimLeSection}
             viewAllPath="/phim-le"
@@ -476,7 +488,7 @@ export default function PhimHay() {
 
         {!hiddenSections.includes("phim-bo") && (
           <MovieSection
-            title="Phim Bộ"
+            title="Phim bộ"
             icon={faTv}
             fetchFn={fetchPhimBoSection}
             viewAllPath="/phim-bo"
@@ -496,7 +508,7 @@ export default function PhimHay() {
 
         {!hiddenSections.includes("thuyet-minh") && (
           <MovieSection
-            title="Phim Thuyết Minh"
+            title="Phim thuyết minh"
             icon={faMicrophone}
             fetchFn={fetchThuyetMinhSection}
             viewAllPath="/thuyet-minh"
@@ -504,7 +516,6 @@ export default function PhimHay() {
           />
         )}
 
-        {/* Country Sections */}
         <MovieSection
           title="Phim Hàn Quốc"
           icon={faGlobe}

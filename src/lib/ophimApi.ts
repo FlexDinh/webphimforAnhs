@@ -250,12 +250,29 @@ export async function getMovieBySlug(slug: string) {
 }
 
 export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
-    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-chieu-rap?page=${page}`;
-    const data = await fetchJsonWithTimeout<any>(url, {
-        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
-        cacheKey: `theatrical:${page}`,
-    });
-    return normalizeApiResponse(data);
+    const candidateUrls = [
+        `${PHIMAPI_BASE_URL}/v1/api/danh-sach/chieu-rap?page=${page}`,
+        `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-chieu-rap?page=${page}`,
+    ];
+
+    let lastError: unknown;
+
+    for (const url of candidateUrls) {
+        try {
+            const data = await fetchJsonWithTimeout<any>(url, {
+                revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+                cacheKey: `theatrical:${page}:${url}`,
+            });
+            const normalized = normalizeApiResponse(data);
+            if (normalized.items.length > 0) {
+                return normalized;
+            }
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError ?? new Error("Unable to fetch theatrical movies");
 }
 
 export async function getMoviesByType(type: string, page: number = 1): Promise<OPhimResponse> {

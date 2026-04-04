@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -34,6 +35,9 @@ const nextConfig: NextConfig = {
   // Optimize JS/CSS
   // swcMinify and minimize are enabled by default in Next.js 13+
   reactStrictMode: false,
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
 };
 
 export default nextConfig;

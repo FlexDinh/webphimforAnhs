@@ -1,142 +1,157 @@
 "use client";
-import Image from "next/image";
+
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import Logo from "@/component/Logo";
+
+const primaryStats = [
+  { label: "Danh mục", value: "8+" },
+  { label: "Cập nhật", value: "Hằng ngày" },
+  { label: "Thiết bị", value: "Mobile first" },
+];
+
+const quickLinks = [
+  {
+    label: "Phim mới",
+    href: "/phimhay",
+    description: "Trang tổng hợp nổi bật và cập nhật nhanh.",
+  },
+  {
+    label: "Phim lẻ",
+    href: "/phim-le",
+    description: "Xem nhanh các tựa phim hoàn chỉnh.",
+  },
+  {
+    label: "Phim bộ",
+    href: "/phim-bo",
+    description: "Theo dõi các series đang lên tập.",
+  },
+  {
+    label: "Chiếu rạp",
+    href: "/chieu-rap",
+    description: "Nhóm phim nổi bật có chất lượng cao.",
+  },
+];
 
 export default function Home() {
   const router = useRouter();
-  const handleNavigation = () => {
-    router.push("/phimhay");
-  };
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
 
   return (
-    <div className="relative w-full min-h-screen bg-[url('/home-background.jpg')] bg-cover bg-center bg-fixed">
-      {/* Animated gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#14161E]" />
+    <main className="relative min-h-screen overflow-hidden bg-[#07111f] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,216,117,0.22),_transparent_32%),radial-gradient(circle_at_80%_20%,_rgba(61,122,255,0.16),_transparent_28%),linear-gradient(180deg,_#0d1828_0%,_#08111d_48%,_#050a12_100%)]" />
+      <div className="absolute inset-x-0 top-0 h-[520px] bg-[linear-gradient(135deg,rgba(255,216,117,0.18),transparent_30%,transparent_60%,rgba(82,142,255,0.12))]" />
+      <div className="absolute right-[-8%] top-[12%] h-[360px] w-[360px] rounded-full bg-[#ffd875]/10 blur-3xl" />
+      <div className="absolute left-[-10%] bottom-[10%] h-[320px] w-[320px] rounded-full bg-[#1f4fff]/10 blur-3xl" />
 
-      {/* Floating particles effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-[#FFD700] rounded-full opacity-30"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-            }}
-          />
-        ))}
-      </div>
+      <div className="relative mx-auto flex min-h-screen max-w-[1380px] flex-col px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+        <div className="mb-12 flex items-center justify-between">
+          <div className="h-[58px] w-[176px] sm:h-[64px] sm:w-[190px]">
+            <Logo />
+          </div>
+          <button
+            onClick={() => router.push("/phimhay")}
+            className="rounded-full border border-white/12 bg-white/6 px-5 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+          >
+            Vào kho phim
+          </button>
+        </div>
 
-      {/* Main content */}
-      <div className="relative z-10 flex items-center justify-center">
-        <div className="container mx-auto px-4 text-white text-center xl:mt-[300px] mt-[100px] xl:mb-[128px] lg:mb-[90px] mb-[70px]">
-
-          {/* Hero card with glassmorphism */}
-          <div className="glass rounded-[40px] flex flex-col items-center justify-center gap-[40px] 2xl:py-[96px] xl:py-[80px] lg:py-[64px] md:py-[48px] sm:py-[40px] py-[50px] 2xl:px-[128px] xl:px-[96px] lg:px-[72px] md:px-[48px] sm:px-[40px] px-[46px] border border-white/10 shadow-2xl">
-
-
-
-
-            {/* Animated logo */}
-            <div className="animated-text-enter">
-              <div className="w-[180px] h-[60px] sm:w-[220px] sm:h-[70px] xl:w-[260px] xl:h-[80px]">
-                <Logo />
-              </div>
-            </div>
-
-            {/* Animated headline */}
-            <p className="animated-text-enter 2xl:text-[41.6px] xl:text-[40px] lg:text-[36px] md:text-[32px] sm:text-[28px] text-[24px] text-center font-medium leading-tight" style={{ animationDelay: "0.2s" }}>
-              Xem Phim <span className="gradient-text font-bold">Miễn Phí</span> Cực Nhanh,
-              <br className="hidden sm:block" />
-              Chất Lượng Cao Và Cập Nhật Liên Tục
+        <section className="grid flex-1 items-center gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,440px)]">
+          <div className="max-w-[680px]">
+            <p className="animated-text-enter mb-4 inline-flex rounded-full border border-[#ffd875]/25 bg-[#ffd875]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#ffd875]">
+              Rạp phim gọn, nhanh, rõ
+            </p>
+            <h1 className="animated-text-enter hero-title max-w-[12ch] text-[44px] font-semibold leading-[0.94] sm:text-[58px] lg:text-[78px]">
+              RoPhim cho trải nghiệm xem phim tập trung hơn.
+            </h1>
+            <p
+              className="animated-text-enter mt-6 max-w-[560px] text-[16px] leading-7 text-white/72 sm:text-[18px]"
+              style={{ animationDelay: "0.12s" }}
+            >
+              Bỏ nền lỗi, bỏ branding chắp vá. Trang chủ giờ dẫn người dùng vào đúng luồng:
+              chọn phim mới, khám phá danh mục và vào xem nhanh trên cả mobile lẫn desktop.
             </p>
 
-            {/* Animated CTA button */}
-            <div className="animated-text-enter" style={{ animationDelay: "0.4s" }}>
+            <div
+              className="animated-text-enter mt-8 flex flex-col gap-4 sm:flex-row"
+              style={{ animationDelay: "0.2s" }}
+            >
               <button
-                onClick={handleNavigation}
-                className="group relative overflow-hidden flex sm:px-[40px] max-[650px]:w-full justify-center sm:py-[18px] py-[16px] cursor-pointer text-[20px] font-bold items-center gap-3 text-black bg-gradient-to-tr rounded-full from-[#fecf59] to-[#fff1cc] hover:shadow-[0_8px_30px_rgba(255,207,89,0.4)] transition-all duration-300 hover:scale-105 active:scale-95"
+                onClick={() => router.push("/phimhay")}
+                className="rounded-full bg-gradient-to-r from-[#ffd875] to-[#f0a500] px-7 py-4 text-[15px] font-bold text-black transition hover:scale-[1.02] hover:shadow-[0_16px_36px_rgba(255,216,117,0.22)]"
               >
-                <span className="relative z-10">🎬 Xem Ngay</span>
-                <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                Xem phim ngay
+              </button>
+              <button
+                onClick={() => router.push("/phim-moi")}
+                className="rounded-full border border-white/14 bg-white/6 px-7 py-4 text-[15px] font-semibold text-white transition hover:bg-white/10"
+              >
+                Khám phá phim mới
               </button>
             </div>
 
-            {/* Stats */}
-            <div className="flex gap-8 mt-4 text-center animated-text-enter" style={{ animationDelay: "0.6s" }}>
-              <div>
-                <p className="text-[#FFD700] text-[24px] font-bold">50,000+</p>
-                <p className="text-gray-400 text-[13px]">Phim</p>
-              </div>
-              <div className="w-px bg-white/10" />
-              <div>
-                <p className="text-[#FFD700] text-[24px] font-bold">4K</p>
-                <p className="text-gray-400 text-[13px]">Chất lượng</p>
-              </div>
-              <div className="w-px bg-white/10" />
-              <div>
-                <p className="text-[#FFD700] text-[24px] font-bold">0đ</p>
-                <p className="text-gray-400 text-[13px]">Miễn phí</p>
-              </div>
+            <div
+              className="animated-text-enter mt-10 grid gap-4 sm:grid-cols-3"
+              style={{ animationDelay: "0.28s" }}
+            >
+              {primaryStats.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[24px] border border-white/10 bg-white/6 px-5 py-5 backdrop-blur-xl"
+                >
+                  <p className="text-[28px] font-semibold text-white">{item.value}</p>
+                  <p className="mt-1 text-sm text-white/58">{item.label}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Dedication section */}
-      <div className="relative bg-gradient-to-b from-[#14161E] to-[#0F111A] py-[80px]">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-[600px] mx-auto relative">
-            {/* Decorative glow */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-[#FFD700]/10 via-[#FFB7C5]/10 to-[#FFD700]/10 blur-3xl opacity-50" />
+          <div className="animated-text-enter relative" style={{ animationDelay: "0.18s" }}>
+            <div className="absolute inset-x-[12%] top-[10%] h-[1px] bg-gradient-to-r from-transparent via-[#ffd875]/50 to-transparent" />
+            <div className="glass-dark relative overflow-hidden rounded-[34px] border border-white/10 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+              <div className="mb-8 flex items-center justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.2em] text-white/44">Lối vào nhanh</p>
+                  <h2 className="mt-2 text-[28px] font-semibold text-white">Chọn nhịp xem</h2>
+                </div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ffd875]/14 text-[22px] text-[#ffd875]">
+                  🎬
+                </div>
+              </div>
 
-            <div className="relative glass rounded-[32px] p-[48px] border border-white/10">
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[48px]">🎬</div>
-
-              <h2 className="gradient-text text-[32px] font-bold mb-[20px] mt-4">
-                Dành Riêng Cho Bé Ánh
-              </h2>
-              <p className="text-white/80 text-[18px] mb-[12px]">
-                <span className="text-[#FFD700] font-semibold">WebForAnhs</span> được dựng lên dành riêng cho
-              </p>
-              <p className="text-[#FFB7C5] text-[36px] font-bold mb-[20px] animate-pulse">
-                ✨ Bé Ánh ✨
-              </p>
-              <p className="text-gray-500 text-[14px]">
-                Xem phim thả ga, không quảng cáo, chất lượng cao 💕
-              </p>
-
-              {/* Decorative hearts */}
-              <div className="flex justify-center gap-2 mt-6">
-                {["❤️", "🧡", "💛", "💚", "💙", "💜"].map((heart, i) => (
-                  <span
-                    key={i}
-                    className="text-[20px] opacity-60"
-                    style={{
-                      animation: `pulse 1.5s ease-in-out infinite`,
-                      animationDelay: `${i * 0.1}s`,
-                    }}
+              <div className="space-y-3">
+                {quickLinks.map((item) => (
+                  <button
+                    key={item.href}
+                    onClick={() => router.push(item.href)}
+                    className="flex w-full items-center justify-between rounded-[22px] border border-white/8 bg-white/5 px-4 py-4 text-left transition hover:border-[#ffd875]/30 hover:bg-white/9"
                   >
-                    {heart}
-                  </span>
+                    <div>
+                      <p className="text-[15px] font-semibold text-white">{item.label}</p>
+                      <p className="mt-1 text-sm text-white/48">{item.description}</p>
+                    </div>
+                    <span className="text-xl text-white/38">→</span>
+                  </button>
                 ))}
               </div>
+
+              <div className="mt-8 rounded-[26px] border border-[#ffd875]/16 bg-[linear-gradient(135deg,rgba(255,216,117,0.12),rgba(255,255,255,0.03))] p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#ffd875]">
+                  Nâng cấp lần này
+                </p>
+                <p className="mt-3 text-[18px] font-medium text-white">
+                  Branding thống nhất, landing page sạch hơn và không còn phụ thuộc ảnh nền bị thiếu.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        <section className="relative mt-14 grid gap-4 border-t border-white/8 pt-8 text-sm text-white/58 sm:grid-cols-3">
+          <p>Hero được làm lại theo hướng một điểm nhấn rõ ràng thay vì card chồng và hạt ngẫu nhiên gây hydration mismatch.</p>
+          <p>Cấu trúc dẫn người dùng tới nội dung chính nhanh hơn: phim mới, phim lẻ, phim bộ, chiếu rạp.</p>
+          <p>RoPhim giờ đồng nhất từ logo, metadata, manifest tới footer và chia sẻ liên kết.</p>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
-

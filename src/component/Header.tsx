@@ -1,10 +1,21 @@
 "use client";
-import { faBars, faSearch, faXmark, faFilm, faTv, faPlay, faClapperboard, faGlobe, faMicrophone } from "@fortawesome/free-solid-svg-icons";
+
+import {
+  faBars,
+  faClapperboard,
+  faFilm,
+  faGlobe,
+  faMicrophone,
+  faPlay,
+  faSearch,
+  faTv,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
-import SearchSuggestions from "./SearchSuggestions";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import Logo from "./Logo";
+import SearchSuggestions from "./SearchSuggestions";
 
 const COUNTRIES = [
   { name: "Hàn Quốc", slug: "han-quoc" },
@@ -15,6 +26,16 @@ const COUNTRIES = [
   { name: "Việt Nam", slug: "viet-nam" },
   { name: "Đài Loan", slug: "dai-loan" },
   { name: "Hồng Kông", slug: "hong-kong" },
+];
+
+const NAV_ITEMS = [
+  { label: "Phim mới", path: "/phimhay", icon: faPlay },
+  { label: "Phim lẻ", path: "/phim-le", icon: faFilm },
+  { label: "Phim bộ", path: "/phim-bo", icon: faTv },
+  { label: "Thể loại", path: "/the-loai", icon: null },
+  { label: "Chiếu rạp", path: "/chieu-rap", icon: faClapperboard },
+  { label: "Thuyết minh", path: "/thuyet-minh", icon: faMicrophone },
+  { label: "Anime", path: "/anime", icon: null },
 ];
 
 export default function Header() {
@@ -29,134 +50,115 @@ export default function Header() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 0);
-    };
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 0);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Keyboard shortcuts: "/" to focus search, ESC to close
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // "/" to focus search (not when typing in input)
-      if (e.key === "/" && document.activeElement?.tagName !== "INPUT") {
-        e.preventDefault();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "/" && document.activeElement?.tagName !== "INPUT") {
+        event.preventDefault();
         searchInputRef.current?.focus();
         setShowSuggestions(true);
       }
-      // ESC to close suggestions
-      if (e.key === "Escape") {
+
+      if (event.key === "Escape") {
         setShowSuggestions(false);
         setShowCountryDropdown(false);
         searchInputRef.current?.blur();
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (search.trim()) {
-      router.push(`/search?query=${encodeURIComponent(search.trim())}`);
-      setShowSuggestions(false);
-    }
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const query = search.trim();
+    if (!query) return;
+    router.push(`/search?query=${encodeURIComponent(query)}`);
+    setShowSuggestions(false);
+    setOpenSearch(false);
   };
-
-  const navItems = [
-    { label: "Phim Mới", path: "/phimhay", icon: faPlay },
-    { label: "Phim Lẻ", path: "/phim-le", icon: faFilm },
-    { label: "Phim Bộ", path: "/phim-bo", icon: faTv },
-    { label: "Thể Loại", path: "/the-loai", icon: null },
-    { label: "Chiếu Rạp", path: "/chieu-rap", icon: faClapperboard },
-    { label: "Thuyết Minh", path: "/thuyet-minh", icon: faMicrophone },
-    { label: "Anime", path: "/anime", icon: null },
-  ];
 
   const isActive = (path: string) => pathname === path;
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full px-[16px] z-50 transition-all duration-500 ${scrolled
-        ? "header-premium shadow-lg"
-        : "bg-gradient-to-b from-black/80 via-black/40 to-transparent"
-        } text-white`}
+      className={`fixed left-0 top-0 z-50 w-full px-[16px] text-white transition-all duration-500 ${
+        scrolled
+          ? "header-premium shadow-[0_12px_40px_rgba(0,0,0,0.28)]"
+          : "bg-gradient-to-b from-black/80 via-black/40 to-transparent"
+      }`}
     >
-      <div className="container max-w-[1400px] mx-auto">
-        <div className="flex items-center justify-between py-3 gap-[16px] h-[64px] sm:h-[70px]">
-
-          {/* Logo + Mobile Menu */}
+      <div className="container mx-auto max-w-[1400px]">
+        <div className="flex h-[64px] items-center justify-between gap-[16px] sm:h-[70px]">
           <div className="flex items-center gap-[12px]">
-            {/* Mobile menu toggle */}
             <button
-              onClick={() => setOpenBarMenu(!openBarMenu)}
-              className="min-[1024px]:hidden p-3 min-w-[48px] min-h-[48px] flex items-center justify-center hover:bg-white/10 rounded-xl transition-colors active:scale-95"
+              onClick={() => setOpenBarMenu((value) => !value)}
+              className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-xl p-3 transition-colors hover:bg-white/10 active:scale-95 min-[1024px]:hidden"
+              aria-label="Mở menu"
             >
-              <FontAwesomeIcon
-                icon={openBarMenu ? faXmark : faBars}
-                className="text-[22px]"
-              />
+              <FontAwesomeIcon icon={openBarMenu ? faXmark : faBars} className="text-[22px]" />
             </button>
 
-            {/* Logo */}
-            <a
+            <button
               onClick={() => router.push("/phimhay")}
-              className="cursor-pointer flex items-center gap-[8px] active:scale-95 transition-transform"
+              className="flex cursor-pointer items-center gap-[8px] transition-transform active:scale-95"
+              aria-label="Về trang phim mới"
             >
-              <div className="w-[160px] h-[50px] sm:w-[180px] sm:h-[60px]">
+              <div className="h-[50px] w-[160px] sm:h-[60px] sm:w-[180px]">
                 <Logo />
               </div>
-            </a>
+            </button>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden min-[1024px]:flex items-center gap-[4px]">
-            {navItems.map((item) => (
-              <a
+          <nav className="hidden items-center gap-[4px] min-[1024px]:flex">
+            {NAV_ITEMS.map((item) => (
+              <button
                 key={item.path}
                 onClick={() => router.push(item.path)}
-                className={`px-[16px] py-[8px] rounded-full text-[14px] cursor-pointer transition-all whitespace-nowrap flex items-center gap-[6px] ${isActive(item.path)
-                  ? "bg-[#FFD875] text-black font-semibold"
-                  : "hover:bg-white/10 text-white/90 hover:text-white"
-                  }`}
+                className={`flex items-center gap-[6px] whitespace-nowrap rounded-full px-[16px] py-[8px] text-[14px] transition-all ${
+                  isActive(item.path)
+                    ? "bg-[#FFD875] font-semibold text-black"
+                    : "text-white/90 hover:bg-white/10 hover:text-white"
+                }`}
               >
                 {item.icon && <FontAwesomeIcon icon={item.icon} className="text-[12px]" />}
                 {item.label}
-              </a>
+              </button>
             ))}
 
-            {/* Country Dropdown */}
             <div className="relative">
               <button
-                onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                className={`px-[16px] py-[8px] rounded-full text-[14px] cursor-pointer transition-all whitespace-nowrap flex items-center gap-[6px] ${pathname.startsWith("/quoc-gia")
-                  ? "bg-[#FFD875] text-black font-semibold"
-                  : "hover:bg-white/10 text-white/90 hover:text-white"
-                  }`}
+                onClick={() => setShowCountryDropdown((value) => !value)}
+                className={`flex items-center gap-[6px] whitespace-nowrap rounded-full px-[16px] py-[8px] text-[14px] transition-all ${
+                  pathname.startsWith("/quoc-gia")
+                    ? "bg-[#FFD875] font-semibold text-black"
+                    : "text-white/90 hover:bg-white/10 hover:text-white"
+                }`}
               >
                 <FontAwesomeIcon icon={faGlobe} className="text-[12px]" />
-                Quốc Gia
+                Quốc gia
               </button>
 
               {showCountryDropdown && (
                 <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setShowCountryDropdown(false)}
-                  />
-                  <div className="absolute top-full left-0 mt-[8px] w-[180px] bg-[#1E2545] rounded-[12px] border border-white/10 shadow-xl z-50 overflow-hidden animate-fade-in">
+                  <div className="fixed inset-0 z-40" onClick={() => setShowCountryDropdown(false)} />
+                  <div className="absolute left-0 top-full z-50 mt-[8px] w-[190px] overflow-hidden rounded-[14px] border border-white/10 bg-[#1E2545] shadow-xl">
                     {COUNTRIES.map((country) => (
-                      <a
+                      <button
                         key={country.slug}
                         onClick={() => {
                           router.push(`/quoc-gia/${country.slug}`);
                           setShowCountryDropdown(false);
                         }}
-                        className="block px-[16px] py-[10px] text-[13px] text-white hover:bg-white/10 cursor-pointer transition-colors"
+                        className="block w-full px-[16px] py-[10px] text-left text-[13px] text-white transition-colors hover:bg-white/10"
                       >
                         {country.name}
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </>
@@ -164,25 +166,24 @@ export default function Header() {
             </div>
           </nav>
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden min-[1024px]:block flex-1 max-w-[350px] relative">
+          <div className="relative hidden max-w-[350px] flex-1 min-[1024px]:block">
             <form className="flex w-full items-center" onSubmit={handleSubmit}>
               <div className="relative w-full">
                 <FontAwesomeIcon
                   icon={faSearch}
-                  className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#666] text-[14px]"
+                  className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[14px] text-[#666]"
                 />
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
+                  onChange={(event) => {
+                    setSearch(event.target.value);
                     setShowSuggestions(true);
                   }}
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="Tìm phim... (nhấn /)"
-                  className="w-full pl-[40px] pr-[16px] py-[10px] text-[14px] placeholder-[#666] text-white rounded-full bg-white/10 border border-white/10 focus:bg-white/15 focus:border-[#FFD875]/50 focus:outline-none transition-all"
+                  className="w-full rounded-full border border-white/10 bg-white/10 py-[10px] pl-[40px] pr-[16px] text-[14px] text-white placeholder-[#666] transition-all focus:border-[#FFD875]/50 focus:bg-white/15 focus:outline-none"
                 />
               </div>
             </form>
@@ -193,35 +194,31 @@ export default function Header() {
             />
           </div>
 
-          {/* Mobile Search Button */}
           <button
-            onClick={() => setOpenSearch(!openSearch)}
-            className="min-[1024px]:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+            onClick={() => setOpenSearch((value) => !value)}
+            className="rounded-lg p-2 transition-colors hover:bg-white/10 min-[1024px]:hidden"
+            aria-label="Mở tìm kiếm"
           >
-            <FontAwesomeIcon
-              icon={openSearch ? faXmark : faSearch}
-              className="text-[18px]"
-            />
+            <FontAwesomeIcon icon={openSearch ? faXmark : faSearch} className="text-[18px]" />
           </button>
         </div>
 
-        {/* Mobile Search Bar */}
         {openSearch && (
-          <div className="min-[1024px]:hidden pb-4">
+          <div className="pb-4 min-[1024px]:hidden">
             <form onSubmit={handleSubmit} className="relative">
               <FontAwesomeIcon
                 icon={faSearch}
-                className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#666] text-[14px]"
+                className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[14px] text-[#666]"
               />
               <input
                 type="text"
                 value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
+                onChange={(event) => {
+                  setSearch(event.target.value);
                   setShowSuggestions(true);
                 }}
                 placeholder="Tìm phim, diễn viên..."
-                className="w-full pl-[44px] pr-[16px] py-[14px] text-[16px] placeholder-[#666] text-white rounded-full bg-white/10 border border-white/10 focus:outline-none"
+                className="w-full rounded-full border border-white/10 bg-white/10 py-[14px] pl-[44px] pr-[16px] text-[16px] text-white placeholder-[#666] focus:outline-none"
                 autoFocus
               />
               <SearchSuggestions
@@ -233,45 +230,44 @@ export default function Header() {
           </div>
         )}
 
-        {/* Mobile Menu */}
         {openBarMenu && (
-          <nav className="min-[1024px]:hidden pb-5 border-t border-white/10 pt-4">
+          <nav className="border-t border-white/10 pb-5 pt-4 min-[1024px]:hidden">
             <div className="flex flex-col gap-[8px]">
-              {navItems.map((item) => (
-                <a
+              {NAV_ITEMS.map((item) => (
+                <button
                   key={item.path}
                   onClick={() => {
                     router.push(item.path);
                     setOpenBarMenu(false);
                   }}
-                  className={`px-[20px] py-[16px] rounded-2xl text-[17px] cursor-pointer transition-all flex items-center gap-[12px] active:scale-[0.98] ${isActive(item.path)
-                    ? "bg-gradient-to-r from-[#FFD700] to-[#f0a500] text-black font-bold shadow-lg"
-                    : "hover:bg-white/10 bg-white/5"
-                    }`}
+                  className={`flex items-center gap-[12px] rounded-2xl px-[20px] py-[16px] text-[17px] transition-all active:scale-[0.98] ${
+                    isActive(item.path)
+                      ? "bg-gradient-to-r from-[#FFD700] to-[#f0a500] font-bold text-black shadow-lg"
+                      : "bg-white/5 hover:bg-white/10"
+                  }`}
                 >
                   {item.icon && <FontAwesomeIcon icon={item.icon} className="text-[18px]" />}
                   {item.label}
-                </a>
+                </button>
               ))}
 
-              {/* Country Section for Mobile */}
-              <div className="mt-[8px] pt-[16px] border-t border-white/10">
-                <p className="px-[20px] text-[12px] text-[#888] uppercase tracking-wider mb-[8px] flex items-center gap-[8px]">
+              <div className="mt-[8px] border-t border-white/10 pt-[16px]">
+                <p className="mb-[8px] flex items-center gap-[8px] px-[20px] text-[12px] uppercase tracking-wider text-[#888]">
                   <FontAwesomeIcon icon={faGlobe} className="text-[#FFD875]" />
-                  Quốc Gia
+                  Quốc gia
                 </p>
                 <div className="grid grid-cols-2 gap-[8px]">
                   {COUNTRIES.map((country) => (
-                    <a
+                    <button
                       key={country.slug}
                       onClick={() => {
                         router.push(`/quoc-gia/${country.slug}`);
                         setOpenBarMenu(false);
                       }}
-                      className="px-[16px] py-[12px] rounded-xl text-[14px] text-white bg-white/5 hover:bg-white/10 cursor-pointer transition-all active:scale-[0.98]"
+                      className="rounded-xl bg-white/5 px-[16px] py-[12px] text-[14px] text-white transition-all hover:bg-white/10 active:scale-[0.98]"
                     >
                       {country.name}
-                    </a>
+                    </button>
                   ))}
                 </div>
               </div>

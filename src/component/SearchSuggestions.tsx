@@ -155,13 +155,13 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                         <div className="flex items-center justify-between px-[12px] py-[8px]">
                             <p className="text-[12px] text-[#888] uppercase tracking-wider flex items-center gap-[6px]">
                                 <FontAwesomeIcon icon={faHistory} className="text-[10px]" />
-                                TĂ¬m kiáº¿m gáº§n Ä‘Ă¢y
+                                Tìm kiếm gần đây
                             </p>
                             <button
                                 onClick={handleClearHistory}
                                 className="text-[11px] text-red-400 hover:text-red-300 px-[8px] py-[4px] rounded"
                             >
-                                XĂ³a táº¥t cáº£
+                                Xóa tất cả
                             </button>
                         </div>
                         <div className="flex flex-wrap gap-[8px] px-[12px] pb-[12px]">
@@ -196,7 +196,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                 {/* No results */}
                 {!isLoading && !isShortQuery && suggestions.length === 0 && trimmedQuery && (
                     <div className="text-center py-[24px] text-[#888] text-[14px]">
-                        KhĂ´ng tĂ¬m tháº¥y phim nĂ o
+                        Không tìm thấy phim nào
                     </div>
                 )}
 
@@ -235,7 +235,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                                 )}
                                 {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
                                     <span className="text-[11px] text-[#FFD875]">
-                                        â­ {movie.tmdb.vote_average.toFixed(1)}
+                                        ★ {movie.tmdb.vote_average.toFixed(1)}
                                     </span>
                                 )}
                                 <span className="text-[11px] text-[#888]">
@@ -258,7 +258,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                         }}
                         className="w-full text-center text-[14px] text-[#FFD875] font-medium py-[10px] rounded-xl hover:bg-[#FFD87510] active:bg-[#FFD87520] transition-colors min-h-[48px]"
                     >
-                        Xem táº¥t cáº£ káº¿t quáº£ cho &quot;{searchValue}&quot;
+                        Xem tất cả kết quả cho &quot;{searchValue}&quot;
                     </button>
                 </div>
             )}
