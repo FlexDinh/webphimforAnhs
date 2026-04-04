@@ -7,6 +7,7 @@ import { STREAMING_SOURCES } from "@/lib/streamingApi";
 import { usePreferences } from "@/lib/usePreferences";
 import { saveWatchProgress } from "@/lib/movieUtils";
 import { isInWatchlist, toggleWatchlist, WatchlistItem } from "@/lib/watchlistUtils";
+import { isThuyetMinhServerName } from "@/lib/movieClassification";
 
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -70,6 +71,7 @@ export default function MoviePage() {
 
                     if (preferences.preferredServer === "thuyet-minh") {
                         const tmIdx = data.episodes.findIndex((s: any) => {
+                            if (isThuyetMinhServerName(s.server_name)) return true;
                             const name = s.server_name?.toLowerCase() || "";
                             return name.includes("thuyết minh") || name.includes("lồng tiếng") || name.includes("thuyet minh");
                         });
@@ -270,6 +272,7 @@ export default function MoviePage() {
     // Get server type icon
     const getServerIcon = (serverName: string) => {
         if (serverName.toLowerCase().includes("vietsub")) return faClosedCaptioning;
+        if (isThuyetMinhServerName(serverName)) return faMicrophone;
         if (serverName.toLowerCase().includes("thuyết minh") || serverName.toLowerCase().includes("lồng tiếng")) return faMicrophone;
         return faServer;
     };

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getImageUrl, OPhimMovie, OPhimResponse } from "@/lib/ophimApi";
+import { isThuyetMinhMovie } from "@/lib/movieClassification";
 
 interface MovieGridProps {
   fetchFunction: (page: number) => Promise<OPhimResponse>;
@@ -80,9 +81,9 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
                     {movie.quality}
                   </span>
                 )}
-                {typeof movie.lang === "string" && movie.lang.toLowerCase().includes("thuyết minh") && (
+                {isThuyetMinhMovie(movie) && (
                   <span className="flex items-center gap-[2px] rounded bg-gradient-to-r from-[#e67e22] to-[#d35400] px-[6px] py-[2px] text-[10px] font-semibold text-white">
-                    🎙️ TM
+                    TM
                   </span>
                 )}
               </div>

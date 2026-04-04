@@ -1,4 +1,11 @@
-﻿const PHIMAPI_BASE_URL = "https://ophim1.com";
+import {
+    dedupeMovies,
+    isTheatricalMovie,
+    isThuyetMinhMovie,
+    matchesMovieType,
+} from "./movieClassification";
+
+const PHIMAPI_BASE_URL = "https://ophim1.com";
 const PHIMAPI_IMAGE_BASE = "https://img.ophim1.com/uploads/movies";
 
 const DEFAULT_REVALIDATE_SECONDS = 300;
@@ -7,6 +14,8 @@ const DEFAULT_TIMEOUT_MS = 8000;
 const CLIENT_CACHE_TTL_MS = 5 * 60 * 1000;
 const SEARCH_CACHE_TTL_MS = 45 * 1000;
 const MAX_CLIENT_CACHE_ENTRIES = 200;
+const DEFAULT_PAGE_SIZE = 24;
+const DERIVED_LIST_SCAN_LIMIT = 12;
 
 export interface OPhimMovie {
     _id: string;
@@ -18,6 +27,7 @@ export interface OPhimMovie {
     year: number;
     quality?: string;
     lang?: string;
+    lang_key?: string[];
     time?: string;
     episode_current?: string;
     type?: string;
@@ -169,8 +179,8 @@ async function fetchJsonWithTimeout<T>(
 
 function normalizeApiResponse(data: any): OPhimResponse {
     return {
-        status: true,
-        msg: "done",
+        status: data?.status === true || data?.status === "success",
+        msg: data?.msg || data?.message || "done",
         items: data?.data?.items || [],
         pagination: parsePagination(data),
     };
@@ -179,7 +189,7 @@ function normalizeApiResponse(data: any): OPhimResponse {
 function parsePagination(data: any): OPhimResponse["pagination"] {
     const fallback = {
         totalItems: 0,
-        totalItemsPerPage: 24,
+        totalItemsPerPage: DEFAULT_PAGE_SIZE,
         currentPage: 1,
         totalPages: 1,
     };
@@ -209,11 +219,12 @@ export function getImageUrl(path: string): string {
 }
 
 export async function getLatestMovies(page: number = 1): Promise<OPhimResponse> {
-    const url = `${PHIMAPI_BASE_URL}/danh-sach/phim-moi-cap-nhat?page=${page}`;
-    return fetchJsonWithTimeout<OPhimResponse>(url, {
+    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
         cacheKey: `latest:${page}`,
     });
+    return normalizeApiResponse(data);
 }
 
 export async function searchMovies(keyword: string, limit: number = 10): Promise<OPhimMovie[]> {
@@ -249,30 +260,71 @@ export async function getMovieBySlug(slug: string) {
     });
 }
 
-export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
-    const candidateUrls = [
-        `${PHIMAPI_BASE_URL}/v1/api/danh-sach/chieu-rap?page=${page}`,
-        `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-chieu-rap?page=${page}`,
-    ];
+async function buildDerivedListing(
+    page: number,
+    sourceFetch: (sourcePage: number) => Promise<OPhimResponse>,
+    predicate: (movie: OPhimMovie) => boolean
+): Promise<OPhimResponse> {
+    const pageStart = (page - 1) * DEFAULT_PAGE_SIZE;
+    const pageEnd = page * DEFAULT_PAGE_SIZE;
+    const lookaheadCount = pageEnd + DEFAULT_PAGE_SIZE;
+    const collected: OPhimMovie[] = [];
+    const seen = new Set<string>();
+    let sourcePage = 1;
+    let sourceTotalPages = 1;
+    let exhausted = false;
 
-    let lastError: unknown;
+    while (
+        sourcePage <= sourceTotalPages &&
+        sourcePage <= DERIVED_LIST_SCAN_LIMIT &&
+        collected.length < lookaheadCount
+    ) {
+        const response = await sourceFetch(sourcePage);
+        sourceTotalPages = Math.max(sourceTotalPages, response.pagination.totalPages || sourcePage);
 
-    for (const url of candidateUrls) {
-        try {
-            const data = await fetchJsonWithTimeout<any>(url, {
-                revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
-                cacheKey: `theatrical:${page}:${url}`,
-            });
-            const normalized = normalizeApiResponse(data);
-            if (normalized.items.length > 0) {
-                return normalized;
-            }
-        } catch (error) {
-            lastError = error;
+        dedupeMovies(response.items.filter(predicate)).forEach((movie) => {
+            const key = movie._id || movie.slug;
+            if (!key || seen.has(key)) return;
+            seen.add(key);
+            collected.push(movie);
+        });
+
+        if (response.items.length === 0 || sourcePage >= sourceTotalPages) {
+            exhausted = true;
+            break;
         }
+
+        sourcePage += 1;
     }
 
-    throw lastError ?? new Error("Unable to fetch theatrical movies");
+    const items = collected.slice(pageStart, pageEnd);
+    const scannedAll = exhausted || sourcePage > sourceTotalPages;
+    const hasMore = scannedAll ? collected.length > pageEnd : collected.length > pageEnd || sourcePage <= sourceTotalPages;
+    const totalItems = scannedAll
+        ? collected.length
+        : Math.max(collected.length, pageEnd + (hasMore ? 1 : 0));
+
+    return {
+        status: true,
+        msg: "done",
+        items,
+        pagination: {
+            totalItems,
+            totalItemsPerPage: DEFAULT_PAGE_SIZE,
+            currentPage: page,
+            totalPages: scannedAll
+                ? Math.max(1, Math.ceil(totalItems / DEFAULT_PAGE_SIZE))
+                : Math.max(page, hasMore ? page + 1 : page),
+        },
+    };
+}
+
+export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
+    return buildDerivedListing(
+        page,
+        (sourcePage) => getMoviesByType("phim-le", sourcePage),
+        isTheatricalMovie
+    );
 }
 
 export async function getMoviesByType(type: string, page: number = 1): Promise<OPhimResponse> {
@@ -281,7 +333,12 @@ export async function getMoviesByType(type: string, page: number = 1): Promise<O
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
         cacheKey: `type:${type}:${page}`,
     });
-    return normalizeApiResponse(data);
+    const normalized = normalizeApiResponse(data);
+
+    return {
+        ...normalized,
+        items: normalized.items.filter((movie) => matchesMovieType(movie, type)),
+    };
 }
 
 export async function getMoviesByCategory(category: string, page: number = 1): Promise<OPhimResponse> {
@@ -294,24 +351,7 @@ export async function getMoviesByCategory(category: string, page: number = 1): P
 }
 
 export async function getThuyetMinhMovies(page: number = 1): Promise<OPhimResponse> {
-    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
-    const data = await fetchJsonWithTimeout<any>(url, {
-        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
-        cacheKey: `thuyet-minh:${page}`,
-    });
-
-    const allItems: OPhimMovie[] = data?.data?.items || [];
-    const tmItems = allItems.filter((movie) => {
-        const lang = (movie.lang || "").toLowerCase();
-        return lang.includes("thuyet minh") || lang.includes("long tieng");
-    });
-
-    return {
-        status: true,
-        msg: "done",
-        items: tmItems.length > 0 ? tmItems : allItems.slice(0, 12),
-        pagination: parsePagination(data),
-    };
+    return buildDerivedListing(page, getLatestMovies, isThuyetMinhMovie);
 }
 
 export async function getMoviesByCountry(country: string, page: number = 1): Promise<OPhimResponse> {
@@ -322,4 +362,3 @@ export async function getMoviesByCountry(country: string, page: number = 1): Pro
     });
     return normalizeApiResponse(data);
 }
-
