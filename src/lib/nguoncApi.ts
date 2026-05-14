@@ -1,5 +1,5 @@
 // NguonC API Service - 32,000+ movies with high quality streams
-const NGUONC_BASE_URL = "https://phim.nguonc.com/api";
+import { getNguonCBaseUrl } from "./apiConfig.ts";
 
 export interface NguoncMovie {
     name: string;
@@ -58,7 +58,7 @@ export interface NguoncDetailResponse {
 export async function getNguoncLatestMovies(page: number = 1): Promise<NguoncResponse> {
     try {
         const response = await fetch(
-            `${NGUONC_BASE_URL}/films/phim-moi-cap-nhat?page=${page}`,
+            `${getNguonCBaseUrl()}/films/phim-moi-cap-nhat?page=${page}`,
             { next: { revalidate: 300 } }
         );
         if (!response.ok) throw new Error("Failed to fetch movies");
@@ -73,7 +73,7 @@ export async function getNguoncLatestMovies(page: number = 1): Promise<NguoncRes
 export async function getNguoncMovieBySlug(slug: string): Promise<NguoncDetailResponse> {
     try {
         const response = await fetch(
-            `${NGUONC_BASE_URL}/film/${slug}`,
+            `${getNguonCBaseUrl()}/film/${slug}`,
             { next: { revalidate: 3600 } }
         );
         if (!response.ok) throw new Error("Failed to fetch movie details");
@@ -88,7 +88,7 @@ export async function getNguoncMovieBySlug(slug: string): Promise<NguoncDetailRe
 export async function searchNguoncMovies(keyword: string, page: number = 1): Promise<NguoncResponse> {
     try {
         const response = await fetch(
-            `${NGUONC_BASE_URL}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`,
+            `${getNguonCBaseUrl()}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`,
             { cache: "no-store" }
         );
         if (!response.ok) throw new Error("Failed to search movies");
@@ -103,7 +103,7 @@ export async function searchNguoncMovies(keyword: string, page: number = 1): Pro
 export async function getNguoncPhimBo(page: number = 1): Promise<NguoncResponse> {
     try {
         const response = await fetch(
-            `${NGUONC_BASE_URL}/films/danh-sach/phim-bo?page=${page}`,
+            `${getNguonCBaseUrl()}/films/danh-sach/phim-bo?page=${page}`,
             { next: { revalidate: 300 } }
         );
         if (!response.ok) throw new Error("Failed to fetch phim bo");
@@ -118,7 +118,7 @@ export async function getNguoncPhimBo(page: number = 1): Promise<NguoncResponse>
 export async function getNguoncPhimLe(page: number = 1): Promise<NguoncResponse> {
     try {
         const response = await fetch(
-            `${NGUONC_BASE_URL}/films/danh-sach/phim-le?page=${page}`,
+            `${getNguonCBaseUrl()}/films/danh-sach/phim-le?page=${page}`,
             { next: { revalidate: 300 } }
         );
         if (!response.ok) throw new Error("Failed to fetch phim le");
@@ -133,7 +133,7 @@ export async function getNguoncPhimLe(page: number = 1): Promise<NguoncResponse>
 export async function getNguoncHoatHinh(page: number = 1): Promise<NguoncResponse> {
     try {
         const response = await fetch(
-            `${NGUONC_BASE_URL}/films/danh-sach/hoat-hinh?page=${page}`,
+            `${getNguonCBaseUrl()}/films/danh-sach/hoat-hinh?page=${page}`,
             { next: { revalidate: 300 } }
         );
         if (!response.ok) throw new Error("Failed to fetch hoat hinh");
@@ -148,7 +148,7 @@ export async function getNguoncHoatHinh(page: number = 1): Promise<NguoncRespons
 export async function getNguoncByCountry(country: string, page: number = 1): Promise<NguoncResponse> {
     try {
         const response = await fetch(
-            `${NGUONC_BASE_URL}/films/quoc-gia/${country}?page=${page}`,
+            `${getNguonCBaseUrl()}/films/quoc-gia/${country}?page=${page}`,
             { next: { revalidate: 300 } }
         );
         if (!response.ok) throw new Error("Failed to fetch country movies");
@@ -163,7 +163,7 @@ export async function getNguoncByCountry(country: string, page: number = 1): Pro
 export async function getNguoncByCategory(category: string, page: number = 1): Promise<NguoncResponse> {
     try {
         const response = await fetch(
-            `${NGUONC_BASE_URL}/films/the-loai/${category}?page=${page}`,
+            `${getNguonCBaseUrl()}/films/the-loai/${category}?page=${page}`,
             { next: { revalidate: 300 } }
         );
         if (!response.ok) throw new Error("Failed to fetch category movies");

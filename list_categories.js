@@ -15,7 +15,6 @@ https.get('https://ophim1.com/v1/api/the-loai', (resp) => {
                 console.log("Structure unexpected:", JSON.stringify(json).substring(0, 200));
             }
         } catch (e) {
-            console.log("Error:", e.message);
-        }
+            console.log("Error:", e.message);``        }
     });
 });

@@ -57,7 +57,7 @@ export default function RootLayout({
 
         {/* Preconnect for performance - API & Image domains */}
         <link rel="preconnect" href="https://phimapi.com" />
-        <link rel="preconnect" href="https://img.ophim1.com" />
+        <link rel="preconnect" href="https://img.ophim.live" />
         <link rel="preconnect" href="https://phimimg.com" />
         <link rel="preconnect" href="https://phim.nguonc.com" />
         <link rel="preconnect" href="https://vidsrc.me" />
@@ -65,7 +65,7 @@ export default function RootLayout({
 
         {/* DNS Prefetch for faster lookups */}
         <link rel="dns-prefetch" href="https://phimapi.com" />
-        <link rel="dns-prefetch" href="https://img.ophim1.com" />
+        <link rel="dns-prefetch" href="https://img.ophim.live" />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
 
         {/* Preconnect for fonts */}

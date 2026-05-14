@@ -8,6 +8,7 @@ import { usePreferences } from "@/lib/usePreferences";
 import { saveWatchProgress } from "@/lib/movieUtils";
 import { isInWatchlist, toggleWatchlist, WatchlistItem } from "@/lib/watchlistUtils";
 import { isThuyetMinhServerName } from "@/lib/movieClassification";
+import { getSafeEmbedUrl, PLAYER_IFRAME_ALLOW, PLAYER_IFRAME_SANDBOX } from "@/lib/playerSecurity";
 
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -305,6 +306,8 @@ export default function MoviePage() {
     }
 
     const { movie: movieData, episodes } = movie;
+    const safeHdSource = useHdSource ? getSafeEmbedUrl(hdSource) : "";
+    const safeEpisodeEmbed = getSafeEmbedUrl(selectedEpisode?.link_embed);
 
     return (
         <div className={`min-h-screen bg-[#0F111A] pt-[70px] ${theaterMode ? 'theater-page' : ''}`}>
@@ -431,21 +434,39 @@ export default function MoviePage() {
                             <FontAwesomeIcon icon={faCrown} className="text-[10px]" />
                             HD/4K
                         </div>
-                        <iframe
-                            src={hdSource}
-                            className="w-full h-full"
-                            allowFullScreen
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        />
+                        {safeHdSource ? (
+                            <iframe
+                                src={safeHdSource}
+                                className="w-full h-full"
+                                title="RoPhim HD player"
+                                allowFullScreen
+                                allow={PLAYER_IFRAME_ALLOW}
+                                sandbox={PLAYER_IFRAME_SANDBOX}
+                                referrerPolicy="no-referrer"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-[#1a1c2e]">
+                                <p className="text-white/50 text-[14px]">Nguồn phát này không hợp lệ hoặc đã bị chặn.</p>
+                            </div>
+                        )}
                     </div>
                 ) : selectedEpisode?.link_embed ? (
                     <div className="aspect-video max-h-[80vh] mx-auto">
-                        <iframe
-                            src={selectedEpisode.link_embed}
-                            className="w-full h-full"
-                            allowFullScreen
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        />
+                        {safeEpisodeEmbed ? (
+                            <iframe
+                                src={safeEpisodeEmbed}
+                                className="w-full h-full"
+                                title={`RoPhim player - ${selectedEpisode.name}`}
+                                allowFullScreen
+                                allow={PLAYER_IFRAME_ALLOW}
+                                sandbox={PLAYER_IFRAME_SANDBOX}
+                                referrerPolicy="no-referrer"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-[#1a1c2e]">
+                                <p className="text-white/50 text-[14px]">Nguồn phát này không hợp lệ hoặc đã bị chặn.</p>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="aspect-video max-h-[80vh] mx-auto flex items-center justify-center bg-[#1a1c2e]">

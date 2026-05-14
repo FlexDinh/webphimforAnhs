@@ -3,9 +3,8 @@ import {
     isThuyetMinhMovie,
     matchesMovieType,
 } from "./movieClassification";
-
-const PHIMAPI_BASE_URL = "https://ophim1.com";
-const PHIMAPI_IMAGE_BASE = "https://img.ophim1.com/uploads/movies";
+import { getOPhimBaseUrl } from "./apiConfig.ts";
+export { getImageUrl } from "./imageUrl";
 
 const DEFAULT_REVALIDATE_SECONDS = 300;
 const DETAIL_REVALIDATE_SECONDS = 3600;
@@ -211,17 +210,11 @@ function parsePagination(data: any): OPhimResponse["pagination"] {
     };
 }
 
-export function getImageUrl(path: string): string {
-    if (!path) return "/placeholder.jpg";
-    if (path.startsWith("http")) return path;
-    return `${PHIMAPI_IMAGE_BASE}/${path}`;
-}
-
 export async function getLatestMovies(page: number = 1): Promise<OPhimResponse> {
-    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
+    const url = `${getOPhimBaseUrl()}/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
-        cacheKey: `latest:${page}`,
+        cacheKey: url,
     });
     return normalizeApiResponse(data);
 }
@@ -230,8 +223,8 @@ export async function searchMovies(keyword: string, limit: number = 10): Promise
     const query = keyword.trim();
     if (!query) return [];
 
-    const url = `${PHIMAPI_BASE_URL}/v1/api/tim-kiem?keyword=${encodeURIComponent(query)}&limit=${limit}`;
-    const cacheKey = `search:${query.toLowerCase()}:${limit}`;
+    const url = `${getOPhimBaseUrl()}/v1/api/tim-kiem?keyword=${encodeURIComponent(query)}&limit=${limit}`;
+    const cacheKey = url;
 
     try {
         const data = await fetchJsonWithTimeout<OPhimSearchResponse>(url, {
@@ -251,10 +244,10 @@ export async function searchMovies(keyword: string, limit: number = 10): Promise
 }
 
 export async function getMovieBySlug(slug: string) {
-    const url = `${PHIMAPI_BASE_URL}/phim/${slug}`;
+    const url = `${getOPhimBaseUrl()}/phim/${slug}`;
     return fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DETAIL_REVALIDATE_SECONDS,
-        cacheKey: `movie:${slug}`,
+        cacheKey: url,
         clientCacheTtlMs: DETAIL_REVALIDATE_SECONDS * 1000,
     });
 }
@@ -319,19 +312,19 @@ async function buildDerivedListing(
 }
 
 export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
-    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/phim-chieu-rap?page=${page}`;
+    const url = `${getOPhimBaseUrl()}/v1/api/danh-sach/phim-chieu-rap?page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
-        cacheKey: `chieu-rap:${page}`,
+        cacheKey: url,
     });
     return normalizeApiResponse(data);
 }
 
 export async function getMoviesByType(type: string, page: number = 1): Promise<OPhimResponse> {
-    const url = `${PHIMAPI_BASE_URL}/v1/api/danh-sach/${type}?page=${page}`;
+    const url = `${getOPhimBaseUrl()}/v1/api/danh-sach/${type}?page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
-        cacheKey: `type:${type}:${page}`,
+        cacheKey: url,
     });
     const normalized = normalizeApiResponse(data);
 
@@ -342,10 +335,10 @@ export async function getMoviesByType(type: string, page: number = 1): Promise<O
 }
 
 export async function getMoviesByCategory(category: string, page: number = 1): Promise<OPhimResponse> {
-    const url = `${PHIMAPI_BASE_URL}/v1/api/the-loai/${category}?page=${page}`;
+    const url = `${getOPhimBaseUrl()}/v1/api/the-loai/${category}?page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
-        cacheKey: `category:${category}:${page}`,
+        cacheKey: url,
     });
     return normalizeApiResponse(data);
 }
@@ -355,10 +348,10 @@ export async function getThuyetMinhMovies(page: number = 1): Promise<OPhimRespon
 }
 
 export async function getMoviesByCountry(country: string, page: number = 1): Promise<OPhimResponse> {
-    const url = `${PHIMAPI_BASE_URL}/v1/api/quoc-gia/${country}?page=${page}`;
+    const url = `${getOPhimBaseUrl()}/v1/api/quoc-gia/${country}?page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
-        cacheKey: `country:${country}:${page}`,
+        cacheKey: url,
     });
     return normalizeApiResponse(data);
 }

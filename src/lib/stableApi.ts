@@ -1,4 +1,10 @@
-﻿const KKPHIM_BASE_URL = "https://phimapi.com";
+import {
+    DEFAULT_MANAGED_API_CONFIG,
+    getKkPhimBaseUrl,
+    getNguonCBaseUrl,
+    getOPhimBaseUrl,
+    getOPhimMovieImageBase,
+} from "./apiConfig.ts";
 
 const DETAIL_CACHE_TTL_MS = 10 * 60 * 1000;
 const DETAIL_REVALIDATE_SECONDS = 300;
@@ -16,18 +22,18 @@ export interface VNMovieSimple {
 export const STABLE_PROVIDERS = [
     {
         name: "KKPhim",
-        url: "https://phimapi.com",
+        url: DEFAULT_MANAGED_API_CONFIG.kkphimBaseUrl,
         image_url: "https://phimimg.com",
     },
     {
         name: "NguonC",
-        url: "https://phim.nguonc.com/api",
+        url: DEFAULT_MANAGED_API_CONFIG.nguoncBaseUrl,
         image_url: "https://phim.nguonc.com/public/images",
     },
     {
         name: "OPhim",
-        url: "https://ophim1.com",
-        image_url: "https://img.ophim1.com/uploads/movies",
+        url: DEFAULT_MANAGED_API_CONFIG.ophimBaseUrl,
+        image_url: getOPhimMovieImageBase(),
     },
 ];
 
@@ -174,22 +180,31 @@ async function fetchJsonWithTimeout<T>(
     }
 }
 
+function getDetailCacheKey(slug: string): string {
+    return [
+        getOPhimBaseUrl(),
+        getNguonCBaseUrl(),
+        getKkPhimBaseUrl(),
+        slug,
+    ].join("|");
+}
+
 function getCachedDetail(slug: string): UnifiedResponse | null {
-    const cached = detailCache.get(slug);
+    const cached = detailCache.get(getDetailCacheKey(slug));
     if (!cached?.data || !cached.expiresAt) return null;
     if (cached.expiresAt < Date.now()) return null;
     return cached.data;
 }
 
 function setCachedDetail(slug: string, data: UnifiedResponse) {
-    detailCache.set(slug, {
+    detailCache.set(getDetailCacheKey(slug), {
         data,
         expiresAt: Date.now() + DETAIL_CACHE_TTL_MS,
     });
 }
 
 async function fetchFromOPhim(slug: string): Promise<UnifiedResponse> {
-    const data = await fetchJsonWithTimeout<any>(`https://ophim1.com/phim/${slug}`, 4200);
+    const data = await fetchJsonWithTimeout<any>(`${getOPhimBaseUrl()}/phim/${slug}`, 4200);
     if (!data?.status) {
         throw new Error("OPhim returned invalid payload");
     }
@@ -201,7 +216,7 @@ async function fetchFromOPhim(slug: string): Promise<UnifiedResponse> {
 }
 
 async function fetchFromNguonC(slug: string): Promise<UnifiedResponse> {
-    const data = await fetchJsonWithTimeout<any>(`https://phim.nguonc.com/api/film/${slug}`, 5000);
+    const data = await fetchJsonWithTimeout<any>(`${getNguonCBaseUrl()}/film/${slug}`, 5000);
     if (data?.status !== "success") {
         throw new Error("NguonC returned invalid payload");
     }
@@ -213,7 +228,7 @@ async function fetchFromNguonC(slug: string): Promise<UnifiedResponse> {
 }
 
 async function fetchFromKkPhim(slug: string): Promise<UnifiedResponse> {
-    const data = await fetchJsonWithTimeout<any>(`${KKPHIM_BASE_URL}/phim/${slug}`, 5000);
+    const data = await fetchJsonWithTimeout<any>(`${getKkPhimBaseUrl()}/phim/${slug}`, 5000);
     if (!data?.status) {
         throw new Error("KKPhim returned invalid payload");
     }
@@ -226,7 +241,7 @@ async function fetchFromKkPhim(slug: string): Promise<UnifiedResponse> {
 
 export async function getBestStream(slug: string) {
     try {
-        const ophimData = await fetchJsonWithTimeout<any>(`https://ophim1.com/phim/${slug}`, 4000, 120);
+        const ophimData = await fetchJsonWithTimeout<any>(`${getOPhimBaseUrl()}/phim/${slug}`, 4000, 120);
         const oPhimM3u8 = ophimData?.episodes?.[0]?.server_data?.[0]?.link_m3u8;
         if (oPhimM3u8) {
             return {
@@ -242,7 +257,7 @@ export async function getBestStream(slug: string) {
     try {
         return await Promise.any([
             (async () => {
-                const data = await fetchJsonWithTimeout<any>(`https://phim.nguonc.com/api/film/${slug}`, 5000, 120);
+                const data = await fetchJsonWithTimeout<any>(`${getNguonCBaseUrl()}/film/${slug}`, 5000, 120);
                 const m3u8 = data?.movie?.episodes?.[0]?.items?.[0]?.m3u8;
                 if (!m3u8) throw new Error("NguonC stream not found");
                 return {
@@ -252,7 +267,7 @@ export async function getBestStream(slug: string) {
                 };
             })(),
             (async () => {
-                const data = await fetchJsonWithTimeout<any>(`${KKPHIM_BASE_URL}/phim/${slug}`, 5000, 120);
+                const data = await fetchJsonWithTimeout<any>(`${getKkPhimBaseUrl()}/phim/${slug}`, 5000, 120);
                 const m3u8 = data?.episodes?.[0]?.server_data?.[0]?.link_m3u8;
                 if (!m3u8) throw new Error("KKPhim stream not found");
                 return {
@@ -273,7 +288,8 @@ export async function getUnifiedMovieDetail(slug: string): Promise<UnifiedRespon
         return freshCached;
     }
 
-    const existingPromise = detailCache.get(slug)?.promise;
+    const cacheKey = getDetailCacheKey(slug);
+    const existingPromise = detailCache.get(cacheKey)?.promise;
     if (existingPromise) {
         return existingPromise;
     }
@@ -295,7 +311,7 @@ export async function getUnifiedMovieDetail(slug: string): Promise<UnifiedRespon
             setCachedDetail(slug, fallback);
             return fallback;
         } catch (error) {
-            const stale = detailCache.get(slug)?.data;
+            const stale = detailCache.get(cacheKey)?.data;
             if (stale) {
                 return stale;
             }
@@ -308,17 +324,17 @@ export async function getUnifiedMovieDetail(slug: string): Promise<UnifiedRespon
         }
     })();
 
-    detailCache.set(slug, {
-        ...detailCache.get(slug),
+    detailCache.set(cacheKey, {
+        ...detailCache.get(cacheKey),
         promise: task,
     });
 
     try {
         return await task;
     } finally {
-        const current = detailCache.get(slug);
+        const current = detailCache.get(cacheKey);
         if (current?.promise) {
-            detailCache.set(slug, {
+            detailCache.set(cacheKey, {
                 data: current.data,
                 expiresAt: current.expiresAt,
             });

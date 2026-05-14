@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600" role="img" aria-label="No poster available">
+  <rect width="400" height="600" fill="#1a1c2e"/>
+  <rect x="24" y="24" width="352" height="552" rx="18" fill="#24283a" stroke="#34394f" stroke-width="2"/>
+  <path d="M148 238h104a18 18 0 0 1 18 18v88a18 18 0 0 1-18 18H148a18 18 0 0 1-18-18v-88a18 18 0 0 1 18-18Zm10 30v64h84v-64h-84Z" fill="#555c74"/>
+  <path d="m171 312 23-29 20 24 13-16 27 37h-95l12-16Z" fill="#737b96"/>
+  <circle cx="228" cy="286" r="10" fill="#8b93ad"/>
+  <text x="200" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#FFD875">RoPhim</text>
+  <text x="200" y="442" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#8b93ad">Poster unavailable</text>
+</svg>

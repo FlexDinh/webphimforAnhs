@@ -17,14 +17,15 @@ const SettingsPanel = dynamic(() => import("@/component/SettingsPanel"), { ssr: 
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const isStandalonePage = pathname === "/" || pathname.startsWith("/ceo");
 
     return (
         <PreferencesProvider>
             <ScrollToTop />
-            {pathname === "/" ? (
+            {isStandalonePage ? (
                 <>
                     {children}
-                    <BottomNav />
+                    {pathname === "/" && <BottomNav />}
                 </>
             ) : (
                 <div className="bg-[#0F111A] min-h-screen flex flex-col">
