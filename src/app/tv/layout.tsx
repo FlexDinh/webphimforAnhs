@@ -1,9 +1,26 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: 1920,
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#FFD875",
+};
 
 export const metadata: Metadata = {
   title: "RoPhim TV — Xem Phim Trên Tivi",
   description:
     "Phiên bản RoPhim tối ưu cho Smart TV. Giao diện đơn giản, dễ dùng trên màn hình lớn.",
+  manifest: "/manifest-tv.json",
+  appleWebApp: {
+    capable: true,
+    title: "RoPhim TV",
+    statusBarStyle: "black-translucent",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 export default function TVLayout({
@@ -56,14 +73,47 @@ export default function TVLayout({
               background: rgba(255,255,255,0.15);
               border-radius: 3px;
             }
+            /* PWA install banner animation */
+            @keyframes tvSlideUp {
+              from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+              to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
           `,
         }}
       />
+
+      {/* TV-specific manifest override (replaces root manifest for /tv routes) */}
+      <link rel="manifest" href="/manifest-tv.json" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="mobile-web-app-capable" content="yes" />
+
+      {/* Register TV-specific service worker */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw-tv.js', { scope: '/tv' })
+                  .then(function(reg) {
+                    // Check for updates periodically
+                    setInterval(function() { reg.update(); }, 60 * 60 * 1000);
+                  })
+                  .catch(function(err) {
+                    console.warn('SW registration failed:', err);
+                  });
+              });
+            }
+          `,
+        }}
+      />
+
       <div className="tv-root">
         {/* TV Header */}
         <TVHeaderWrapper />
         {/* Page content with top padding for fixed header */}
         <main style={{ paddingTop: "110px" }}>{children}</main>
+        {/* PWA Install Prompt */}
+        <TVInstallPWAWrapper />
       </div>
     </>
   );
@@ -74,4 +124,11 @@ import TVHeader from "./_components/TVHeader";
 
 function TVHeaderWrapper() {
   return <TVHeader />;
+}
+
+// PWA install prompt wrapper
+import TVInstallPWA from "./_components/TVInstallPWA";
+
+function TVInstallPWAWrapper() {
+  return <TVInstallPWA />;
 }
