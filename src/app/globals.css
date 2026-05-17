@@ -1036,6 +1036,12 @@ a:focus-visible {
     margin-bottom: 54px !important;
   }
 
+  .tv-row-section,
+  .tv-movie-grid > * {
+    content-visibility: auto;
+    contain-intrinsic-size: 360px 520px;
+  }
+
   .tv-horizontal-row {
     gap: clamp(16px, 1vw, 26px) !important;
     padding-bottom: 14px !important;
@@ -1056,7 +1062,7 @@ a:focus-visible {
   }
 
   .tv-movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)) !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
     gap: 24px 20px !important;
   }
 
@@ -1108,7 +1114,7 @@ a:focus-visible {
 
 @media (min-width: 2200px) and (min-height: 1000px) {
   .tv-movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)) !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
     gap: 30px 24px !important;
   }
 
