@@ -310,7 +310,7 @@ export default function MoviePage() {
     const safeEpisodeEmbed = getSafeEmbedUrl(selectedEpisode?.link_embed);
 
     return (
-        <div className={`min-h-screen bg-[#0F111A] pt-[70px] ${theaterMode ? 'theater-page' : ''}`}>
+        <div className={`tv-watch-page min-h-screen bg-[#0F111A] pt-[70px] ${theaterMode ? 'theater-page' : ''}`}>
             {/* Auto-select notification toast */}
             {autoSelectNotice && (
                 <div className="fixed top-[80px] left-1/2 -translate-x-1/2 z-[200] px-[20px] py-[12px] bg-gradient-to-r from-[#1e1e3f] to-[#2a1e3f] border border-[#FFD875]/40 rounded-full text-[#FFD875] text-[13px] font-medium shadow-xl animate-fade-in flex items-center gap-[8px]">
@@ -429,7 +429,7 @@ export default function MoviePage() {
                 )}
 
                 {useHdSource && hdSource ? (
-                    <div className="aspect-video max-h-[80vh] mx-auto relative">
+                    <div className="tv-player-frame mx-auto relative">
                         <div className="absolute top-[10px] right-[10px] z-10 px-[10px] py-[4px] bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[11px] font-bold rounded-full flex items-center gap-[4px]">
                             <FontAwesomeIcon icon={faCrown} className="text-[10px]" />
                             HD/4K
@@ -451,7 +451,7 @@ export default function MoviePage() {
                         )}
                     </div>
                 ) : selectedEpisode?.link_embed ? (
-                    <div className="aspect-video max-h-[80vh] mx-auto">
+                    <div className="tv-player-frame mx-auto">
                         {safeEpisodeEmbed ? (
                             <iframe
                                 src={safeEpisodeEmbed}
@@ -469,7 +469,7 @@ export default function MoviePage() {
                         )}
                     </div>
                 ) : (
-                    <div className="aspect-video max-h-[80vh] mx-auto flex items-center justify-center bg-[#1a1c2e]">
+                    <div className="tv-player-frame mx-auto flex items-center justify-center bg-[#1a1c2e]">
                         <div className="text-center">
                             <FontAwesomeIcon icon={faPlay} className="text-[60px] text-white/20 mb-[16px]" />
                             <p className="text-white/40">Chọn tập phim để xem</p>
@@ -480,7 +480,7 @@ export default function MoviePage() {
 
             <div className="container max-w-[1400px] mx-auto px-[16px] py-[30px]">
                 {/* Back button + Current playing + Actions */}
-                <div className="flex items-center justify-between mb-[24px] flex-wrap gap-[12px]">
+                <div className="tv-watch-actions flex items-center justify-between mb-[24px] flex-wrap gap-[12px]">
                     <div className="flex items-center gap-[16px]">
                         <button
                             onClick={() => router.back()}
@@ -553,9 +553,9 @@ export default function MoviePage() {
                 </div>
 
                 {/* Movie Info */}
-                <div className="flex flex-col lg:flex-row gap-[30px] mb-[40px]">
+                <div className="tv-movie-info flex flex-col lg:flex-row gap-[30px] mb-[40px]">
                     {/* Poster */}
-                    <div className="w-[180px] flex-shrink-0 mx-auto lg:mx-0">
+                    <div className="tv-movie-poster w-[180px] flex-shrink-0 mx-auto lg:mx-0">
                         <Image
                             src={getImageUrl(movieData.poster_url || movieData.thumb_url)}
                             alt={movieData.name}
@@ -625,7 +625,7 @@ export default function MoviePage() {
 
                 {/* Server & Episodes */}
                 {episodes && episodes.length > 0 && (
-                    <div className="bg-[#1a1c2e] rounded-[16px] p-[20px] lg:p-[24px]">
+                    <div className="tv-episode-panel bg-[#1a1c2e] rounded-[16px] p-[20px] lg:p-[24px]">
                         <h2 className="text-white text-[18px] font-semibold mb-[20px] flex items-center gap-[10px]">
                             <FontAwesomeIcon icon={faPlay} className="text-[#FFD875]" />
                             Danh sách tập phim

@@ -215,7 +215,7 @@ export default function ChieuRapPage() {
 
         {/* Movie Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 gap-[14px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          <div className="tv-movie-grid grid grid-cols-2 gap-[14px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {Array.from({ length: 24 }).map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="aspect-[2/3] rounded-[14px] bg-[#2a2d3e]" />
@@ -237,7 +237,7 @@ export default function ChieuRapPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-[14px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          <div className="tv-movie-grid grid grid-cols-2 gap-[14px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {filteredMovies.map((movie) => (
               <button
                 key={movie._id}
@@ -250,7 +250,7 @@ export default function ChieuRapPage() {
                     alt={movie.name}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                    sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
                     unoptimized
                   />
 

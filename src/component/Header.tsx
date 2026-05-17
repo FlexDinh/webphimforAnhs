@@ -87,14 +87,14 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed left-0 top-0 z-50 w-full px-[16px] text-white transition-all duration-500 ${
+      className={`tv-header fixed left-0 top-0 z-50 w-full px-[16px] text-white transition-all duration-500 ${
         scrolled
           ? "header-premium shadow-[0_12px_40px_rgba(0,0,0,0.28)]"
           : "bg-gradient-to-b from-black/80 via-black/40 to-transparent"
       }`}
     >
       <div className="container mx-auto max-w-[1400px]">
-        <div className="flex h-[64px] items-center justify-between gap-[16px] sm:h-[70px]">
+        <div className="tv-header-row flex h-[64px] items-center justify-between gap-[16px] sm:h-[70px]">
           <div className="flex items-center gap-[12px]">
             <button
               onClick={() => setOpenBarMenu((value) => !value)}
@@ -109,7 +109,7 @@ export default function Header() {
               className="flex cursor-pointer items-center gap-[8px] transition-transform active:scale-95"
               aria-label="Về trang phim mới"
             >
-              <div className="h-[50px] w-[160px] sm:h-[60px] sm:w-[180px]">
+              <div className="tv-logo-frame h-[50px] w-[160px] sm:h-[60px] sm:w-[180px]">
                 <Logo />
               </div>
             </button>
@@ -166,7 +166,7 @@ export default function Header() {
             </div>
           </nav>
 
-          <div className="relative hidden max-w-[350px] flex-1 min-[1024px]:block">
+          <div className="tv-header-search relative hidden max-w-[350px] flex-1 min-[1024px]:block">
             <form className="flex w-full items-center" onSubmit={handleSubmit}>
               <div className="relative w-full">
                 <FontAwesomeIcon

@@ -45,7 +45,7 @@ const YEARS = Array.from({ length: 15 }, (_, index) => currentYear - index);
 const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => void }) => (
   <button onClick={onClick} className="group cursor-pointer text-left transition-transform active:scale-[0.98]">
     <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
-      <Image src={getImageUrl(movie.poster_url || movie.thumb_url)} alt={typeof movie.name === "string" ? movie.name : "Movie"} fill className="object-cover" sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw" loading="lazy" unoptimized />
+      <Image src={getImageUrl(movie.poster_url || movie.thumb_url)} alt={typeof movie.name === "string" ? movie.name : "Movie"} fill className="object-cover" sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw" loading="lazy" unoptimized />
       <div className="absolute inset-0 hidden items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100 sm:flex">
         <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#FFD875]"><FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[12px] text-black" /></div>
       </div>
@@ -159,7 +159,7 @@ export default function TheLoaiPage() {
 
         <div className="mb-[16px] flex flex-wrap items-center gap-[8px] text-[14px] text-[#888]"><span>Đang xem:</span><span className="flex items-center gap-[4px] font-medium text-[#FFD875]">{selectedCategory.icon} {selectedCategory.name}</span>{!loading && <><span>•</span><span>{filteredAndSortedMovies.length} phim</span><span>•</span><span>Trang {page}/{totalPages}</span></>}</div>
 
-        <div className="grid grid-cols-3 gap-[10px] sm:grid-cols-4 sm:gap-[16px] md:grid-cols-5 lg:grid-cols-6">{loading ? Array.from({ length: 18 }).map((_, index) => <SkeletonCard key={index} />) : filteredAndSortedMovies.length > 0 ? filteredAndSortedMovies.map((movie) => <MovieCard key={movie._id} movie={movie} onClick={() => router.push(`/phim/${movie.slug}`)} />) : <div className="col-span-full py-[60px] text-center text-[#888]"><p className="mb-[8px] text-[16px]">Không tìm thấy phim</p><p className="text-[13px]">Thử thay đổi bộ lọc hoặc chuyển sang thể loại khác.</p></div>}</div>
+        <div className="tv-movie-grid grid grid-cols-3 gap-[10px] sm:grid-cols-4 sm:gap-[16px] md:grid-cols-5 lg:grid-cols-6">{loading ? Array.from({ length: 18 }).map((_, index) => <SkeletonCard key={index} />) : filteredAndSortedMovies.length > 0 ? filteredAndSortedMovies.map((movie) => <MovieCard key={movie._id} movie={movie} onClick={() => router.push(`/phim/${movie.slug}`)} />) : <div className="col-span-full py-[60px] text-center text-[#888]"><p className="mb-[8px] text-[16px]">Không tìm thấy phim</p><p className="text-[13px]">Thử thay đổi bộ lọc hoặc chuyển sang thể loại khác.</p></div>}</div>
 
         {!loading && totalPages > 1 && <div className="mt-[30px] flex flex-wrap items-center justify-center gap-[8px]">
           <button onClick={() => { setPage((current) => Math.max(1, current - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }} disabled={page === 1} className="min-h-[44px] rounded-full bg-white/10 px-[16px] py-[10px] text-[13px] text-white disabled:opacity-40">← Trước</button>

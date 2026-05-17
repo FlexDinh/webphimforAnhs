@@ -39,7 +39,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-[#888] text-[14px] leading-relaxed mb-[8px]">
-              Xem phim online miễn phí với giao diện gọn, tải nhanh và tối ưu tốt hơn cho mobile.
+              Xem phim online miễn phí với giao diện gọn, tải nhanh và tối ưu tốt hơn cho mobile, desktop và TV.
             </p>
             <p className="text-[#888] text-[14px] leading-relaxed mb-[20px]">
               Khám phá phim mới, phim lẻ, phim bộ và danh mục theo quốc gia từ nhiều nguồn API.

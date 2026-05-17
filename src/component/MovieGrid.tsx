@@ -40,7 +40,7 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-[16px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="tv-movie-grid grid grid-cols-2 gap-[16px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {Array.from({ length: 18 }).map((_, index) => (
           <div key={index} className="animate-pulse">
             <div className="aspect-[2/3] rounded-[12px] bg-[#2a2d3e]" />
@@ -54,7 +54,7 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="tv-movie-grid grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {movies.map((movie) => (
           <button
             key={movie._id}
@@ -67,7 +67,7 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
                 alt={movie.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
-                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
                 unoptimized
               />
 
@@ -112,7 +112,7 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
         ))}
       </div>
 
-      <div className="mt-[40px] flex items-center justify-center gap-[8px]">
+      <div className="tv-pagination mt-[40px] flex items-center justify-center gap-[8px]">
         <button
           onClick={() => setPage((current) => Math.max(1, current - 1))}
           disabled={page === 1}

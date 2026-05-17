@@ -95,7 +95,7 @@ export default function WatchlistPage() {
 
                 {/* Watchlist Grid */}
                 {items.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-[12px] sm:gap-[16px]">
+                    <div className="tv-movie-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-[12px] sm:gap-[16px]">
                         {items.map((item) => (
                             <div
                                 key={item.slug}
@@ -110,7 +110,7 @@ export default function WatchlistPage() {
                                         alt={item.name}
                                         fill
                                         className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
+                                        sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
                                         unoptimized
                                     />
 

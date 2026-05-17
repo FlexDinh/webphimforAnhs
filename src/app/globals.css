@@ -919,6 +919,227 @@ a:focus-visible {
 }
 
 /* ======================= */
+/* TV / LARGE SCREEN QA    */
+/* ======================= */
+.tv-player-frame {
+  aspect-ratio: 16 / 9;
+  width: min(100%, calc(80vh * 16 / 9));
+  max-width: 100%;
+}
+
+@media (min-width: 1600px) and (min-height: 800px) {
+  :root {
+    --tv-page-gutter: clamp(32px, 3.2vw, 88px);
+    --tv-content-max: min(92vw, 2200px);
+    --tv-wide-max: min(94vw, 2400px);
+  }
+
+  body {
+    font-size: 17px;
+  }
+
+  .container,
+  .tv-home-shell {
+    max-width: var(--tv-content-max) !important;
+    padding-left: var(--tv-page-gutter) !important;
+    padding-right: var(--tv-page-gutter) !important;
+  }
+
+  .tv-header .container {
+    max-width: var(--tv-wide-max) !important;
+  }
+
+  .tv-header-row {
+    height: 78px !important;
+    gap: 24px !important;
+  }
+
+  .tv-logo-frame {
+    height: 68px !important;
+    width: 212px !important;
+  }
+
+  .tv-header nav {
+    gap: 8px !important;
+  }
+
+  .tv-header nav button {
+    min-height: 48px;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    font-size: 15px !important;
+  }
+
+  .tv-header-search {
+    max-width: 480px !important;
+  }
+
+  .tv-header-search input {
+    min-height: 48px;
+    font-size: 15px !important;
+  }
+
+  .tv-home-hero {
+    padding-bottom: 42px !important;
+    padding-top: 34px !important;
+  }
+
+  .tv-home-title {
+    max-width: 920px !important;
+    font-size: clamp(58px, 3.4vw, 82px) !important;
+    line-height: 1.03 !important;
+  }
+
+  .tv-home-hero form,
+  .tv-search-box {
+    max-width: 860px !important;
+  }
+
+  .tv-home-primary-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+  }
+
+  .tv-home-primary-grid > button {
+    min-height: 112px !important;
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+
+  .tv-hero-carousel {
+    height: min(76vh, 900px) !important;
+    max-height: 900px !important;
+    min-height: 640px !important;
+  }
+
+  .tv-hero-content {
+    max-width: 760px !important;
+  }
+
+  .tv-hero-title {
+    font-size: clamp(46px, 3vw, 68px) !important;
+    line-height: 1.05 !important;
+  }
+
+  .tv-hero-subtitle {
+    font-size: 20px !important;
+  }
+
+  .tv-hero-action {
+    min-height: 56px;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+    font-size: 16px !important;
+  }
+
+  .tv-row-section {
+    margin-bottom: 54px !important;
+  }
+
+  .tv-horizontal-row {
+    gap: clamp(16px, 1vw, 26px) !important;
+    padding-bottom: 14px !important;
+    scroll-padding-left: var(--tv-page-gutter);
+  }
+
+  .tv-row-card {
+    width: clamp(184px, 8vw, 238px) !important;
+  }
+
+  .tv-row-card h3 {
+    font-size: 15px !important;
+    margin-top: 12px !important;
+  }
+
+  .tv-row-card p {
+    font-size: 12px !important;
+  }
+
+  .tv-movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)) !important;
+    gap: 24px 20px !important;
+  }
+
+  .tv-movie-grid h3 {
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+  }
+
+  .tv-movie-grid > * {
+    min-width: 0;
+  }
+
+  .tv-trending-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+  }
+
+  .tv-player-frame {
+    width: min(100%, calc(84vh * 16 / 9));
+  }
+
+  .tv-watch-page {
+    padding-top: 96px !important;
+  }
+
+  .tv-watch-page.theater-page {
+    padding-top: 0 !important;
+  }
+
+  .tv-movie-info {
+    gap: 40px !important;
+    margin-bottom: 52px !important;
+  }
+
+  .tv-movie-poster {
+    width: 230px !important;
+  }
+
+  .tv-episode-panel {
+    padding: 30px !important;
+  }
+
+  .tv-episode-panel button,
+  .tv-watch-actions button,
+  .tv-pagination button {
+    min-height: 46px;
+  }
+}
+
+@media (min-width: 2200px) and (min-height: 1000px) {
+  .tv-movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)) !important;
+    gap: 30px 24px !important;
+  }
+
+  .tv-row-card {
+    width: clamp(210px, 7.4vw, 270px) !important;
+  }
+
+  .tv-player-frame {
+    width: min(100%, calc(86vh * 16 / 9));
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 1600px) {
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid #FFD875;
+    outline-offset: 4px;
+  }
+
+  .tv-movie-grid button:focus-visible,
+  .tv-row-card:focus-visible {
+    transform: translateY(-8px) scale(1.025);
+    box-shadow: 0 0 0 3px rgba(255, 216, 117, 0.45);
+  }
+}
+
+body.theater-active .tv-player-frame {
+  width: min(100vw, calc(100vh * 16 / 9));
+}
+
+/* ======================= */
 /* ENHANCED HERO SECTION   */
 /* ======================= */
 .hero-gradient {

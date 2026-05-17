@@ -31,7 +31,7 @@ import ContinueWatching from "@/component/ContinueWatching";
 const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="movie-card-premium neon-glow group w-[140px] flex-shrink-0 cursor-pointer text-left sm:w-[160px]"
+    className="tv-row-card movie-card-premium neon-glow group w-[140px] flex-shrink-0 cursor-pointer text-left sm:w-[160px]"
   >
     <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
       <Image
@@ -39,7 +39,7 @@ const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => 
         alt={typeof movie.name === "string" ? movie.name : "Movie"}
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
-        sizes="(max-width: 640px) 140px, 160px"
+        sizes="(min-width: 2200px) 270px, (min-width: 1600px) 230px, (max-width: 640px) 140px, 160px"
         loading="lazy"
         unoptimized
       />
@@ -68,7 +68,7 @@ const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => 
 MovieCard.displayName = "MovieCard";
 
 const SkeletonCard = () => (
-  <div className="w-[140px] flex-shrink-0 sm:w-[160px]">
+  <div className="tv-row-card w-[140px] flex-shrink-0 sm:w-[160px]">
     <div className="aspect-[2/3] rounded-[12px] bg-[#2a2d3e] animate-pulse" />
     <div className="mt-[8px] h-[14px] w-3/4 rounded bg-[#2a2d3e] animate-pulse" />
   </div>
@@ -133,7 +133,7 @@ const MovieSection = memo(
     }, [shouldLoad]);
 
     return (
-      <section ref={sectionRef} className="mb-[40px]">
+      <section ref={sectionRef} className="tv-row-section mb-[40px]">
         <div className="mb-[16px] flex items-center justify-between">
           <div className="flex items-center gap-[10px]">
             <div className={`flex h-[36px] w-[36px] items-center justify-center rounded-lg ${gradient}`}>
@@ -150,7 +150,7 @@ const MovieSection = memo(
           </button>
         </div>
 
-        <div className="scrollbar-hide flex gap-[12px] overflow-x-auto pb-[8px]">
+        <div className="tv-horizontal-row scrollbar-hide flex gap-[12px] overflow-x-auto pb-[8px]">
           {loading
             ? [...Array(6)].map((_, index) => <SkeletonCard key={index} />)
             : movies.map((movie) => (
@@ -208,13 +208,13 @@ function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
   };
 
   if (heroMovies.length === 0) {
-    return <div className="h-[60vh] min-h-[400px] w-full animate-pulse bg-gradient-to-br from-[#1a1c2e] to-[#0F111A]" />;
+    return <div className="tv-hero-carousel h-[60vh] min-h-[400px] w-full animate-pulse bg-gradient-to-br from-[#1a1c2e] to-[#0F111A]" />;
   }
 
   const current = heroMovies[currentSlide];
 
   return (
-    <div className="relative h-[65vh] min-h-[420px] max-h-[700px] overflow-hidden" onMouseEnter={pauseTimer} onMouseLeave={resumeTimer}>
+    <div className="tv-hero-carousel relative h-[65vh] min-h-[420px] max-h-[700px] overflow-hidden" onMouseEnter={pauseTimer} onMouseLeave={resumeTimer}>
       {heroMovies.map((movie, index) => (
         <div
           key={movie._id}
@@ -237,7 +237,7 @@ function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
 
       <div className="absolute bottom-[60px] left-0 right-0 z-10 px-[16px]">
         <div className="container mx-auto max-w-[1400px]">
-          <div className="max-w-[550px]">
+          <div className="tv-hero-content max-w-[550px]">
             <div className={`mb-[12px] flex items-center gap-[8px] transition-all duration-500 ${isTransitioning ? "translate-y-[10px] opacity-0" : "translate-y-0 opacity-100"}`}>
               {current.quality && (
                 <span className="rounded-full bg-[#FFD875] px-[10px] py-[4px] text-[11px] font-semibold text-black">
@@ -260,14 +260,14 @@ function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
             </div>
 
             <h1
-              className={`mb-[6px] text-[28px] font-bold leading-tight text-white transition-all duration-500 lg:text-[40px] ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
+              className={`tv-hero-title mb-[6px] text-[28px] font-bold leading-tight text-white transition-all duration-500 lg:text-[40px] ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
               style={{ transitionDelay: "0.05s" }}
             >
               {String(current.name || "")}
             </h1>
 
             <p
-              className={`mb-[20px] text-[14px] text-[#FFD875] transition-all duration-500 lg:text-[16px] ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
+              className={`tv-hero-subtitle mb-[20px] text-[14px] text-[#FFD875] transition-all duration-500 lg:text-[16px] ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
               style={{ transitionDelay: "0.1s" }}
             >
               {String(current.origin_name || "")}
@@ -279,14 +279,14 @@ function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
             >
               <button
                 onClick={() => router.push(`/phim/${current.slug}`)}
-                className="flex items-center gap-[8px] rounded-full bg-gradient-to-r from-[#FFD875] to-[#f0a500] px-[28px] py-[14px] text-[14px] font-semibold text-black transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#FFD875]/30 active:scale-95"
+                className="tv-hero-action flex items-center gap-[8px] rounded-full bg-gradient-to-r from-[#FFD875] to-[#f0a500] px-[28px] py-[14px] text-[14px] font-semibold text-black transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#FFD875]/30 active:scale-95"
               >
                 <FontAwesomeIcon icon={faPlay} className="text-[12px]" />
                 Xem ngay
               </button>
               <button
                 onClick={() => router.push(`/phim/${current.slug}`)}
-                className="flex items-center gap-[8px] rounded-full border border-white/10 bg-white/10 px-[24px] py-[14px] text-[14px] text-white backdrop-blur-sm transition-all hover:bg-white/20"
+                className="tv-hero-action flex items-center gap-[8px] rounded-full border border-white/10 bg-white/10 px-[24px] py-[14px] text-[14px] text-white backdrop-blur-sm transition-all hover:bg-white/20"
               >
                 Chi tiết
               </button>
@@ -355,7 +355,7 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-[12px] sm:grid-cols-2 lg:grid-cols-5">
+      <div className="tv-trending-grid grid grid-cols-1 gap-[12px] sm:grid-cols-2 lg:grid-cols-5">
         {trendingMovies.map((movie, index) => (
           <button
             key={movie._id}

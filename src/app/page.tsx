@@ -52,7 +52,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#0B0D13] pb-[92px] text-white min-[1024px]:pb-0">
       <section className="border-b border-white/8 bg-[#10141E]">
-        <div className="mx-auto max-w-[1380px] px-4 pb-6 pt-5 sm:px-6 lg:px-8">
+        <div className="tv-home-shell tv-home-hero mx-auto max-w-[1380px] px-4 pb-6 pt-5 sm:px-6 lg:px-8">
           <nav className="flex items-center justify-between gap-4">
             <button
               onClick={() => router.push("/phimhay")}
@@ -88,7 +88,7 @@ export default function Home() {
               <p className="mb-3 inline-flex rounded-md border border-[#FFD875]/28 bg-[#FFD875]/10 px-3 py-2 text-[13px] font-semibold text-[#FFD875]">
                 Rổ Phim
               </p>
-              <h1 className="max-w-[720px] text-[34px] font-black leading-tight text-white sm:text-[46px] lg:text-[54px]">
+              <h1 className="tv-home-title max-w-[720px] text-[34px] font-black leading-tight text-white sm:text-[46px] lg:text-[54px]">
                 Tìm phim nhanh, xem tiếp gọn.
               </h1>
 
@@ -141,8 +141,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1380px] px-4 py-5 sm:px-6 lg:px-8">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <section className="tv-home-shell mx-auto max-w-[1380px] px-4 py-5 sm:px-6 lg:px-8">
+        <div className="tv-home-primary-grid grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {primaryRoutes.map((item) => (
             <button
               key={item.href}

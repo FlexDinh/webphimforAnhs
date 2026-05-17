@@ -180,7 +180,7 @@ function SearchContent() {
         </section>
 
         <form onSubmit={(e) => { e.preventDefault(); if (searchInput.trim()) router.push(`/search?query=${encodeURIComponent(searchInput.trim())}`); }} className="mb-[30px]">
-          <div className="relative mx-auto max-w-[640px]">
+          <div className="tv-search-box relative mx-auto max-w-[640px]">
             <FontAwesomeIcon icon={faSearch} className="absolute left-[20px] top-1/2 -translate-y-1/2 text-[18px] text-[#666]" />
             <input type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Tìm phim, diễn viên, đạo diễn..." className="w-full rounded-full border border-white/10 bg-white/10 py-[16px] pl-[56px] pr-[20px] text-[16px] text-white placeholder-[#666] transition-all focus:border-[#FFD875]/50 focus:bg-white/15 focus:outline-none" autoFocus />
           </div>
@@ -239,10 +239,10 @@ function SearchContent() {
           </div>
         </div>}
 
-        {loading ? <div className="flex justify-center py-[60px]"><FontAwesomeIcon icon={faSpinner} className="animate-spin text-[40px] text-[#FFD875]" /></div> : filteredResults.length > 0 ? <div className="grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        {loading ? <div className="flex justify-center py-[60px]"><FontAwesomeIcon icon={faSpinner} className="animate-spin text-[40px] text-[#FFD875]" /></div> : filteredResults.length > 0 ? <div className="tv-movie-grid grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filteredResults.map((movie) => <button key={movie._id} onClick={() => router.push(`/phim/${movie.slug}`)} className="movie-card-premium group cursor-pointer text-left">
             <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
-              <Image src={getImageUrl(movie.poster_url || movie.thumb_url)} alt={movie.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw" unoptimized />
+              <Image src={getImageUrl(movie.poster_url || movie.thumb_url)} alt={movie.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw" unoptimized />
               <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100"><div className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-[#FFD875]"><FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[14px] text-black" /></div></div>
               {movie.quality && <span className="absolute left-[8px] top-[8px] rounded bg-[#FFD875] px-[6px] py-[2px] text-[10px] font-semibold text-black">{movie.quality}</span>}
               {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && <span className="absolute right-[8px] top-[8px] flex items-center gap-[2px] rounded bg-black/70 px-[5px] py-[2px] text-[9px] font-bold text-[#FFD875]">★ {movie.tmdb.vote_average.toFixed(1)}</span>}
