@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -217,7 +217,6 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                                 fill
                                 className="object-cover"
                                 sizes="55px"
-                                unoptimized
                             />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -265,4 +264,3 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
         </div>
     );
 }
-

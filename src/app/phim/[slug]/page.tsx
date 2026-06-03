@@ -562,7 +562,6 @@ export default function MoviePage() {
                             width={180}
                             height={270}
                             className="rounded-[12px] w-full shadow-xl"
-                            unoptimized
                         />
                     </div>
 

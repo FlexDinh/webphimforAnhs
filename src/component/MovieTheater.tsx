@@ -37,7 +37,6 @@ export default function MovieTheater({ Movie }: { Movie: IMovieNew }) {
               <div className="relative">
                 <Image
                   className="w-full h-auto"
-                  unoptimized
                   width={320}
                   height={180}
                   src={Movie.logoImage}

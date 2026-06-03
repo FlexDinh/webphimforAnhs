@@ -76,7 +76,6 @@ export default function RelatedMovies({ currentMovie, className = "" }: RelatedM
                                 fill
                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                 sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw"
-                                unoptimized
                             />
                             {/* Hover Overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-[8px]">

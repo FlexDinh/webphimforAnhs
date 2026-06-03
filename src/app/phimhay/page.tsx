@@ -41,7 +41,6 @@ const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => 
         className="object-cover transition-transform duration-300 group-hover:scale-105"
         sizes="(min-width: 2200px) 270px, (min-width: 1600px) 230px, (max-width: 640px) 140px, 160px"
         loading="lazy"
-        unoptimized
       />
       <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100">
         <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#FFD875]">
@@ -227,7 +226,6 @@ function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
             className="object-cover"
             priority={index === 0}
             sizes="100vw"
-            unoptimized
           />
         </div>
       ))}
@@ -377,7 +375,6 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
                 fill
                 className="object-cover"
                 sizes="45px"
-                unoptimized
               />
             </div>
 

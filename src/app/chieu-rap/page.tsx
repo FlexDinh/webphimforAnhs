@@ -251,7 +251,6 @@ export default function ChieuRapPage() {
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
-                    unoptimized
                   />
 
                   {/* Hover overlay */}

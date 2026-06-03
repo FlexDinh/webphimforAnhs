@@ -55,7 +55,7 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
   return (
     <div>
       <div className="tv-movie-grid grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {movies.map((movie) => (
+        {movies.map((movie, index) => (
           <button
             key={movie._id}
             onClick={() => router.push(`/phim/${movie.slug}`)}
@@ -68,7 +68,7 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
-                unoptimized
+                priority={index < 6}
               />
 
               <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-transparent to-transparent p-[12px] opacity-0 transition-opacity group-hover:opacity-100">

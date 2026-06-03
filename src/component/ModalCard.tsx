@@ -37,7 +37,6 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
               <div className="relative">
                 <Image
                   className="w-full h-auto"
-                  unoptimized
                   width={320}
                   height={180}
                   src={Movie.image}
@@ -130,7 +129,6 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
           <div className="pr-[10px] cursor-pointer max-[1024px]:px-[5px] relative movie-card-premium neon-glow">
             <Image
               className="w-full h-auto rounded-[10px] lazy-image"
-              unoptimized
               width={289}
               height={162}
               src={Movie.image}
@@ -164,7 +162,6 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
       <div className="pr-[10px] max-[1280px]:block hidden cursor-pointer max-[1024px]:px-[5px] relative movie-card-hover">
         <Image
           className="w-full h-auto rounded-[10px] lazy-image"
-          unoptimized
           width={289}
           height={162}
           src={Movie.image}
