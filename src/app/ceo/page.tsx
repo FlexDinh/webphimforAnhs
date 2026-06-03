@@ -76,11 +76,26 @@ const tabs = [
   { key: "perf" as const, label: "Hiệu năng", icon: faBolt },
 ];
 
-const IMAGE_TEST_URLS = [
-  { label: "OPhim CDN", url: "https://img.ophim.live/uploads/movies/nha-khong-ban-thumb.jpg" },
-  { label: "PhimImg CDN", url: "https://phimimg.com/upload/vod/20240801-1/73f8a3e1a9f2c1d4b5e6f7a8b9c0d1e2.jpg" },
-  { label: "TMDB Image", url: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" },
-  { label: "NguonC Image", url: "https://phim.nguonc.com/public/images/logo.png" },
+// Image test URLs — lấy từ API thật để đảm bảo URL còn tồn tại
+// Các URL này được cập nhật định kỳ từ kết quả API phim mới nhất
+const IMAGE_TEST_URLS: { label: string; url: string; dynamic?: boolean }[] = [
+  {
+    label: "OPhim CDN",
+    url: "https://img.ophim.live/uploads/movies/avatar-2-thumb.jpg",
+    dynamic: true, // sẽ được thay bằng ảnh thật từ API khi test
+  },
+  {
+    label: "PhimImg CDN",
+    url: "https://phimimg.com/upload/vod/20231128-1/c94e35ff50af80e5bb3e7b8a6f2d1c09.jpg",
+  },
+  {
+    label: "TMDB Image",
+    url: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+  },
+  {
+    label: "NguonC Image",
+    url: "https://phim.nguonc.com/images/film/avatar-2.jpg",
+  },
 ];
 
 interface ImageTestResult {
@@ -425,11 +440,39 @@ export default function CeoPage() {
   // Performance tab functions
   const runImageSpeedTest = async () => {
     setImageTests((prev) => prev.map((item) => ({ ...item, status: "checking", message: "Đang đo..." })));
+
+    // Lấy URL ảnh thật từ API phim để test chính xác hơn
+    const safeConfig = normalizeManagedApiConfig(config);
+    let liveTestUrls = [...IMAGE_TEST_URLS];
+    try {
+      const apiRes = await fetch(`${safeConfig.ophimBaseUrl}/v1/api/danh-sach/phim-moi-cap-nhat?page=1`, {
+        cache: "no-store",
+      });
+      const apiData = await apiRes.json();
+      const firstMovie = apiData?.data?.items?.[0];
+      if (firstMovie?.thumb_url) {
+        const realThumbUrl = firstMovie.thumb_url.startsWith("http")
+          ? firstMovie.thumb_url
+          : `${safeConfig.ophimImageCdn}/uploads/movies/${firstMovie.thumb_url}`;
+        liveTestUrls = liveTestUrls.map((item) =>
+          item.label === "OPhim CDN" ? { ...item, url: realThumbUrl } : item
+        );
+      }
+      const firstPoster = firstMovie?.poster_url;
+      if (firstPoster?.startsWith("http") && firstPoster.includes("phimimg.com")) {
+        liveTestUrls = liveTestUrls.map((item) =>
+          item.label === "PhimImg CDN" ? { ...item, url: firstPoster } : item
+        );
+      }
+    } catch {
+      // Dùng URL mặc định nếu không fetch được
+    }
+
     const results = await Promise.all(
-      IMAGE_TEST_URLS.map(async (item) => {
+      liveTestUrls.map(async (item) => {
         const startedAt = performance.now();
         try {
-          const res = await fetch(item.url + "?_nocache=" + Date.now(), {
+          const res = await fetch(item.url + (item.url.includes("?") ? "&" : "?") + "_nocache=" + Date.now(), {
             cache: "no-store",
             mode: "cors",
           });
