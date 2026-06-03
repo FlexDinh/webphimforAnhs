@@ -38,6 +38,12 @@ export default function MoviePage() {
     const [autoSelectNotice, setAutoSelectNotice] = useState<string | null>(null);
     const { preferences } = usePreferences();
 
+    // Player loading state
+    const [playerLoading, setPlayerLoading] = useState(false);
+    const [playerSlow, setPlayerSlow] = useState(false);
+    const playerSlowTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const iframeKey = useRef(0);
+
     // Auto-play next episode
     const [autoPlayEnabled, setAutoPlayEnabled] = useState(true);
     const [showAutoPlayOverlay, setShowAutoPlayOverlay] = useState(false);
@@ -192,6 +198,23 @@ export default function MoviePage() {
     const hasNextEpisode = selectedEpisodeIdx < currentServerData.length - 1;
     const hasPrevEpisode = selectedEpisodeIdx > 0;
 
+    // Start loading player with slow-server detection
+    const startPlayerLoad = useCallback(() => {
+        setPlayerLoading(true);
+        setPlayerSlow(false);
+        iframeKey.current += 1;
+        if (playerSlowTimerRef.current) clearTimeout(playerSlowTimerRef.current);
+        playerSlowTimerRef.current = setTimeout(() => {
+            setPlayerSlow(true);
+        }, 15000); // warn after 15s
+    }, []);
+
+    const handlePlayerLoaded = useCallback(() => {
+        setPlayerLoading(false);
+        setPlayerSlow(false);
+        if (playerSlowTimerRef.current) clearTimeout(playerSlowTimerRef.current);
+    }, []);
+
     const handleNextEpisode = useCallback(() => {
         if (!movie || !hasNextEpisode) return;
         const nextIdx = selectedEpisodeIdx + 1;
@@ -201,9 +224,10 @@ export default function MoviePage() {
             setSelectedEpisodeIdx(nextIdx);
             setUseHdSource(false);
             setHdSource(null);
+            startPlayerLoad();
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
-    }, [movie, selectedEpisodeIdx, currentServerData, hasNextEpisode]);
+    }, [movie, selectedEpisodeIdx, currentServerData, hasNextEpisode, startPlayerLoad]);
 
     const handlePrevEpisode = useCallback(() => {
         if (!movie || !hasPrevEpisode) return;
@@ -214,9 +238,10 @@ export default function MoviePage() {
             setSelectedEpisodeIdx(prevIdx);
             setUseHdSource(false);
             setHdSource(null);
+            startPlayerLoad();
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
-    }, [movie, selectedEpisodeIdx, currentServerData, hasPrevEpisode]);
+    }, [movie, selectedEpisodeIdx, currentServerData, hasPrevEpisode, startPlayerLoad]);
 
     // Trigger auto-play overlay (simulated — in real scenario, would detect video end via postMessage)
     const triggerAutoPlay = useCallback(() => {
@@ -436,6 +461,7 @@ export default function MoviePage() {
                         </div>
                         {safeHdSource ? (
                             <iframe
+                                key={`hd-${iframeKey.current}`}
                                 src={safeHdSource}
                                 className="w-full h-full"
                                 title="RoPhim HD player"
@@ -443,6 +469,7 @@ export default function MoviePage() {
                                 allow={PLAYER_IFRAME_ALLOW}
                                 sandbox={PLAYER_IFRAME_SANDBOX}
                                 referrerPolicy="no-referrer"
+                                onLoad={handlePlayerLoaded}
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-[#1a1c2e]">
@@ -451,9 +478,38 @@ export default function MoviePage() {
                         )}
                     </div>
                 ) : selectedEpisode?.link_embed ? (
-                    <div className="tv-player-frame mx-auto">
+                    <div className="tv-player-frame mx-auto relative">
+                        {/* Loading overlay */}
+                        {playerLoading && (
+                            <div className="absolute inset-0 z-20 bg-black/80 flex flex-col items-center justify-center gap-[12px]">
+                                <div className="w-[40px] h-[40px] border-4 border-[#FFD875]/30 border-t-[#FFD875] rounded-full animate-spin" />
+                                <p className="text-white/60 text-[13px]">Đang tải video...</p>
+                            </div>
+                        )}
+                        {/* Slow server warning */}
+                        {playerSlow && (
+                            <div className="absolute bottom-[16px] left-1/2 -translate-x-1/2 z-30 flex items-center gap-[10px] px-[16px] py-[10px] bg-black/90 border border-orange-500/50 rounded-full text-[12px] whitespace-nowrap">
+                                <span className="text-orange-400">⚠️ Server đang chậm</span>
+                                <button
+                                    onClick={() => {
+                                        if (!movie || !episodes) return;
+                                        const nextServer = (selectedServer + 1) % episodes.length;
+                                        setSelectedServer(nextServer);
+                                        const ep = episodes[nextServer]?.server_data?.[0];
+                                        if (ep) { setSelectedEpisode(ep); setSelectedEpisodeIdx(0); }
+                                        setUseHdSource(false); setHdSource(null);
+                                        startPlayerLoad();
+                                    }}
+                                    className="px-[10px] py-[4px] bg-[#FFD875] text-black text-[11px] font-bold rounded-full hover:bg-[#FFE49A] transition-colors"
+                                >
+                                    Đổi server →
+                                </button>
+                                <button onClick={() => setPlayerSlow(false)} className="text-white/40 hover:text-white">✕</button>
+                            </div>
+                        )}
                         {safeEpisodeEmbed ? (
                             <iframe
+                                key={`ep-${iframeKey.current}-${selectedEpisode.slug}`}
                                 src={safeEpisodeEmbed}
                                 className="w-full h-full"
                                 title={`RoPhim player - ${selectedEpisode.name}`}
@@ -461,6 +517,7 @@ export default function MoviePage() {
                                 allow={PLAYER_IFRAME_ALLOW}
                                 sandbox={PLAYER_IFRAME_SANDBOX}
                                 referrerPolicy="no-referrer"
+                                onLoad={handlePlayerLoaded}
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-[#1a1c2e]">
@@ -712,7 +769,7 @@ export default function MoviePage() {
 
                         {/* Server Selection */}
                         <div className="mb-[20px]">
-                            <p className="text-white/50 text-[12px] uppercase tracking-wider mb-[10px]">Chọn Server Vietsub</p>
+                            <p className="text-white/50 text-[12px] uppercase tracking-wider mb-[10px]">Chọn Server Vietsub <span className="normal-case text-orange-400/80">(Nếu video đứng → đổi server khác)</span></p>
                             <div className="flex flex-wrap gap-[8px]">
                                 {episodes.map((server, idx) => (
                                     <button
@@ -722,6 +779,10 @@ export default function MoviePage() {
                                             if (server.server_data[0]) {
                                                 setSelectedEpisode(server.server_data[0]);
                                                 setSelectedEpisodeIdx(0);
+                                                setUseHdSource(false);
+                                                setHdSource(null);
+                                                startPlayerLoad();
+                                                window.scrollTo({ top: 0, behavior: "smooth" });
                                             }
                                         }}
                                         className={`px-[16px] py-[10px] rounded-full text-[13px] whitespace-nowrap transition-all flex items-center gap-[8px] ${selectedServer === idx
