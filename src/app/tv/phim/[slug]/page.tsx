@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getImageUrl } from "@/lib/ophimApi";
+import { getTVImageUrl } from "@/lib/tvImageUrl";
 import {
   getUnifiedMovieDetail,
   UnifiedResponse,
@@ -106,7 +107,7 @@ export default function TVMoviePage() {
         {/* Movie Info */}
         <div style={{ display: "flex", gap: 30, marginBottom: 40, flexWrap: "wrap" as const }}>
           <div style={{ width: 200, flexShrink: 0 }}>
-            <img src={getImageUrl(m.poster_url || m.thumb_url)} alt={m.name} style={{ width: "100%", borderRadius: RADIUS.md }} />
+            <img src={getTVImageUrl(getImageUrl(m.poster_url || m.thumb_url))} alt={m.name} style={{ width: "100%", borderRadius: RADIUS.md }} />
           </div>
           <div style={{ flex: 1, minWidth: 280 }}>
             <h1 style={{ fontSize: 32, fontWeight: 800, color: COLORS.text, margin: "0 0 8px" }}>{m.name || ""}</h1>

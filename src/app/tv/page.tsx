@@ -2,14 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import {
-  getLatestMovies,
-  getMoviesByType,
-  getMoviesByCountry,
-  getThuyetMinhMovies,
-  OPhimMovie,
-} from "@/lib/ophimApi";
+import { getLatestMovies, getMoviesByType, getMoviesByCountry, getThuyetMinhMovies, OPhimMovie } from "@/lib/ophimApi";
 import { getImageUrl } from "@/lib/imageUrl";
+import { getTVImageUrl } from "@/lib/tvImageUrl";
 import TVMovieCard from "./_components/TVMovieCard";
 import { COLORS, FONT, SPACING, RADIUS, styles } from "./_components/TVStyles";
 
@@ -129,7 +124,7 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
   }
 
   const movie = heroMovies[current];
-  const bgUrl = getImageUrl(movie.poster_url || movie.thumb_url);
+  const bgUrl = getTVImageUrl(getImageUrl(movie.poster_url || movie.thumb_url));
 
   return (
     <div

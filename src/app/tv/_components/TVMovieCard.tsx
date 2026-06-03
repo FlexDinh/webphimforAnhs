@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { getImageUrl } from "@/lib/ophimApi";
 import type { OPhimMovie } from "@/lib/ophimApi";
+import { getImageUrl } from "@/lib/ophimApi";
+import { getTVImageUrl } from "@/lib/tvImageUrl";
 import { COLORS, FONT, RADIUS } from "./TVStyles";
 
 interface TVMovieCardProps {
@@ -19,7 +20,9 @@ export default function TVMovieCard({
   rank,
 }: TVMovieCardProps) {
   const router = useRouter();
-  const imageUrl = getImageUrl(movie.poster_url || movie.thumb_url);
+  // Dùng proxy để tránh CORS và CDN downtime trên TV
+  const rawUrl = getImageUrl(movie.poster_url || movie.thumb_url);
+  const imageUrl = getTVImageUrl(rawUrl);
   const rating = movie.tmdb?.vote_average;
 
   return (
