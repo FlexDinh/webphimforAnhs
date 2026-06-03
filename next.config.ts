@@ -69,7 +69,7 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60,
+    minimumCacheTTL: 86400,
   },
   // Enable compression
   compress: true,
@@ -123,6 +123,26 @@ const nextConfig: NextConfig = {
           {
             key: "Content-Type",
             value: "application/manifest+json",
+          },
+        ],
+      },
+      // Cache optimized images for 24h on browser, 7 days stale-while-revalidate on CDN
+      {
+        source: "/_next/image",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      // Cache static assets aggressively
+      {
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },

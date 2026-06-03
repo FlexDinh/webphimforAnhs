@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleRight,
   faArrowRotateRight,
+  faBolt,
   faCheck,
   faClipboardList,
   faCopy,
@@ -28,10 +29,11 @@ import {
   faRotateLeft,
   faServer,
   faShieldHalved,
+  faTrash,
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 
-type TabKey = "overview" | "api" | "content" | "ops";
+type TabKey = "overview" | "api" | "content" | "ops" | "perf";
 type CheckKey = "ophim" | "kkphim" | "nguonc";
 type CheckStatus = "idle" | "checking" | "ok" | "error";
 
@@ -71,7 +73,46 @@ const tabs = [
   { key: "api" as const, label: "Nguồn API", icon: faPlug },
   { key: "content" as const, label: "Nội dung", icon: faFilm },
   { key: "ops" as const, label: "Vận hành", icon: faListCheck },
+  { key: "perf" as const, label: "Hiệu năng", icon: faBolt },
 ];
+
+const IMAGE_TEST_URLS = [
+  { label: "OPhim CDN", url: "https://img.ophim.live/uploads/movies/nha-khong-ban-thumb.jpg" },
+  { label: "PhimImg CDN", url: "https://phimimg.com/upload/vod/20240801-1/73f8a3e1a9f2c1d4b5e6f7a8b9c0d1e2.jpg" },
+  { label: "TMDB Image", url: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" },
+  { label: "NguonC Image", url: "https://phim.nguonc.com/public/images/logo.png" },
+];
+
+interface ImageTestResult {
+  label: string;
+  url: string;
+  status: CheckStatus;
+  latencyMs?: number;
+  size?: string;
+  message: string;
+}
+
+interface SwCacheStats {
+  imageCount: number;
+  pageCount: number;
+  cacheName: string;
+  imageCacheName: string;
+}
+
+async function sendSwMessage(data: Record<string, string>): Promise<any> {
+  if (typeof navigator === "undefined" || !navigator.serviceWorker?.controller) {
+    throw new Error("Service Worker chưa active");
+  }
+  return new Promise((resolve, reject) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = (e) => {
+      if (e.data?.success) resolve(e.data);
+      else reject(new Error("SW error"));
+    };
+    navigator.serviceWorker.controller!.postMessage(data, [channel.port2]);
+    setTimeout(() => reject(new Error("SW timeout")), 5000);
+  });
+}
 
 const checkLabels: Record<CheckKey, string> = {
   ophim: "OPhim",
@@ -201,6 +242,15 @@ export default function CeoPage() {
   const [taskState, setTaskState] = useState<Record<string, boolean>>({});
   const [keyword, setKeyword] = useState("mai");
   const [detailSlug, setDetailSlug] = useState("hom-nay-lai-ban-het");
+
+  // Performance tab state
+  const [imageTests, setImageTests] = useState<ImageTestResult[]>(
+    IMAGE_TEST_URLS.map((u) => ({ ...u, status: "idle" as CheckStatus, message: "Chưa test" }))
+  );
+  const [swStats, setSwStats] = useState<SwCacheStats | null>(null);
+  const [swStatsStatus, setSwStatsStatus] = useState<CheckStatus>("idle");
+  const [clearStatus, setClearStatus] = useState("");
+  const [coldStartMs, setColdStartMs] = useState<number | null>(null);
 
   useEffect(() => {
     const current = readManagedApiConfig();
@@ -370,6 +420,84 @@ export default function CeoPage() {
 
   const runAllChecks = async () => {
     await Promise.all([runApiChecks(), runRouteChecks(), runContentProbe()]);
+  };
+
+  // Performance tab functions
+  const runImageSpeedTest = async () => {
+    setImageTests((prev) => prev.map((item) => ({ ...item, status: "checking", message: "Đang đo..." })));
+    const results = await Promise.all(
+      IMAGE_TEST_URLS.map(async (item) => {
+        const startedAt = performance.now();
+        try {
+          const res = await fetch(item.url + "?_nocache=" + Date.now(), {
+            cache: "no-store",
+            mode: "cors",
+          });
+          const buffer = await res.arrayBuffer();
+          const latencyMs = Math.round(performance.now() - startedAt);
+          const sizeKb = (buffer.byteLength / 1024).toFixed(1);
+          return {
+            ...item,
+            status: res.ok ? ("ok" as CheckStatus) : ("error" as CheckStatus),
+            latencyMs,
+            size: `${sizeKb} KB`,
+            message: res.ok ? `Load OK · ${sizeKb} KB` : `HTTP ${res.status}`,
+          };
+        } catch {
+          return {
+            ...item,
+            status: "error" as CheckStatus,
+            message: "Timeout hoặc bị block (CORS)",
+          };
+        }
+      })
+    );
+    setImageTests(results);
+  };
+
+  const fetchSwStats = async () => {
+    setSwStatsStatus("checking");
+    try {
+      const stats = await sendSwMessage({ type: "GET_CACHE_STATS" });
+      setSwStats(stats);
+      setSwStatsStatus("ok");
+    } catch (e) {
+      setSwStatsStatus("error");
+      setSwStats(null);
+    }
+  };
+
+  const clearImageCache = async () => {
+    setClearStatus("Đang xóa cache ảnh...");
+    try {
+      await sendSwMessage({ type: "CLEAR_IMAGE_CACHE" });
+      setClearStatus("✓ Đã xóa cache ảnh CDN");
+      fetchSwStats();
+    } catch {
+      setClearStatus("⚠ Không xóa được — SW chưa active?");
+    }
+  };
+
+  const clearAllCache = async () => {
+    setClearStatus("Đang xóa tất cả cache...");
+    try {
+      await sendSwMessage({ type: "CLEAR_ALL_CACHE" });
+      setClearStatus("✓ Đã xóa toàn bộ cache");
+      fetchSwStats();
+    } catch {
+      setClearStatus("⚠ Không xóa được — SW chưa active?");
+    }
+  };
+
+  const measureColdStart = async () => {
+    setColdStartMs(null);
+    const startedAt = performance.now();
+    try {
+      await fetch("/api/health", { cache: "no-store" });
+      setColdStartMs(Math.round(performance.now() - startedAt));
+    } catch {
+      setColdStartMs(-1);
+    }
   };
 
   const copyConfig = async () => {
@@ -660,6 +788,130 @@ export default function CeoPage() {
                 placeholder="Ghi lại API vừa đổi, lỗi đang theo dõi, việc cần kiểm tra trước deploy..."
                 className="min-h-[210px] w-full resize-y rounded-md border border-white/10 bg-[#0B0D13] p-3 text-[14px] leading-6 text-white outline-none placeholder:text-white/32 focus:border-[#FFD875]/55"
               />
+            </Panel>
+          </div>
+        )}
+        {activeTab === "perf" && (
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
+            {/* Image Speed Test */}
+            <Panel title="Kiểm tra tốc độ ảnh CDN" icon={faBolt}>
+              <p className="mb-4 text-[13px] leading-6 text-white/54">
+                Test load ảnh trực tiếp từ CDN ngoài (không qua cache). Nếu latency cao (&gt;2000ms) là CDN đang chậm.
+              </p>
+              <div className="grid gap-3 md:grid-cols-2">
+                {imageTests.map((item) => (
+                  <div key={item.label} className="rounded-md border border-white/8 bg-[#0B0D13] p-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-white">{item.label}</p>
+                        <p className="mt-1 truncate text-[11px] text-white/34">{item.url.slice(0, 48)}...</p>
+                      </div>
+                      <span className={`shrink-0 rounded px-2 py-1 text-[11px] font-bold ${statusClass(item.status)}`}>
+                        {formatStatus(item.status)}
+                      </span>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between">
+                      <p className="text-[13px] text-white/62">{item.message}</p>
+                      {item.latencyMs && (
+                        <span className={`text-[13px] font-bold ${
+                          item.latencyMs < 500 ? "text-[#7DFFA6]" :
+                          item.latencyMs < 1500 ? "text-[#FFD875]" : "text-[#FF8A8A]"
+                        }`}>
+                          {item.latencyMs}ms
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4">
+                <ActionButton onClick={runImageSpeedTest} icon={faBolt} label="Test tốc độ ảnh" />
+              </div>
+            </Panel>
+
+            {/* SW Cache Stats */}
+            <Panel title="Service Worker Cache" icon={faDatabase}>
+              <div className="grid gap-3">
+                <div className="rounded-md border border-white/8 bg-[#0B0D13] p-4">
+                  <p className="mb-3 text-[13px] font-semibold text-white/58">Thống kê cache hiện tại</p>
+                  {swStats ? (
+                    <div className="grid gap-2 text-[14px]">
+                      <div className="flex justify-between">
+                        <span className="text-white/60">Ảnh CDN cache</span>
+                        <span className="font-bold text-[#7DFFA6]">{swStats.imageCount} files</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-white/60">Page cache</span>
+                        <span className="font-bold text-white">{swStats.pageCount} files</span>
+                      </div>
+                      <div className="mt-1 text-[11px] text-white/30">
+                        Cache: {swStats.cacheName} / {swStats.imageCacheName}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-[13px] text-white/40]">
+                      {swStatsStatus === "checking" ? "Đang đọc cache..." :
+                       swStatsStatus === "error" ? "⚠ SW chưa active hoặc lỗi" :
+                       "Bấm nút bên dưới để kiểm tra"}
+                    </p>
+                  )}
+                </div>
+
+                {clearStatus && (
+                  <div className={`rounded-md border px-3 py-3 text-[13px] font-semibold ${
+                    clearStatus.startsWith("✓")
+                      ? "border-[#7DFFA6]/20 bg-[#7DFFA6]/10 text-[#7DFFA6]"
+                      : clearStatus.startsWith("⚠")
+                        ? "border-[#FFD875]/20 bg-[#FFD875]/10 text-[#FFD875]"
+                        : "border-white/8 bg-white/5 text-white/60"
+                  }`}>
+                    {clearStatus}
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 grid gap-2">
+                <ActionButton onClick={fetchSwStats} icon={faArrowRotateRight} label="Xem cache stats" variant="secondary" />
+                <ActionButton onClick={clearImageCache} icon={faTrash} label="Xóa cache ảnh CDN" variant="secondary" />
+                <ActionButton onClick={clearAllCache} icon={faTrash} label="Xóa toàn bộ cache" variant="secondary" />
+              </div>
+            </Panel>
+
+            {/* Cold Start Monitor */}
+            <Panel title="Cold Start Monitor" icon={faGaugeHigh} wide>
+              <p className="mb-4 text-[13px] leading-6 text-white/54">
+                Đo thời gian response của server. Nếu &gt;3000ms là server đang cold start (Vercel free plan ngủ ~15 phút không có traffic).
+              </p>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="rounded-md border border-white/8 bg-[#0B0D13] p-4 text-center">
+                  <p className="text-[13px] font-semibold text-white/50">Latency API Health</p>
+                  <p className={`mt-2 text-[32px] font-black ${
+                    coldStartMs === null ? "text-white/30" :
+                    coldStartMs === -1 ? "text-[#FF8A8A]" :
+                    coldStartMs < 500 ? "text-[#7DFFA6]" :
+                    coldStartMs < 2000 ? "text-[#FFD875]" : "text-[#FF8A8A]"
+                  }`}>
+                    {coldStartMs === null ? "---" : coldStartMs === -1 ? "ERR" : `${coldStartMs}ms`}
+                  </p>
+                  <p className="mt-1 text-[11px] text-white/30">
+                    {coldStartMs === null ? "Chưa đo" :
+                     coldStartMs === -1 ? "Không kết nối được" :
+                     coldStartMs < 500 ? "Server đang warm 🟢" :
+                     coldStartMs < 2000 ? "Hơi chậm 🟡" : "Cold start! 🔴"}
+                  </p>
+                </div>
+                <div className="rounded-md border border-white/8 bg-[#0B0D13] p-4 md:col-span-2">
+                  <p className="mb-3 text-[13px] font-semibold text-white/50">Giải thích chỉ số</p>
+                  <div className="grid gap-2 text-[13px]">
+                    <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#7DFFA6]"></span><span className="text-white/70">&lt;500ms — Server warm, load nhanh</span></div>
+                    <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#FFD875]"></span><span className="text-white/70">500–2000ms — Bình thường hoặc hơi chậm</span></div>
+                    <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#FF8A8A]"></span><span className="text-white/70">&gt;2000ms — Cold start, request đầu sẽ chậm</span></div>
+                  </div>
+                  <p className="mt-3 text-[12px] text-white/36">💡 Vercel free plan cold start sau ~15 phút idle. Upgrade lên Pro để có warm instances.</p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <ActionButton onClick={measureColdStart} icon={faBolt} label="Đo cold start" />
+              </div>
             </Panel>
           </div>
         )}
