@@ -62,11 +62,25 @@ export default function RootLayout({
         <link rel="preconnect" href="https://phim.nguonc.com" />
         <link rel="preconnect" href="https://vidsrc.me" />
         <link rel="preconnect" href="https://vidlink.pro" />
+        {/* Video streaming servers - preconnect for faster video start */}
+        <link rel="preconnect" href="https://vidsrc.xyz" />
+        <link rel="preconnect" href="https://vidsrc.icu" />
+        <link rel="preconnect" href="https://player.videasy.net" />
 
-        {/* DNS Prefetch for faster lookups */}
         <link rel="dns-prefetch" href="https://phimapi.com" />
         <link rel="dns-prefetch" href="https://img.ophim.live" />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
+        {/* Video streaming servers - DNS prefetch */}
+        <link rel="dns-prefetch" href="https://vidsrc.xyz" />
+        <link rel="dns-prefetch" href="https://vidsrc.me" />
+        <link rel="dns-prefetch" href="https://vidsrc.icu" />
+        <link rel="dns-prefetch" href="https://multiembed.mov" />
+        <link rel="dns-prefetch" href="https://vidlink.pro" />
+        <link rel="dns-prefetch" href="https://autoembed.co" />
+        <link rel="dns-prefetch" href="https://moviesapi.club" />
+        <link rel="dns-prefetch" href="https://ophim1.com" />
+        <link rel="dns-prefetch" href="https://phim.nguonc.com" />
+
 
         {/* Preconnect for fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

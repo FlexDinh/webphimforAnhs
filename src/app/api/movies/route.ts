@@ -1,0 +1,90 @@
+import { NextRequest, NextResponse } from "next/server";
+
+/**
+ * /api/movies — Server-side cache proxy cho OPhim API
+ *
+ * Lợi ích so với gọi OPhim trực tiếp từ browser:
+ * - Cache 5 phút trên Vercel Edge → 1000 user cùng vào chỉ gọi OPhim 1 lần
+ * - Tránh CORS trên TV browsers
+ * - Thêm fallback nếu OPhim chậm/down
+ */
+
+const OPHIM_BASE = "https://phimapi.com";
+const CACHE_SECONDS = 300; // 5 phút
+const STALE_SECONDS = 600; // 10 phút stale-while-revalidate
+
+const ALLOWED_PATHS = [
+  /^\/v1\/api\/danh-sach\//,
+  /^\/v1\/api\/the-loai\//,
+  /^\/v1\/api\/quoc-gia\//,
+  /^\/v1\/api\/tim-kiem/,
+  /^\/phim\//,
+];
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const path = searchParams.get("path");
+
+  if (!path) {
+    return NextResponse.json({ error: "Missing path" }, { status: 400 });
+  }
+
+  // Whitelist check — chỉ cho phép các path hợp lệ
+  const isAllowed = ALLOWED_PATHS.some((re) => re.test(path));
+  if (!isAllowed) {
+    return NextResponse.json({ error: "Path not allowed" }, { status: 403 });
+  }
+
+  // Rebuild query string
+  const upstreamParams = new URLSearchParams();
+  searchParams.forEach((value, key) => {
+    if (key !== "path") upstreamParams.set(key, value);
+  });
+
+  const upstreamUrl = `${OPHIM_BASE}${path}${
+    upstreamParams.toString() ? "?" + upstreamParams.toString() : ""
+  }`;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    const upstream = await fetch(upstreamUrl, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; RoPhimBot/1.0)",
+        Accept: "application/json",
+      },
+      // Server-side: Vercel cache 5 phút
+      next: { revalidate: CACHE_SECONDS },
+    });
+
+    clearTimeout(timeout);
+
+    if (!upstream.ok) {
+      return NextResponse.json(
+        { error: `Upstream error: ${upstream.status}` },
+        { status: upstream.status }
+      );
+    }
+
+    const data = await upstream.json();
+
+    return NextResponse.json(data, {
+      status: 200,
+      headers: {
+        // Cache trên Vercel Edge 5 phút, stale thêm 10 phút
+        "Cache-Control": `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=${STALE_SECONDS}`,
+        "CDN-Cache-Control": `public, max-age=${CACHE_SECONDS}`,
+        "Vercel-CDN-Cache-Control": `public, max-age=${CACHE_SECONDS}`,
+        "Access-Control-Allow-Origin": "*",
+        "X-Cache-Source": "rophim-proxy",
+      },
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return NextResponse.json({ error: "Upstream timeout" }, { status: 504 });
+    }
+    return NextResponse.json({ error: "Proxy error" }, { status: 502 });
+  }
+}

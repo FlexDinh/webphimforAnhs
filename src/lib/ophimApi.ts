@@ -211,7 +211,7 @@ function parsePagination(data: any): OPhimResponse["pagination"] {
 }
 
 export async function getLatestMovies(page: number = 1): Promise<OPhimResponse> {
-    const url = `${getOPhimBaseUrl()}/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
+    const url = `/api/movies?path=/v1/api/danh-sach/phim-moi-cap-nhat&page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
         cacheKey: url,
@@ -223,7 +223,7 @@ export async function searchMovies(keyword: string, limit: number = 10): Promise
     const query = keyword.trim();
     if (!query) return [];
 
-    const url = `${getOPhimBaseUrl()}/v1/api/tim-kiem?keyword=${encodeURIComponent(query)}&limit=${limit}`;
+    const url = `/api/movies?path=/v1/api/tim-kiem&keyword=${encodeURIComponent(query)}&limit=${limit}`;
     const cacheKey = url;
 
     try {
@@ -244,7 +244,7 @@ export async function searchMovies(keyword: string, limit: number = 10): Promise
 }
 
 export async function getMovieBySlug(slug: string) {
-    const url = `${getOPhimBaseUrl()}/phim/${slug}`;
+    const url = `/api/movies?path=/phim/${slug}`;
     return fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DETAIL_REVALIDATE_SECONDS,
         cacheKey: url,
@@ -312,7 +312,7 @@ async function buildDerivedListing(
 }
 
 export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
-    const url = `${getOPhimBaseUrl()}/v1/api/danh-sach/phim-chieu-rap?page=${page}`;
+    const url = `/api/movies?path=/v1/api/danh-sach/phim-chieu-rap&page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
         cacheKey: url,
@@ -321,7 +321,7 @@ export async function getTheatricalMovies(page: number = 1): Promise<OPhimRespon
 }
 
 export async function getMoviesByType(type: string, page: number = 1): Promise<OPhimResponse> {
-    const url = `${getOPhimBaseUrl()}/v1/api/danh-sach/${type}?page=${page}`;
+    const url = `/api/movies?path=/v1/api/danh-sach/${type}&page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
         cacheKey: url,
@@ -335,7 +335,7 @@ export async function getMoviesByType(type: string, page: number = 1): Promise<O
 }
 
 export async function getMoviesByCategory(category: string, page: number = 1): Promise<OPhimResponse> {
-    const url = `${getOPhimBaseUrl()}/v1/api/the-loai/${category}?page=${page}`;
+    const url = `/api/movies?path=/v1/api/the-loai/${category}&page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
         cacheKey: url,
@@ -348,7 +348,7 @@ export async function getThuyetMinhMovies(page: number = 1): Promise<OPhimRespon
 }
 
 export async function getMoviesByCountry(country: string, page: number = 1): Promise<OPhimResponse> {
-    const url = `${getOPhimBaseUrl()}/v1/api/quoc-gia/${country}?page=${page}`;
+    const url = `/api/movies?path=/v1/api/quoc-gia/${country}&page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
         revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
         cacheKey: url,

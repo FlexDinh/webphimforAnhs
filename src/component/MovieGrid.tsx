@@ -60,6 +60,7 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
           <button
             key={movie._id}
             onClick={() => router.push(`/phim/${movie.slug}`)}
+            onMouseEnter={() => router.prefetch(`/phim/${movie.slug}`)}
             className="group cursor-pointer text-left transition-transform active:scale-[0.98]"
           >
             <div className="movie-card-hover touch-feedback relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e] shadow-lg">
