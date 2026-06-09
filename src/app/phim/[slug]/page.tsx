@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getImageUrl } from "@/lib/ophimApi";
+import { getProxiedImageUrl } from "@/lib/imageProxy";
 import { getUnifiedMovieDetail, UnifiedResponse as MovieDetail, UnifiedEpisode as Episode, UnifiedServer as Server } from "@/lib/stableApi";
 import { STREAMING_SOURCES } from "@/lib/streamingApi";
 import { usePreferences } from "@/lib/usePreferences";
@@ -614,11 +615,12 @@ export default function MoviePage() {
                     {/* Poster */}
                     <div className="tv-movie-poster w-[180px] flex-shrink-0 mx-auto lg:mx-0">
                         <Image
-                            src={getImageUrl(movieData.poster_url || movieData.thumb_url)}
+                            src={getProxiedImageUrl(getImageUrl(movieData.poster_url || movieData.thumb_url))}
                             alt={movieData.name}
                             width={180}
                             height={270}
                             className="rounded-[12px] w-full shadow-xl"
+                            unoptimized
                         />
                     </div>
 

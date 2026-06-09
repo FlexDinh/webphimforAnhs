@@ -6,6 +6,7 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faChevronDown, faFilter, faPlay, faSort, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { getImageUrl, getMoviesByCategory, OPhimMovie } from "@/lib/ophimApi";
+import { getProxiedImageUrl } from "@/lib/imageProxy";
 
 const CATEGORIES = [
   { slug: "hanh-dong", name: "Hành động", icon: "🔥" },
@@ -45,7 +46,7 @@ const YEARS = Array.from({ length: 15 }, (_, index) => currentYear - index);
 const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => void }) => (
   <button onClick={onClick} className="group cursor-pointer text-left transition-transform active:scale-[0.98]">
     <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
-      <Image src={getImageUrl(movie.poster_url || movie.thumb_url)} alt={typeof movie.name === "string" ? movie.name : "Movie"} fill className="object-cover" sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw" loading="lazy" />
+      <Image src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))} alt={typeof movie.name === "string" ? movie.name : "Movie"} fill className="object-cover" sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw" loading="lazy" unoptimized />
       <div className="absolute inset-0 hidden items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100 sm:flex">
         <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#FFD875]"><FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[12px] text-black" /></div>
       </div>

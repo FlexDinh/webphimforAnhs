@@ -16,6 +16,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { getImageUrl, OPhimMovie, searchMovies } from "@/lib/ophimApi";
+import { getProxiedImageUrl } from "@/lib/imageProxy";
 import { extractAllGenres, extractAllYears, filterMoviesByGenres, filterMoviesByRating, filterMoviesByYear } from "@/lib/movieUtils";
 
 function fuzzyMatch(text: string, query: string): number {
@@ -242,7 +243,7 @@ function SearchContent() {
         {loading ? <div className="flex justify-center py-[60px]"><FontAwesomeIcon icon={faSpinner} className="animate-spin text-[40px] text-[#FFD875]" /></div> : filteredResults.length > 0 ? <div className="tv-movie-grid grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filteredResults.map((movie) => <button key={movie._id} onClick={() => router.push(`/phim/${movie.slug}`)} className="movie-card-premium group cursor-pointer text-left">
             <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
-              <Image src={getImageUrl(movie.poster_url || movie.thumb_url)} alt={movie.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw" />
+              <Image src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))} alt={movie.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw" unoptimized />
               <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100"><div className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-[#FFD875]"><FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[14px] text-black" /></div></div>
               {movie.quality && <span className="absolute left-[8px] top-[8px] rounded bg-[#FFD875] px-[6px] py-[2px] text-[10px] font-semibold text-black">{movie.quality}</span>}
               {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && <span className="absolute right-[8px] top-[8px] flex items-center gap-[2px] rounded bg-black/70 px-[5px] py-[2px] text-[9px] font-bold text-[#FFD875]">★ {movie.tmdb.vote_average.toFixed(1)}</span>}

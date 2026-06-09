@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/ophimApi";
+import { getProxiedImageUrl } from "@/lib/imageProxy";
 import { getRecentlyWatched, clearWatchProgress } from "@/lib/movieUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faTimes, faHistory } from "@fortawesome/free-solid-svg-icons";
@@ -67,11 +68,12 @@ export default function ContinueWatching() {
                     >
                         <div className="relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e] shadow-lg">
                             <Image
-                                src={getImageUrl(item.posterUrl)}
+                                src={getProxiedImageUrl(getImageUrl(item.posterUrl))}
                                 alt={item.movieName}
                                 fill
                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                 sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
+                                unoptimized
                             />
 
                             {/* Overlay */}

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { searchMovies, getImageUrl, OPhimMovie } from "@/lib/ophimApi";
+import { getProxiedImageUrl } from "@/lib/imageProxy";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faTimes, faSearch } from "@fortawesome/free-solid-svg-icons";
 
@@ -212,11 +213,12 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                     >
                         <div className="w-[55px] h-[75px] rounded-[8px] overflow-hidden flex-shrink-0 relative bg-[#2a2d3e]">
                             <Image
-                                src={getImageUrl(movie.thumb_url)}
+                                src={getProxiedImageUrl(getImageUrl(movie.thumb_url))}
                                 alt={movie.name}
                                 fill
                                 className="object-cover"
                                 sizes="55px"
+                                unoptimized
                             />
                         </div>
                         <div className="flex-1 min-w-0">

@@ -41,6 +41,7 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
                   height={180}
                   src={Movie.image}
                   alt={Movie.title}
+                  unoptimized
                 />
                 <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-[#1E2545] via-[#1E2545]/5 to-transparent" />
               </div>
@@ -136,6 +137,7 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
               loading="lazy"
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUH/8QAIhAAAgEDBAMBAAAAAAAAAAAAAQIDAAQRBQYSITFBUWH/xAAVAQEBAAAAAAAAAAAAAAAAAAADBP/EABkRAAIDAQAAAAAAAAAAAAAAAAECAAMRIf/aAAwDAQACEQMRAD8AzHbW4bvbemVNO4Ril/O7ykO5HokDwB9NKvNy7gv7VrW51G4aNxhgGxkH7SlKlbky5yTf/9k="
+              unoptimized
             />
             <div>
               <div className="absolute left-[30px] max-[650px]:bottom-[68px] bottom-[71px] ">
@@ -169,6 +171,7 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
           loading="lazy"
           placeholder="blur"
           blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUH/8QAIhAAAgEDBAMBAAAAAAAAAAAAAQIDAAQRBQYSITFBUWH/xAAVAQEBAAAAAAAAAAAAAAAAAAADBP/EABkRAAIDAQAAAAAAAAAAAAAAAAECAAMRIf/aAAwDAQACEQMRAD8AzHbW4bvbemVNO4Ril/O7ykO5HokDwB9NKvNy7gv7VrW51G4aNxhgGxkH7SlKlbky5yTf/9k="
+          unoptimized
         />
         <div>
           <div className="absolute left-[30px] max-[650px]:bottom-[68px] bottom-[71px] ">

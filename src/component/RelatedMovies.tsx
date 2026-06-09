@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getImageUrl, getLatestMovies, OPhimMovie } from "@/lib/ophimApi";
+import { getProxiedImageUrl } from "@/lib/imageProxy";
 import { getRelatedMovies, normalizeGenres } from "@/lib/movieUtils";
 
 interface RelatedMoviesProps {
@@ -71,11 +72,12 @@ export default function RelatedMovies({ currentMovie, className = "" }: RelatedM
                     >
                         <div className="relative aspect-[2/3] rounded-[10px] overflow-hidden bg-[#2a2d3e]">
                             <Image
-                                src={getImageUrl(movie.poster_url || movie.thumb_url)}
+                                src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))}
                                 alt={movie.name}
                                 fill
                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                 sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw"
+                                unoptimized
                             />
                             {/* Hover Overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-[8px]">

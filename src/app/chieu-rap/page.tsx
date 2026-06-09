@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getTheatricalMovies, getImageUrl, OPhimMovie } from "@/lib/ophimApi";
+import { getProxiedImageUrl } from "@/lib/imageProxy";
 
 const GENRES = [
   { label: "Tất cả", value: "" },
@@ -246,11 +247,12 @@ export default function ChieuRapPage() {
               >
                 <div className="movie-card-hover relative aspect-[2/3] overflow-hidden rounded-[14px] bg-[#2a2d3e] shadow-lg">
                   <Image
-                    src={getImageUrl(movie.poster_url || movie.thumb_url)}
+                    src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))}
                     alt={movie.name}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                    unoptimized
                   />
 
                   {/* Hover overlay */}
