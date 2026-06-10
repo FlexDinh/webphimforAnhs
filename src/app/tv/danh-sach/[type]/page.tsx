@@ -197,11 +197,12 @@ export default function TVListPage() {
         </div>
       ) : (
         <div style={styles.movieGrid}>
-          {movies.map((movie) => (
+          {movies.map((movie, index) => (
             <TVMovieCard
               key={movie._id || movie.slug}
               movie={movie}
               width="100%"
+              loading={index < 12 ? "eager" : "lazy"}
             />
           ))}
         </div>

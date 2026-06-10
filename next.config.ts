@@ -63,6 +63,22 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'ophim1.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'phimapi.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.ophim.live',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.imgur.com',
+      },
+      {
+        protocol: 'https',
         hostname: '**.ophim.live',
       },
     ],

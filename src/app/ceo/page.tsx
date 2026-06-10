@@ -33,7 +33,7 @@ import {
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 
-type TabKey = "overview" | "api" | "content" | "ops" | "perf";
+type TabKey = "overview" | "api" | "content" | "tools" | "ops" | "perf";
 type CheckKey = "ophim" | "kkphim" | "nguonc";
 type CheckStatus = "idle" | "checking" | "ok" | "error";
 
@@ -65,6 +65,18 @@ interface TaskItem {
   label: string;
 }
 
+interface MovieLookupItem {
+  name?: string;
+  origin_name?: string;
+  slug?: string;
+  year?: string | number;
+  episode_current?: string;
+  quality?: string;
+  lang?: string;
+  category?: Array<{ name?: string }>;
+  country?: Array<{ name?: string }>;
+}
+
 const NOTES_STORAGE_KEY = "rophim.ceo.notes.v1";
 const TASKS_STORAGE_KEY = "rophim.ceo.tasks.v1";
 
@@ -72,6 +84,7 @@ const tabs = [
   { key: "overview" as const, label: "Tổng quan", icon: faGaugeHigh },
   { key: "api" as const, label: "Nguồn API", icon: faPlug },
   { key: "content" as const, label: "Nội dung", icon: faFilm },
+  { key: "tools" as const, label: "Công cụ", icon: faClipboardList },
   { key: "ops" as const, label: "Vận hành", icon: faListCheck },
   { key: "perf" as const, label: "Hiệu năng", icon: faBolt },
 ];
@@ -239,6 +252,26 @@ function getSavedTaskState() {
   }
 }
 
+function getMovieLookupItems(data: any): MovieLookupItem[] {
+  const items = data?.data?.items || data?.items || [];
+  return Array.isArray(items) ? items : [];
+}
+
+function formatMovieTags(item: MovieLookupItem) {
+  const tags = [
+    item.year,
+    item.quality,
+    item.lang,
+    item.episode_current,
+    ...(item.category || []).map((category) => category.name).slice(0, 2),
+    ...(item.country || []).map((country) => country.name).slice(0, 1),
+  ]
+    .filter(Boolean)
+    .map(String);
+
+  return tags.length ? tags.join(" · ") : "Chưa có metadata";
+}
+
 export default function CeoPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
@@ -257,6 +290,9 @@ export default function CeoPage() {
   const [taskState, setTaskState] = useState<Record<string, boolean>>({});
   const [keyword, setKeyword] = useState("mai");
   const [detailSlug, setDetailSlug] = useState("hom-nay-lai-ban-het");
+  const [movieLookupStatus, setMovieLookupStatus] = useState<CheckStatus>("idle");
+  const [movieLookupMessage, setMovieLookupMessage] = useState("Nhập từ khóa để tra cứu phim từ OPhim");
+  const [movieLookupItems, setMovieLookupItems] = useState<MovieLookupItem[]>([]);
 
   // Performance tab state
   const [imageTests, setImageTests] = useState<ImageTestResult[]>(
@@ -286,6 +322,58 @@ export default function CeoPage() {
   const routeOkCount = routeChecks.filter((item) => item.status === "ok").length;
   const doneTaskCount = defaultTasks.filter((item) => taskState[item.id]).length;
   const configJson = useMemo(() => JSON.stringify(normalizedPreview, null, 2), [normalizedPreview]);
+  const statusReport = useMemo(() => {
+    const checkedAt = new Intl.DateTimeFormat("vi-VN", {
+      dateStyle: "short",
+      timeStyle: "medium",
+    }).format(new Date());
+    const apiLines = (Object.keys(checks) as CheckKey[]).map((key) => {
+      const item = checks[key];
+      return `- ${item.label}: ${formatStatus(item.status)} (${item.message}${item.latencyMs ? `, ${item.latencyMs}ms` : ""})`;
+    });
+    const routeLines = routeChecks.map((item) => {
+      return `- ${item.label} ${item.path}: ${formatStatus(item.status)} (${item.latencyMs ? `${item.latencyMs}ms` : item.message})`;
+    });
+    const taskLines = defaultTasks.map((item) => {
+      return `- ${taskState[item.id] ? "[x]" : "[ ]"} ${item.label}`;
+    });
+    const swLine = swStats
+      ? `SW cache: ${swStats.imageCount} ảnh, ${swStats.pageCount} page`
+      : "SW cache: chưa đọc";
+    const coldStartLine =
+      coldStartMs === null ? "Cold start: chưa đo" : coldStartMs === -1 ? "Cold start: lỗi" : `Cold start: ${coldStartMs}ms`;
+
+    const lines = [
+      `Rổ Phim CEO Report`,
+      `Thời điểm: ${checkedAt}`,
+      `Lưu cấu hình: ${formatDate(savedAt)}`,
+      "",
+      `Tổng quan: API ${apiOkCount}/3 · Route ${routeOkCount}/${routeTargets.length} · Checklist ${doneTaskCount}/${defaultTasks.length}`,
+      "",
+      "API health:",
+      ...apiLines,
+      "",
+      "Content probe:",
+      `- Tìm kiếm: ${contentProbe.searchMessage}`,
+      `- Chi tiết: ${contentProbe.detailMessage}`,
+      "",
+      "Routes:",
+      ...routeLines,
+      "",
+      "Performance:",
+      `- ${swLine}`,
+      `- ${coldStartLine}`,
+      "",
+      "Checklist:",
+      ...taskLines,
+    ];
+
+    if (notes.trim()) {
+      lines.push("", "Ghi chú:", notes.trim());
+    }
+
+    return lines.join("\n");
+  }, [apiOkCount, checks, coldStartMs, contentProbe, doneTaskCount, notes, routeChecks, routeOkCount, savedAt, swStats, taskState]);
 
   const updateField = (field: keyof ManagedApiConfig, value: string) => {
     setConfig((current) => ({
@@ -543,13 +631,97 @@ export default function CeoPage() {
     }
   };
 
-  const copyConfig = async () => {
+  const copyTextFallback = (text: string) => {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+
     try {
-      await navigator.clipboard.writeText(configJson);
-      setNotice("Đã copy cấu hình JSON");
-    } catch {
-      setNotice("Không copy được, hãy copy thủ công");
+      return document.execCommand("copy");
+    } finally {
+      document.body.removeChild(textarea);
     }
+  };
+
+  const copyText = (text: string, successMessage: string) => {
+    setNotice("Đang copy...");
+    void (async () => {
+      try {
+        if (!navigator.clipboard?.writeText) {
+          throw new Error("Clipboard API không khả dụng");
+        }
+        await Promise.race([
+          navigator.clipboard.writeText(text),
+          new Promise((_, reject) => window.setTimeout(() => reject(new Error("Clipboard timeout")), 900)),
+        ]);
+        setNotice(successMessage);
+      } catch {
+        setNotice(copyTextFallback(text) ? successMessage : "Không copy được, hãy copy thủ công");
+      }
+    })();
+  };
+
+  const copyConfig = () => {
+    copyText(configJson, "Đã copy cấu hình JSON");
+  };
+
+  const downloadStatusReport = () => {
+    const blob = new Blob([statusReport], { type: "text/plain;charset=utf-8" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `rophim-ceo-report-${new Date().toISOString().slice(0, 10)}.txt`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    setNotice("Đã tạo file báo cáo");
+  };
+
+  const runMovieLookup = async () => {
+    const safeKeyword = keyword.trim();
+    if (!safeKeyword) {
+      setMovieLookupStatus("error");
+      setMovieLookupMessage("Nhập từ khóa phim trước khi tra cứu");
+      setMovieLookupItems([]);
+      return;
+    }
+
+    const safeConfig = normalizeManagedApiConfig(config);
+    setMovieLookupStatus("checking");
+    setMovieLookupMessage("Đang tra cứu phim");
+    setMovieLookupItems([]);
+
+    try {
+      const result = await fetchJsonProbe(
+        `${safeConfig.ophimBaseUrl}/v1/api/tim-kiem?keyword=${encodeURIComponent(safeKeyword)}&limit=12`
+      );
+      const items = getMovieLookupItems(result.data).slice(0, 12);
+      setMovieLookupItems(items);
+      setMovieLookupStatus("ok");
+      setMovieLookupMessage(`${items.length} kết quả cho "${safeKeyword}" · ${result.latencyMs}ms`);
+    } catch (error) {
+      setMovieLookupStatus("error");
+      setMovieLookupMessage(error instanceof Error ? error.message : "Không tra cứu được");
+    }
+  };
+
+  const openMovie = (item: MovieLookupItem) => {
+    if (!item.slug) {
+      setNotice("Phim này chưa có slug");
+      return;
+    }
+    router.push(`/phim/${item.slug}`);
+  };
+
+  const copyMovieSlug = (item: MovieLookupItem) => {
+    if (!item.slug) {
+      setNotice("Phim này chưa có slug");
+      return;
+    }
+    copyText(item.slug, `Đã copy slug: ${item.slug}`);
   };
 
   const importConfig = () => {
@@ -643,6 +815,13 @@ export default function CeoPage() {
       </section>
 
       <section className="mx-auto max-w-[1480px] px-4 py-5 sm:px-6 lg:px-8">
+        {notice && (
+          <div className="mb-5 flex items-center gap-2 rounded-md border border-[#7DFFA6]/20 bg-[#7DFFA6]/10 px-3 py-3 text-[13px] font-semibold text-[#7DFFA6]">
+            <FontAwesomeIcon icon={faCheck} className="text-xs" />
+            {notice}
+          </div>
+        )}
+
         {activeTab === "overview" && (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
             <Panel title="Tình trạng hệ thống" icon={faGaugeHigh}>
@@ -681,7 +860,7 @@ export default function CeoPage() {
             <Panel title="Smoke routes" icon={faHouse} wide>
               <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                 {routeChecks.map((item) => (
-                  <RouteRow key={item.path} item={item} />
+                  <RouteRow key={item.path} item={item} onOpen={() => router.push(item.path)} />
                 ))}
               </div>
             </Panel>
@@ -708,13 +887,6 @@ export default function CeoPage() {
                     <p className="truncate">NguonC: {normalizedPreview.nguoncBaseUrl}</p>
                   </div>
                 </div>
-
-                {notice && (
-                  <div className="flex items-center gap-2 rounded-md border border-[#7DFFA6]/20 bg-[#7DFFA6]/10 px-3 py-3 text-[13px] font-semibold text-[#7DFFA6]">
-                    <FontAwesomeIcon icon={faCheck} className="text-xs" />
-                    {notice}
-                  </div>
-                )}
 
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <ActionButton type="submit" icon={faCheck} label="Lưu cấu hình" />
@@ -767,7 +939,7 @@ export default function CeoPage() {
             <Panel title="Route monitor" icon={faHouse}>
               <div className="grid gap-2">
                 {routeChecks.map((item) => (
-                  <RouteRow key={item.path} item={item} compact />
+                  <RouteRow key={item.path} item={item} compact onOpen={() => router.push(item.path)} />
                 ))}
               </div>
               <div className="mt-4">
@@ -787,6 +959,83 @@ export default function CeoPage() {
                     {item}
                   </div>
                 ))}
+              </div>
+            </Panel>
+          </div>
+        )}
+
+        {activeTab === "tools" && (
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_430px]">
+            <Panel title="Tra cứu phim nhanh" icon={faMagnifyingGlass}>
+              <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_170px] md:items-end">
+                <Field label="Từ khóa phim" value={keyword} onChange={setKeyword} />
+                <ActionButton onClick={runMovieLookup} icon={faMagnifyingGlass} label="Tra cứu" />
+              </div>
+              <div className="mt-4">
+                <StatusBlock title="Kết quả OPhim" status={movieLookupStatus} detail={movieLookupMessage} />
+              </div>
+              <div className="mt-4 grid gap-2">
+                {movieLookupItems.length > 0 ? (
+                  movieLookupItems.map((item, index) => (
+                    <MovieLookupRow
+                      key={`${item.slug || item.name || "movie"}-${index}`}
+                      item={item}
+                      onOpen={() => openMovie(item)}
+                      onCopy={() => copyMovieSlug(item)}
+                    />
+                  ))
+                ) : (
+                  <div className="rounded-md border border-white/8 bg-[#0B0D13] p-4 text-[13px] leading-6 text-white/44">
+                    Kết quả tra cứu sẽ hiện ở đây để mở nhanh trang chi tiết hoặc copy slug.
+                  </div>
+                )}
+              </div>
+            </Panel>
+
+            <Panel title="Báo cáo trạng thái" icon={faClipboardList}>
+              <textarea
+                readOnly
+                value={statusReport}
+                className="min-h-[360px] w-full resize-y rounded-md border border-white/10 bg-[#0B0D13] p-3 font-mono text-[12px] leading-5 text-white/72 outline-none focus:border-[#FFD875]/55"
+              />
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <ActionButton
+                  onClick={() => {
+                    setNotice("Đang copy...");
+                    copyText(statusReport, "Đã copy báo cáo trạng thái");
+                  }}
+                  icon={faCopy}
+                  label="Copy report"
+                  variant="secondary"
+                />
+                <ActionButton onClick={downloadStatusReport} icon={faClipboardList} label="Tải report" variant="secondary" />
+              </div>
+            </Panel>
+
+            <Panel title="Lối tắt kiểm tra" icon={faHouse} wide>
+              <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                {routeTargets.map((item) => (
+                  <button
+                    key={item.path}
+                    onClick={() => router.push(item.path)}
+                    className="flex min-h-[48px] items-center justify-between gap-3 rounded-md border border-white/8 bg-white/5 px-3 text-left text-[14px] font-semibold text-white/74 transition hover:bg-white/10 hover:text-white"
+                  >
+                    <span className="min-w-0 truncate">{item.label}</span>
+                    <FontAwesomeIcon icon={faAngleRight} className="shrink-0 text-[11px] text-white/36" />
+                  </button>
+                ))}
+              </div>
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                <ActionButton onClick={runAllChecks} icon={faArrowRotateRight} label="Test tổng" />
+                <ActionButton
+                  onClick={() => {
+                    setNotice("Đang copy...");
+                    copyText(statusReport, "Đã copy báo cáo trạng thái");
+                  }}
+                  icon={faCopy}
+                  label="Copy báo cáo"
+                  variant="secondary"
+                />
               </div>
             </Panel>
           </div>
@@ -1098,18 +1347,81 @@ function ApiCard({ item }: { item: ApiCheck }) {
   );
 }
 
-function RouteRow({ item, compact = false }: { item: RouteCheck; compact?: boolean }) {
+function MovieLookupRow({
+  item,
+  onOpen,
+  onCopy,
+}: {
+  item: MovieLookupItem;
+  onOpen: () => void;
+  onCopy: () => void;
+}) {
+  return (
+    <div className="rounded-md border border-white/8 bg-[#0B0D13] p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-[15px] font-bold text-white">{item.name || "Chưa có tên"}</p>
+          <p className="mt-1 truncate text-[12px] text-white/42">{item.origin_name || item.slug || "Chưa có tên gốc"}</p>
+        </div>
+        <span className="shrink-0 rounded bg-white/8 px-2 py-1 text-[11px] font-bold text-white/56">
+          {item.slug || "no-slug"}
+        </span>
+      </div>
+      <p className="mt-3 text-[12px] leading-5 text-white/54">{formatMovieTags(item)}</p>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={onOpen}
+          className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-md bg-[#FFD875] px-3 text-[13px] font-bold text-black transition hover:bg-[#FFE49A]"
+        >
+          <FontAwesomeIcon icon={faAngleRight} className="text-[11px]" />
+          Mở chi tiết
+        </button>
+        <button
+          type="button"
+          onClick={onCopy}
+          className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-md border border-white/10 bg-white/6 px-3 text-[13px] font-bold text-white transition hover:bg-white/10"
+        >
+          <FontAwesomeIcon icon={faCopy} className="text-[11px]" />
+          Copy slug
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function RouteRow({
+  item,
+  compact = false,
+  onOpen,
+}: {
+  item: RouteCheck;
+  compact?: boolean;
+  onOpen?: () => void;
+}) {
   return (
     <div className="flex min-h-[54px] items-center justify-between gap-3 rounded-md border border-white/8 bg-[#0B0D13] px-3">
       <div className="min-w-0">
         <p className="truncate text-[14px] font-bold text-white">{item.label}</p>
         {!compact && <p className="truncate text-[12px] text-white/36">{item.path}</p>}
       </div>
-      <div className="shrink-0 text-right">
-        <span className={`rounded px-2 py-1 text-[11px] font-bold ${statusClass(item.status)}`}>
-          {formatStatus(item.status)}
-        </span>
-        <p className="mt-1 text-[11px] text-white/38">{item.latencyMs ? `${item.latencyMs}ms` : item.message}</p>
+      <div className="flex shrink-0 items-center gap-2">
+        <div className="text-right">
+          <span className={`rounded px-2 py-1 text-[11px] font-bold ${statusClass(item.status)}`}>
+            {formatStatus(item.status)}
+          </span>
+          <p className="mt-1 text-[11px] text-white/38">{item.latencyMs ? `${item.latencyMs}ms` : item.message}</p>
+        </div>
+        {onOpen && (
+          <button
+            type="button"
+            onClick={onOpen}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/8 bg-white/5 text-white/62 transition hover:bg-white/10 hover:text-white"
+            aria-label={`Mở ${item.label}`}
+          >
+            <FontAwesomeIcon icon={faAngleRight} className="text-[11px]" />
+          </button>
+        )}
       </div>
     </div>
   );

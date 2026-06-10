@@ -433,36 +433,6 @@ export default function PhimHay() {
       <HeroCarousel movies={heroMovies} />
 
       <div className="container mx-auto max-w-[1400px] px-[16px] py-[30px]">
-        <section className="mb-[28px] grid gap-[14px] lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="rounded-[28px] border border-white/8 bg-[linear-gradient(135deg,rgba(255,216,117,0.1),rgba(255,255,255,0.03))] px-[20px] py-[22px]">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#FFD875]">Khám phá nhanh</p>
-            <h2 className="mt-[8px] text-[28px] font-semibold text-white">
-              Phim mới, xu hướng và các nhóm nội dung theo quốc gia.
-            </h2>
-            <p className="mt-[8px] max-w-[760px] text-[14px] leading-6 text-white/58">
-              Trang này đã được dọn lại theo hướng ưu tiên nội dung: hero nổi bật ở trên, xu hướng ngay bên dưới, rồi tới các hàng phim theo từng nhóm dễ quét hơn trên cả điện thoại và desktop.
-            </p>
-          </div>
-
-          <div className="rounded-[28px] border border-white/8 bg-white/[0.03] px-[20px] py-[22px]">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-white/40">API trạng thái</p>
-            <div className="mt-[12px] space-y-[10px] text-[14px] text-white/72">
-              <p className="flex items-center justify-between gap-[16px]">
-                <span>OPhim latest</span>
-                <span className="text-[#7dffa6]">OK</span>
-              </p>
-              <p className="flex items-center justify-between gap-[16px]">
-                <span>Nguồn C latest</span>
-                <span className="text-[#7dffa6]">OK</span>
-              </p>
-              <p className="flex items-center justify-between gap-[16px]">
-                <span>Chiếu rạp</span>
-                <span className="text-[#FFD875]">Đã sửa endpoint</span>
-              </p>
-            </div>
-          </div>
-        </section>
-
         <ContinueWatching />
         <TrendingSection movies={trendingMovies} />
 

@@ -17,7 +17,8 @@ const SettingsPanel = dynamic(() => import("@/component/SettingsPanel"), { ssr: 
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const isStandalonePage = pathname === "/" || pathname.startsWith("/ceo");
+    const isStandalonePage =
+        pathname === "/" || pathname.startsWith("/ceo") || pathname.startsWith("/tv");
 
     return (
         <PreferencesProvider>

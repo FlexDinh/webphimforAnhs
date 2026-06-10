@@ -77,8 +77,12 @@ function TVMovieRow({
                 />
               </div>
             ))
-          : movies.map((movie) => (
-              <TVMovieCard key={movie._id || movie.slug} movie={movie} />
+          : movies.map((movie, index) => (
+              <TVMovieCard
+                key={movie._id || movie.slug}
+                movie={movie}
+                loading={index < 7 ? "eager" : "lazy"}
+              />
             ))}
       </div>
     </section>
@@ -378,6 +382,7 @@ function TVTrending({ movies }: { movies: OPhimMovie[] }) {
             key={movie._id || movie.slug}
             movie={movie}
             rank={i + 1}
+            loading={i < 7 ? "eager" : "lazy"}
           />
         ))}
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { OPhimMovie } from "@/lib/ophimApi";
 import { getImageUrl } from "@/lib/ophimApi";
@@ -11,6 +12,7 @@ interface TVMovieCardProps {
   width?: string;
   showRating?: boolean;
   rank?: number;
+  loading?: "eager" | "lazy";
 }
 
 export default function TVMovieCard({
@@ -18,12 +20,33 @@ export default function TVMovieCard({
   width = "180px",
   showRating = true,
   rank,
+  loading = "lazy",
 }: TVMovieCardProps) {
   const router = useRouter();
-  // Dùng proxy để tránh CORS và CDN downtime trên TV
-  const rawUrl = getImageUrl(movie.poster_url || movie.thumb_url);
-  const imageUrl = getTVImageUrl(rawUrl);
+  const posterUrl = useMemo(
+    () => getTVImageUrl(getImageUrl(movie.poster_url || movie.thumb_url)),
+    [movie.poster_url, movie.thumb_url]
+  );
+  const fallbackUrl = useMemo(
+    () => getTVImageUrl(getImageUrl(movie.thumb_url || movie.poster_url)),
+    [movie.poster_url, movie.thumb_url]
+  );
+  const [imageUrl, setImageUrl] = useState(posterUrl);
+  const imageLoadedRef = useRef(false);
   const rating = movie.tmdb?.vote_average;
+
+  useEffect(() => {
+    imageLoadedRef.current = false;
+    setImageUrl(posterUrl);
+    if (posterUrl === fallbackUrl) return;
+
+    const timer = window.setTimeout(() => {
+      if (imageLoadedRef.current) return;
+      setImageUrl((current) => (current === posterUrl ? fallbackUrl : current));
+    }, 4500);
+
+    return () => window.clearTimeout(timer);
+  }, [posterUrl, fallbackUrl]);
 
   return (
     <button
@@ -55,7 +78,16 @@ export default function TVMovieCard({
         <img
           src={imageUrl}
           alt={movie.name || "Movie"}
-          loading="lazy"
+          loading={loading}
+          fetchPriority={loading === "eager" ? "high" : "auto"}
+          onLoad={() => {
+            imageLoadedRef.current = true;
+          }}
+          onError={() => {
+            setImageUrl((current) =>
+              current !== fallbackUrl ? fallbackUrl : "/placeholder.svg"
+            );
+          }}
           style={{
             position: "absolute" as const,
             top: 0,

@@ -13,7 +13,9 @@ const PROXY_HOSTS = [
   "image.tmdb.org",
   "phim.nguonc.com",
   "ophim1.com",
+  "phimapi.com",
   "cdn.ophim.live",
+  "i.imgur.com",
 ];
 
 function shouldProxy(url: string): boolean {

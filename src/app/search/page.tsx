@@ -164,21 +164,12 @@ function SearchContent() {
   return (
     <div className="min-h-screen bg-[#0F111A] pb-[100px] pt-[90px]">
       <div className="container mx-auto max-w-[1400px] px-[16px]">
-        <section className="mb-[28px] grid gap-[14px] lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="rounded-[28px] border border-white/8 bg-[linear-gradient(135deg,rgba(255,216,117,0.12),rgba(255,255,255,0.03))] px-[20px] py-[22px]">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#FFD875]">Tìm kiếm thông minh</p>
-            <h1 className="mt-[8px] text-[28px] font-semibold text-white">Tìm theo tên phim, diễn viên hoặc cụm từ gần đúng.</h1>
-            <p className="mt-[8px] max-w-[760px] text-[14px] leading-6 text-white/58">Khu vực tìm kiếm đã được đồng bộ lại với phần gợi ý, bộ lọc và trạng thái kết quả để tránh cảm giác rời rạc giữa ô search, trang search và page phim.</p>
+        <div className="mb-[18px] flex flex-wrap items-end justify-between gap-[12px]">
+          <div>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#FFD875]">Tìm kiếm</p>
+            <h1 className="mt-[6px] text-[24px] font-semibold text-white sm:text-[30px]">Tìm phim</h1>
           </div>
-          <div className="rounded-[28px] border border-white/8 bg-white/[0.03] px-[20px] py-[22px]">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-white/40">Gợi ý sử dụng</p>
-            <div className="mt-[12px] space-y-[10px] text-[14px] text-white/72">
-              <p>Tên phim: `One Piece`, `Dandadan`</p>
-              <p>Thể loại gần đúng: `hanh dong`, `kinh di`</p>
-              <p>Dùng bộ lọc để thu hẹp theo năm và rating.</p>
-            </div>
-          </div>
-        </section>
+        </div>
 
         <form onSubmit={(e) => { e.preventDefault(); if (searchInput.trim()) router.push(`/search?query=${encodeURIComponent(searchInput.trim())}`); }} className="mb-[30px]">
           <div className="tv-search-box relative mx-auto max-w-[640px]">

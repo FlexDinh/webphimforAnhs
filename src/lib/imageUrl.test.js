@@ -25,8 +25,33 @@ test("normalizes protocol-relative and upload-prefixed image paths", async () =>
   assert.equal(getImageUrl("uploads/movies/a.jpg"), "https://img.ophim.live/uploads/movies/a.jpg");
 });
 
+test("uses phimimg CDN for upload/vod paths returned by phimapi", async () => {
+  const { getImageUrl } = await import("./imageUrl.ts");
+
+  assert.equal(
+    getImageUrl("upload/vod/20260604-1/poster.jpg"),
+    "https://phimimg.com/upload/vod/20260604-1/poster.jpg"
+  );
+});
+
 test("uses placeholder for missing image paths", async () => {
   const { getImageUrl } = await import("./imageUrl.ts");
 
   assert.equal(getImageUrl(""), "/placeholder.svg");
+});
+
+test("proxies backup image hosts on desktop and TV helpers", async () => {
+  const { getProxiedImageUrl } = await import("./imageProxy.ts");
+  const { getTVImageUrl } = await import("./tvImageUrl.ts");
+  const urls = [
+    "https://phimapi.com/static/poster.jpg",
+    "https://cdn.ophim.live/uploads/movies/poster.jpg",
+    "https://i.imgur.com/poster.jpg",
+  ];
+
+  for (const url of urls) {
+    const expected = `/api/img?url=${encodeURIComponent(url)}`;
+    assert.equal(getProxiedImageUrl(url), expected);
+    assert.equal(getTVImageUrl(url), expected);
+  }
 });
