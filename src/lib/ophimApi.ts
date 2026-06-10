@@ -1,8 +1,4 @@
-import {
-    dedupeMovies,
-    isThuyetMinhMovie,
-    matchesMovieType,
-} from "./movieClassification";
+import { matchesMovieType } from "./movieClassification";
 import { getOPhimBaseUrl } from "./apiConfig.ts";
 export { getImageUrl } from "./imageUrl";
 
@@ -13,7 +9,6 @@ const CLIENT_CACHE_TTL_MS = 5 * 60 * 1000;
 const SEARCH_CACHE_TTL_MS = 45 * 1000;
 const MAX_CLIENT_CACHE_ENTRIES = 200;
 const DEFAULT_PAGE_SIZE = 24;
-const DERIVED_LIST_SCAN_LIMIT = 12;
 
 export interface OPhimMovie {
     _id: string;
@@ -252,65 +247,6 @@ export async function getMovieBySlug(slug: string) {
     });
 }
 
-async function buildDerivedListing(
-    page: number,
-    sourceFetch: (sourcePage: number) => Promise<OPhimResponse>,
-    predicate: (movie: OPhimMovie) => boolean
-): Promise<OPhimResponse> {
-    const pageStart = (page - 1) * DEFAULT_PAGE_SIZE;
-    const pageEnd = page * DEFAULT_PAGE_SIZE;
-    const lookaheadCount = pageEnd + DEFAULT_PAGE_SIZE;
-    const collected: OPhimMovie[] = [];
-    const seen = new Set<string>();
-    let sourcePage = 1;
-    let sourceTotalPages = 1;
-    let exhausted = false;
-
-    while (
-        sourcePage <= sourceTotalPages &&
-        sourcePage <= DERIVED_LIST_SCAN_LIMIT &&
-        collected.length < lookaheadCount
-    ) {
-        const response = await sourceFetch(sourcePage);
-        sourceTotalPages = Math.max(sourceTotalPages, response.pagination.totalPages || sourcePage);
-
-        dedupeMovies(response.items.filter(predicate)).forEach((movie) => {
-            const key = movie._id || movie.slug;
-            if (!key || seen.has(key)) return;
-            seen.add(key);
-            collected.push(movie);
-        });
-
-        if (response.items.length === 0 || sourcePage >= sourceTotalPages) {
-            exhausted = true;
-            break;
-        }
-
-        sourcePage += 1;
-    }
-
-    const items = collected.slice(pageStart, pageEnd);
-    const scannedAll = exhausted || sourcePage > sourceTotalPages;
-    const hasMore = scannedAll ? collected.length > pageEnd : collected.length > pageEnd || sourcePage <= sourceTotalPages;
-    const totalItems = scannedAll
-        ? collected.length
-        : Math.max(collected.length, pageEnd + (hasMore ? 1 : 0));
-
-    return {
-        status: true,
-        msg: "done",
-        items,
-        pagination: {
-            totalItems,
-            totalItemsPerPage: DEFAULT_PAGE_SIZE,
-            currentPage: page,
-            totalPages: scannedAll
-                ? Math.max(1, Math.ceil(totalItems / DEFAULT_PAGE_SIZE))
-                : Math.max(page, hasMore ? page + 1 : page),
-        },
-    };
-}
-
 export async function getTheatricalMovies(page: number = 1): Promise<OPhimResponse> {
     const url = `/api/movies?path=/v1/api/danh-sach/phim-chieu-rap&page=${page}`;
     const data = await fetchJsonWithTimeout<any>(url, {
@@ -344,7 +280,12 @@ export async function getMoviesByCategory(category: string, page: number = 1): P
 }
 
 export async function getThuyetMinhMovies(page: number = 1): Promise<OPhimResponse> {
-    return buildDerivedListing(page, getLatestMovies, isThuyetMinhMovie);
+    const url = `/api/movies?path=/v1/api/danh-sach/phim-thuyet-minh&page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: url,
+    });
+    return normalizeApiResponse(data);
 }
 
 export async function getMoviesByCountry(country: string, page: number = 1): Promise<OPhimResponse> {

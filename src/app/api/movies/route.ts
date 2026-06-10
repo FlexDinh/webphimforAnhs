@@ -14,6 +14,7 @@ const OPHIM_BASE = DEFAULT_MANAGED_API_CONFIG.ophimBaseUrl;
 const FALLBACK_OPHIM_BASES = ["https://ophim1.com", "https://phimapi.com"];
 const CACHE_SECONDS = 300; // 5 phút
 const STALE_SECONDS = 600; // 10 phút stale-while-revalidate
+const UPSTREAM_TIMEOUT_MS = 4500;
 
 const ALLOWED_PATHS = [
   /^\/v1\/api\/danh-sach\//,
@@ -45,16 +46,17 @@ export async function GET(request: NextRequest) {
 
   const baseUrls = Array.from(new Set([OPHIM_BASE, ...FALLBACK_OPHIM_BASES]));
 
-  try {
-    let lastStatus = 502;
+  let lastStatus = 502;
+  let lastErrorMessage = "Proxy error";
 
-    for (const baseUrl of baseUrls) {
-      const upstreamUrl = `${baseUrl}${path}${
-        upstreamParams.toString() ? "?" + upstreamParams.toString() : ""
-      }`;
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
+  for (const baseUrl of baseUrls) {
+    const upstreamUrl = `${baseUrl}${path}${
+      upstreamParams.toString() ? "?" + upstreamParams.toString() : ""
+    }`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
 
+    try {
       const upstream = await fetch(upstreamUrl, {
         signal: controller.signal,
         headers: {
@@ -65,10 +67,9 @@ export async function GET(request: NextRequest) {
         next: { revalidate: CACHE_SECONDS },
       });
 
-      clearTimeout(timeout);
-
       if (!upstream.ok) {
         lastStatus = upstream.status;
+        lastErrorMessage = `Upstream error: ${upstream.status}`;
         continue;
       }
 
@@ -86,16 +87,19 @@ export async function GET(request: NextRequest) {
           "X-Upstream-Source": baseUrl,
         },
       });
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        lastStatus = 504;
+        lastErrorMessage = "Upstream timeout";
+      } else {
+        lastStatus = 502;
+        lastErrorMessage = "Proxy error";
+      }
+      continue;
+    } finally {
+      clearTimeout(timeout);
     }
-
-    return NextResponse.json(
-      { error: `Upstream error: ${lastStatus}` },
-      { status: lastStatus }
-    );
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      return NextResponse.json({ error: "Upstream timeout" }, { status: 504 });
-    }
-    return NextResponse.json({ error: "Proxy error" }, { status: 502 });
   }
+
+  return NextResponse.json({ error: lastErrorMessage }, { status: lastStatus });
 }
