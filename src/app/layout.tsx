@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import "./globals.css";
 import ClientLayout from "@/component/ClientLayout";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -108,6 +109,7 @@ export default function RootLayout({
       </head>
       <body>
         <ClientLayout>{children}</ClientLayout>
+        <SpeedInsights />
       </body>
     </html>
   );
