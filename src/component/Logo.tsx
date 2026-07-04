@@ -12,52 +12,85 @@ export default function Logo({ className = "" }: { className?: string }) {
                 className="w-full h-full"
             >
                 <defs>
-                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#FFD700" />
-                        <stop offset="50%" stopColor="#FDB931" />
-                        <stop offset="100%" stopColor="#FFD700" />
+                    <linearGradient id="premiumGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#FFF2A3" />
+                        <stop offset="50%" stopColor="#FFD875" />
+                        <stop offset="100%" stopColor="#E2A616" />
                     </linearGradient>
-                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="2" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.4" />
                     </filter>
                 </defs>
 
-                {/* Flower Icon */}
-                <path
-                    d="M30 30 C30 20 40 10 50 20 C60 10 70 20 70 30 C70 40 60 50 50 40 C40 50 30 40 30 30"
-                    fill="#FF4D4D"
-                    opacity="0.2"
-                    transform="translate(-20, -10) scale(0.8)"
-                />
+                {/* Minimalist Ticket Icon */}
+                <g filter="url(#subtleShadow)">
+                    {/* Outer Ticket Shape with side notches */}
+                    <path
+                        d="M 12 18 
+                           H 48 
+                           A 4 4 0 0 1 52 22 
+                           V 27 
+                           A 5 5 0 0 0 52 37 
+                           V 42 
+                           A 4 4 0 0 1 48 46 
+                           H 12 
+                           A 4 4 0 0 1 8 42 
+                           V 37 
+                           A 5 5 0 0 0 8 27 
+                           V 22 
+                           A 4 4 0 0 1 12 18 Z"
+                        fill="url(#premiumGold)"
+                    />
+                    
+                    {/* Perforation Line (Dashed) */}
+                    <line 
+                        x1="22" 
+                        y1="22" 
+                        x2="22" 
+                        y2="42" 
+                        stroke="#0F111A" 
+                        strokeWidth="1.5" 
+                        strokeDasharray="3 2" 
+                        opacity="0.8"
+                    />
 
-                {/* Text */}
+                    {/* Star Emblem inside ticket stub */}
+                    <path 
+                        d="M 35 27 L 36.5 30.5 L 40 31 L 37.5 33.5 L 38 37 L 35 35 L 32 37 L 32.5 33.5 L 30 31 L 33.5 30.5 Z" 
+                        fill="#0F111A"
+                    />
+                </g>
+
+                {/* Text "RoPhim" */}
                 <text
-                    x="10"
-                    y="45"
-                    fontFamily="'Playfair Display', serif"
-                    fontWeight="bold"
-                    fontSize="48"
-                    fill="url(#goldGradient)"
-                    style={{ textShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
+                    x="62"
+                    y="43"
+                    fontFamily="system-ui, -apple-system, sans-serif"
+                    fontWeight="800"
+                    fontSize="32"
+                    fill="url(#premiumGold)"
+                    filter="url(#subtleShadow)"
+                    letterSpacing="0.5"
                 >
-                    RoPhim
+                    Ro
+                    <tspan fill="#FFFFFF">Phim</tspan>
                 </text>
 
-                {/* Small "Official" tagline */}
+                {/* Small "Cinema" tagline */}
                 <text
-                    x="130"
-                    y="55"
-                    fontFamily="sans-serif"
-                    fontWeight="normal"
-                    fontSize="10"
-                    fill="#ffffff"
-                    opacity="0.8"
-                    letterSpacing="2"
+                    x="63"
+                    y="53"
+                    fontFamily="system-ui, -apple-system, sans-serif"
+                    fontWeight="700"
+                    fontSize="8"
+                    fill="#FFFFFF"
+                    opacity="0.6"
+                    letterSpacing="3"
                 >
-                    OFFICIAL
+                    CINEMA
                 </text>
             </svg>
         </div>
     );
 }
+
