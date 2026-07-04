@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import "./globals.css";
 import ClientLayout from "@/component/ClientLayout";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -8,7 +9,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
   themeColor: '#FFD875',
 };
-
+// ... (rest of metadata remains identical)
 export const metadata: Metadata = {
   metadataBase: new URL("https://webphimfor-anhs.vercel.app"),
   title: "RoPhim - Xem Phim Online Miễn Phí | Phim Mới, Vietsub, Thuyết Minh",
@@ -108,6 +109,7 @@ export default function RootLayout({
       </head>
       <body>
         <ClientLayout>{children}</ClientLayout>
+        <SpeedInsights />
       </body>
     </html>
   );
