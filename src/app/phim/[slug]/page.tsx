@@ -469,7 +469,7 @@ export default function MoviePage() {
                                 allowFullScreen
                                 allow={PLAYER_IFRAME_ALLOW}
                                 sandbox={PLAYER_IFRAME_SANDBOX}
-                                referrerPolicy="no-referrer"
+                                referrerPolicy="origin"
                                 onLoad={handlePlayerLoaded}
                             />
                         ) : (
@@ -517,7 +517,7 @@ export default function MoviePage() {
                                 allowFullScreen
                                 allow={PLAYER_IFRAME_ALLOW}
                                 sandbox={PLAYER_IFRAME_SANDBOX}
-                                referrerPolicy="no-referrer"
+                                referrerPolicy="origin"
                                 onLoad={handlePlayerLoaded}
                             />
                         ) : (

@@ -9,6 +9,9 @@ import {
   getMoviesByCountry,
   getMoviesByType,
   getThuyetMinhMovies,
+  getLongTiengMovies,
+  getCoTrangMovies,
+  getCungDauMovies,
   OPhimMovie,
 } from "@/lib/ophimApi";
 import { getProxiedImageUrl } from "@/lib/imageProxy";
@@ -19,6 +22,7 @@ import {
   faChevronLeft,
   faChevronRight,
   faClapperboard,
+  faCrown,
   faFilm,
   faFire,
   faGlobe,
@@ -26,6 +30,7 @@ import {
   faPlay,
   faStar,
   faTv,
+  faVolumeHigh,
 } from "@fortawesome/free-solid-svg-icons";
 import ContinueWatching from "@/component/ContinueWatching";
 
@@ -412,15 +417,19 @@ export default function PhimHay() {
   const fetchPhimBoSection = useCallback(async () => (await getMoviesByType("phim-bo", 1)).items.slice(0, 12), []);
   const fetchAnimeSection = useCallback(async () => (await getMoviesByType("hoat-hinh", 1)).items.slice(0, 12), []);
   const fetchThuyetMinhSection = useCallback(async () => (await getThuyetMinhMovies(1)).items.slice(0, 12), []);
+  const fetchLongTiengSection = useCallback(async () => (await getLongTiengMovies(1)).items.slice(0, 12), []);
+  const fetchCungDauSection = useCallback(async () => (await getCungDauMovies(1)).items.slice(0, 12), []);
+  const fetchCoTrangSection = useCallback(async () => (await getCoTrangMovies(1)).items.slice(0, 12), []);
   const fetchHanQuocSection = useCallback(async () => (await getMoviesByCountry("han-quoc", 1)).items.slice(0, 12), []);
   const fetchTrungQuocSection = useCallback(async () => (await getMoviesByCountry("trung-quoc", 1)).items.slice(0, 12), []);
   const fetchAuMySection = useCallback(async () => (await getMoviesByCountry("au-my", 1)).items.slice(0, 12), []);
 
   useEffect(() => {
-    Promise.all([getLatestMovies(1), getLatestMovies(2)])
-      .then(([pageOne, pageTwo]) => {
+    // Chỉ fetch 1 page thay vì 2 → hero load nhanh hơn 50%
+    getLatestMovies(1)
+      .then((pageOne) => {
         setHeroMovies(pageOne.items.slice(0, 8));
-        setTrendingMovies([...pageOne.items, ...pageTwo.items]);
+        setTrendingMovies(pageOne.items);
       })
       .catch(() => {
         setHeroMovies([]);
@@ -488,6 +497,30 @@ export default function PhimHay() {
         )}
 
         <MovieSection
+          title="Phim Lồng Tiếng"
+          icon={faVolumeHigh}
+          fetchFn={fetchLongTiengSection}
+          viewAllPath="/long-tieng"
+          gradient="bg-gradient-to-br from-[#8E44AD] to-[#6C3483]"
+        />
+
+        <MovieSection
+          title="Cung Đấu Triều Thanh"
+          icon={faCrown}
+          fetchFn={fetchCungDauSection}
+          viewAllPath="/cung-dau"
+          gradient="bg-gradient-to-br from-[#C0392B] to-[#922B21]"
+        />
+
+        <MovieSection
+          title="Phim Cổ Trang"
+          icon={faCrown}
+          fetchFn={fetchCoTrangSection}
+          viewAllPath="/the-loai/co-trang"
+          gradient="bg-gradient-to-br from-[#D4AC0D] to-[#B7950B]"
+        />
+
+        <MovieSection
           title="Phim Hàn Quốc"
           icon={faGlobe}
           fetchFn={fetchHanQuocSection}
@@ -514,3 +547,4 @@ export default function PhimHay() {
     </div>
   );
 }
+

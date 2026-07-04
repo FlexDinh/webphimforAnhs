@@ -296,3 +296,47 @@ export async function getMoviesByCountry(country: string, page: number = 1): Pro
     });
     return normalizeApiResponse(data);
 }
+
+export async function getLongTiengMovies(page: number = 1): Promise<OPhimResponse> {
+    const url = `/api/movies?path=/v1/api/danh-sach/phim-long-tieng&page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: url,
+    });
+    return normalizeApiResponse(data);
+}
+
+export async function getCoTrangMovies(page: number = 1): Promise<OPhimResponse> {
+    const url = `/api/movies?path=/v1/api/the-loai/co-trang&page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: url,
+    });
+    return normalizeApiResponse(data);
+}
+
+export async function getCungDauMovies(page: number = 1): Promise<OPhimResponse> {
+    // Cung đấu = cổ trang Trung Quốc — lọc bằng thể loại cổ trang + quốc gia Trung Quốc
+    const url = `/api/movies?path=/v1/api/quoc-gia/trung-quoc&page=${page}`;
+    const data = await fetchJsonWithTimeout<any>(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: `cung-dau-${page}`,
+    });
+    const normalized = normalizeApiResponse(data);
+
+    // Lọc lấy phim cổ trang (cung đấu thường thuộc thể loại cổ trang)
+    return {
+        ...normalized,
+        items: normalized.items.filter((movie) => {
+            const categories = movie.category?.map((c) => c.slug) || [];
+            const langLower = (movie.lang || "").toLowerCase();
+            const isCoTrang = categories.some((slug) =>
+                ["co-trang", "than-thoai", "chinh-kich"].includes(slug)
+            );
+            const isLongTieng = langLower.includes("lồng") || langLower.includes("long tieng") || langLower.includes("thuyết minh") || langLower.includes("thuyet minh");
+            // Ưu tiên phim cổ trang lồng tiếng, nhưng vẫn lấy tất cả cổ trang
+            return isCoTrang || isLongTieng;
+        }),
+    };
+}
+

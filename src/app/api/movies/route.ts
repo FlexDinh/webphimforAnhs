@@ -7,14 +7,14 @@ import { DEFAULT_MANAGED_API_CONFIG } from "@/lib/apiConfig";
  * Lợi ích so với gọi OPhim trực tiếp từ browser:
  * - Cache 5 phút trên Vercel Edge → 1000 user cùng vào chỉ gọi OPhim 1 lần
  * - Tránh CORS trên TV browsers
- * - Thêm fallback nếu OPhim chậm/down
+ * - Race pattern: gọi tất cả sources cùng lúc, ai nhanh dùng trước
  */
 
 const OPHIM_BASE = DEFAULT_MANAGED_API_CONFIG.ophimBaseUrl;
 const FALLBACK_OPHIM_BASES = ["https://ophim1.com", "https://phimapi.com"];
 const CACHE_SECONDS = 300; // 5 phút
-const STALE_SECONDS = 600; // 10 phút stale-while-revalidate
-const UPSTREAM_TIMEOUT_MS = 4500;
+const STALE_SECONDS = 1800; // 30 phút stale-while-revalidate → user luôn thấy content ngay
+const UPSTREAM_TIMEOUT_MS = 6000;
 
 const ALLOWED_PATHS = [
   /^\/v1\/api\/danh-sach\//,
@@ -23,6 +23,39 @@ const ALLOWED_PATHS = [
   /^\/v1\/api\/tim-kiem/,
   /^\/phim\//,
 ];
+
+async function fetchUpstream(
+  baseUrl: string,
+  path: string,
+  params: URLSearchParams,
+  timeoutMs: number,
+): Promise<{ data: unknown; source: string }> {
+  const upstreamUrl = `${baseUrl}${path}${
+    params.toString() ? "?" + params.toString() : ""
+  }`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const upstream = await fetch(upstreamUrl, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; RoPhimBot/1.0)",
+        Accept: "application/json",
+      },
+      next: { revalidate: CACHE_SECONDS },
+    });
+
+    if (!upstream.ok) {
+      throw new Error(`Upstream ${baseUrl} returned ${upstream.status}`);
+    }
+
+    const data = await upstream.json();
+    return { data, source: baseUrl };
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -46,60 +79,30 @@ export async function GET(request: NextRequest) {
 
   const baseUrls = Array.from(new Set([OPHIM_BASE, ...FALLBACK_OPHIM_BASES]));
 
-  let lastStatus = 502;
-  let lastErrorMessage = "Proxy error";
+  try {
+    // Race pattern: gọi tất cả sources cùng lúc, ai nhanh dùng trước
+    const { data, source } = await Promise.any(
+      baseUrls.map((baseUrl) =>
+        fetchUpstream(baseUrl, path, upstreamParams, UPSTREAM_TIMEOUT_MS),
+      ),
+    );
 
-  for (const baseUrl of baseUrls) {
-    const upstreamUrl = `${baseUrl}${path}${
-      upstreamParams.toString() ? "?" + upstreamParams.toString() : ""
-    }`;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
-
-    try {
-      const upstream = await fetch(upstreamUrl, {
-        signal: controller.signal,
-        headers: {
-          "User-Agent": "Mozilla/5.0 (compatible; RoPhimBot/1.0)",
-          Accept: "application/json",
-        },
-        // Server-side: Vercel cache 5 phút
-        next: { revalidate: CACHE_SECONDS },
-      });
-
-      if (!upstream.ok) {
-        lastStatus = upstream.status;
-        lastErrorMessage = `Upstream error: ${upstream.status}`;
-        continue;
-      }
-
-      const data = await upstream.json();
-
-      return NextResponse.json(data, {
-        status: 200,
-        headers: {
-          // Cache trên Vercel Edge 5 phút, stale thêm 10 phút
-          "Cache-Control": `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=${STALE_SECONDS}`,
-          "CDN-Cache-Control": `public, max-age=${CACHE_SECONDS}`,
-          "Vercel-CDN-Cache-Control": `public, max-age=${CACHE_SECONDS}`,
-          "Access-Control-Allow-Origin": "*",
-          "X-Cache-Source": "rophim-proxy",
-          "X-Upstream-Source": baseUrl,
-        },
-      });
-    } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        lastStatus = 504;
-        lastErrorMessage = "Upstream timeout";
-      } else {
-        lastStatus = 502;
-        lastErrorMessage = "Proxy error";
-      }
-      continue;
-    } finally {
-      clearTimeout(timeout);
-    }
+    return NextResponse.json(data, {
+      status: 200,
+      headers: {
+        // Cache trên Vercel Edge 5 phút, stale thêm 30 phút
+        "Cache-Control": `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=${STALE_SECONDS}`,
+        "CDN-Cache-Control": `public, max-age=${CACHE_SECONDS}`,
+        "Vercel-CDN-Cache-Control": `public, max-age=${CACHE_SECONDS}`,
+        "Access-Control-Allow-Origin": "*",
+        "X-Cache-Source": "rophim-proxy",
+        "X-Upstream-Source": source,
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "All upstream sources failed" },
+      { status: 502 },
+    );
   }
-
-  return NextResponse.json({ error: lastErrorMessage }, { status: lastStatus });
 }

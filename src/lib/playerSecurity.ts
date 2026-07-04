@@ -3,9 +3,12 @@ export const PLAYER_IFRAME_SANDBOX = [
     "allow-presentation",
     "allow-same-origin",
     "allow-scripts",
+    "allow-popups",
+    "allow-popups-to-escape-sandbox",
+    "allow-top-navigation-by-user-activation",
 ].join(" ");
 
-export const PLAYER_IFRAME_ALLOW = "autoplay; encrypted-media; fullscreen; picture-in-picture";
+export const PLAYER_IFRAME_ALLOW = "autoplay; encrypted-media; fullscreen; picture-in-picture; web-share";
 
 const ALLOWED_EMBED_PROTOCOLS = new Set(["https:", "http:"]);
 

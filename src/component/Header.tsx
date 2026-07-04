@@ -3,12 +3,14 @@
 import {
   faBars,
   faClapperboard,
+  faCrown,
   faFilm,
   faGlobe,
   faMicrophone,
   faPlay,
   faSearch,
   faTv,
+  faVolumeHigh,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,6 +37,8 @@ const NAV_ITEMS = [
   { label: "Thể loại", path: "/the-loai", icon: null },
   { label: "Chiếu rạp", path: "/chieu-rap", icon: faClapperboard },
   { label: "Thuyết minh", path: "/thuyet-minh", icon: faMicrophone },
+  { label: "Lồng tiếng", path: "/long-tieng", icon: faVolumeHigh },
+  { label: "Cung đấu", path: "/cung-dau", icon: faCrown },
   { label: "Anime", path: "/anime", icon: null },
 ];
 
