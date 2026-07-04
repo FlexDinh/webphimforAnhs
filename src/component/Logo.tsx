@@ -79,37 +79,23 @@ export default function Logo({ className = "" }: { className?: string }) {
                     </g>
                 </g>
 
-                {/* Typography: "RoPhim" */}
+                {/* Typography: "FOR ANH'S" */}
                 <text
                     x="56"
-                    y="36"
+                    y="35"
                     fontFamily="system-ui, -apple-system, sans-serif"
                     fontWeight="800"
-                    fontSize="30"
+                    fontSize="18"
                     fill="url(#premiumGold)"
-                    letterSpacing="0.5"
+                    letterSpacing="1.5"
                 >
-                    Ro
-                    <tspan fill="#FFFFFF">Phim</tspan>
-                </text>
-
-                {/* Subtitle: "FOR ANH'S" */}
-                <text
-                    x="57"
-                    y="46"
-                    fontFamily="system-ui, -apple-system, sans-serif"
-                    fontWeight="700"
-                    fontSize="8"
-                    fill="#FFFFFF"
-                    opacity="0.6"
-                    letterSpacing="3.5"
-                >
-                    FOR ANH'S
+                    FOR <tspan fill="#FFFFFF">ANH'S</tspan>
                 </text>
             </svg>
         </div>
     );
 }
+
 
 
 
