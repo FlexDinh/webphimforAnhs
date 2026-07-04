@@ -22,8 +22,8 @@ export default function Logo({ className = "" }: { className?: string }) {
                     </filter>
                 </defs>
 
-                {/* Minimalist Ticket Icon */}
-                <g filter="url(#subtleShadow)">
+                {/* Centered Minimalist Ticket Icon */}
+                <g filter="url(#subtleShadow)" transform="translate(70, 0)">
                     {/* Outer Ticket Shape with side notches */}
                     <path
                         d="M 12 18 
@@ -60,37 +60,9 @@ export default function Logo({ className = "" }: { className?: string }) {
                         fill="#0F111A"
                     />
                 </g>
-
-                {/* Text "RoPhim" */}
-                <text
-                    x="62"
-                    y="43"
-                    fontFamily="system-ui, -apple-system, sans-serif"
-                    fontWeight="800"
-                    fontSize="32"
-                    fill="url(#premiumGold)"
-                    filter="url(#subtleShadow)"
-                    letterSpacing="0.5"
-                >
-                    Ro
-                    <tspan fill="#FFFFFF">Phim</tspan>
-                </text>
-
-                {/* Small "Cinema" tagline */}
-                <text
-                    x="63"
-                    y="53"
-                    fontFamily="system-ui, -apple-system, sans-serif"
-                    fontWeight="700"
-                    fontSize="8"
-                    fill="#FFFFFF"
-                    opacity="0.6"
-                    letterSpacing="3"
-                >
-                    CINEMA
-                </text>
             </svg>
         </div>
     );
 }
+
 
