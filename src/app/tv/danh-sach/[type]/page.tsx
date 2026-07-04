@@ -8,6 +8,9 @@ import {
   getMoviesByCountry,
   getTheatricalMovies,
   getThuyetMinhMovies,
+  getLongTiengMovies,
+  getCungDauMovies,
+  getCoTrangMovies,
   OPhimMovie,
 } from "@/lib/ophimApi";
 import TVMovieCard from "../../_components/TVMovieCard";
@@ -37,6 +40,18 @@ const TYPE_MAP: Record<string, { title: string; fetch: (page: number) => Promise
   "thuyet-minh": {
     title: "Phim thuyết minh",
     fetch: getThuyetMinhMovies,
+  },
+  "long-tieng": {
+    title: "Phim lồng tiếng",
+    fetch: getLongTiengMovies,
+  },
+  "cung-dau": {
+    title: "Cung đấu Triều Thanh",
+    fetch: getCungDauMovies,
+  },
+  "co-trang": {
+    title: "Phim cổ trang",
+    fetch: getCoTrangMovies,
   },
   "han-quoc": {
     title: "Phim Hàn Quốc",

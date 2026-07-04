@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { getLatestMovies, getMoviesByType, getMoviesByCountry, getThuyetMinhMovies, OPhimMovie } from "@/lib/ophimApi";
+import { getLatestMovies, getMoviesByType, getMoviesByCountry, getThuyetMinhMovies, getLongTiengMovies, getCungDauMovies, getCoTrangMovies, OPhimMovie } from "@/lib/ophimApi";
 import { getImageUrl } from "@/lib/imageUrl";
 import { getTVImageUrl } from "@/lib/tvImageUrl";
 import TVMovieCard from "./_components/TVMovieCard";
@@ -415,6 +415,18 @@ export default function TVHomePage() {
     async () => (await getThuyetMinhMovies(1)).items.slice(0, 14),
     []
   );
+  const fetchLongTieng = useCallback(
+    async () => (await getLongTiengMovies(1)).items.slice(0, 14),
+    []
+  );
+  const fetchCungDau = useCallback(
+    async () => (await getCungDauMovies(1)).items.slice(0, 14),
+    []
+  );
+  const fetchCoTrang = useCallback(
+    async () => (await getCoTrangMovies(1)).items.slice(0, 14),
+    []
+  );
   const fetchHanQuoc = useCallback(
     async () => (await getMoviesByCountry("han-quoc", 1)).items.slice(0, 14),
     []
@@ -429,10 +441,11 @@ export default function TVHomePage() {
   );
 
   useEffect(() => {
-    Promise.all([getLatestMovies(1), getLatestMovies(2)])
-      .then(([p1, p2]) => {
+    // Chỉ fetch 1 page → TV load nhanh hơn
+    getLatestMovies(1)
+      .then((p1) => {
         setHeroMovies(p1.items.slice(0, 6));
-        setAllMovies([...p1.items, ...p2.items]);
+        setAllMovies(p1.items);
       })
       .catch(() => {});
   }, []);
@@ -474,6 +487,21 @@ export default function TVHomePage() {
           title="🎙️ Thuyết minh"
           fetchFn={fetchThuyetMinh}
           viewAllPath="/tv/danh-sach/thuyet-minh"
+        />
+        <TVMovieRow
+          title="🔊 Lồng tiếng"
+          fetchFn={fetchLongTieng}
+          viewAllPath="/tv/danh-sach/long-tieng"
+        />
+        <TVMovieRow
+          title="⚔️ Cung đấu Triều Thanh"
+          fetchFn={fetchCungDau}
+          viewAllPath="/tv/danh-sach/cung-dau"
+        />
+        <TVMovieRow
+          title="🏯 Phim Cổ Trang"
+          fetchFn={fetchCoTrang}
+          viewAllPath="/tv/danh-sach/co-trang"
         />
         <TVMovieRow
           title="🇰🇷 Phim Hàn Quốc"
