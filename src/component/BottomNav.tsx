@@ -3,7 +3,7 @@
 import { faBookmark, faFilm, faHome, faSearch, faTv } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const navItems = [
   { icon: faHome, label: "Trang chủ", path: "/" },
@@ -17,24 +17,24 @@ export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [visible, setVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY < lastScrollY || currentScrollY < 100) {
+      if (currentScrollY < lastScrollYRef.current || currentScrollY < 100) {
         setVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      } else if (currentScrollY > lastScrollYRef.current && currentScrollY > 100) {
         setVisible(false);
       }
 
-      setLastScrollY(currentScrollY);
+      lastScrollYRef.current = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   return (
     <nav className={`bottom-nav min-[1024px]:hidden transition-transform duration-300 ${visible ? "translate-y-0" : "translate-y-full"}`}>

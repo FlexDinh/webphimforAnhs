@@ -1,6 +1,19 @@
 // NguonC API Service - 32,000+ movies with high quality streams
 import { getNguonCBaseUrl } from "./apiConfig.ts";
 
+const NGUONC_TIMEOUT_MS = 8000;
+
+async function fetchWithTimeout(url: string, options?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), NGUONC_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export interface NguoncMovie {
     name: string;
     slug: string;
@@ -57,7 +70,7 @@ export interface NguoncDetailResponse {
 // Fetch latest movies from NguonC
 export async function getNguoncLatestMovies(page: number = 1): Promise<NguoncResponse> {
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${getNguonCBaseUrl()}/films/phim-moi-cap-nhat?page=${page}`,
             { next: { revalidate: 300 } }
         );
@@ -72,7 +85,7 @@ export async function getNguoncLatestMovies(page: number = 1): Promise<NguoncRes
 // Get movie details from NguonC
 export async function getNguoncMovieBySlug(slug: string): Promise<NguoncDetailResponse> {
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${getNguonCBaseUrl()}/film/${slug}`,
             { next: { revalidate: 3600 } }
         );
@@ -87,7 +100,7 @@ export async function getNguoncMovieBySlug(slug: string): Promise<NguoncDetailRe
 // Search movies from NguonC
 export async function searchNguoncMovies(keyword: string, page: number = 1): Promise<NguoncResponse> {
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${getNguonCBaseUrl()}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`,
             { cache: "no-store" }
         );
@@ -102,7 +115,7 @@ export async function searchNguoncMovies(keyword: string, page: number = 1): Pro
 // Get phim bộ (TV series) from NguonC
 export async function getNguoncPhimBo(page: number = 1): Promise<NguoncResponse> {
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${getNguonCBaseUrl()}/films/danh-sach/phim-bo?page=${page}`,
             { next: { revalidate: 300 } }
         );
@@ -117,7 +130,7 @@ export async function getNguoncPhimBo(page: number = 1): Promise<NguoncResponse>
 // Get phim lẻ (Movies) from NguonC
 export async function getNguoncPhimLe(page: number = 1): Promise<NguoncResponse> {
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${getNguonCBaseUrl()}/films/danh-sach/phim-le?page=${page}`,
             { next: { revalidate: 300 } }
         );
@@ -132,7 +145,7 @@ export async function getNguoncPhimLe(page: number = 1): Promise<NguoncResponse>
 // Get hoạt hình from NguonC
 export async function getNguoncHoatHinh(page: number = 1): Promise<NguoncResponse> {
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${getNguonCBaseUrl()}/films/danh-sach/hoat-hinh?page=${page}`,
             { next: { revalidate: 300 } }
         );
@@ -147,7 +160,7 @@ export async function getNguoncHoatHinh(page: number = 1): Promise<NguoncRespons
 // Get movies by country from NguonC
 export async function getNguoncByCountry(country: string, page: number = 1): Promise<NguoncResponse> {
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${getNguonCBaseUrl()}/films/quoc-gia/${country}?page=${page}`,
             { next: { revalidate: 300 } }
         );
@@ -162,7 +175,7 @@ export async function getNguoncByCountry(country: string, page: number = 1): Pro
 // Get movies by category from NguonC  
 export async function getNguoncByCategory(category: string, page: number = 1): Promise<NguoncResponse> {
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${getNguonCBaseUrl()}/films/the-loai/${category}?page=${page}`,
             { next: { revalidate: 300 } }
         );

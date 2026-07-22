@@ -36,6 +36,8 @@ export default function CountryFilter({
             {/* Dropdown Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
+                aria-expanded={isOpen}
+                aria-haspopup="listbox"
                 className="flex items-center gap-[10px] px-[16px] py-[10px] rounded-full bg-white/10 hover:bg-white/15 border border-white/10 transition-all"
             >
                 <FontAwesomeIcon icon={faGlobe} className="text-[#FFD875] text-[14px]" />

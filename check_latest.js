@@ -1,6 +1,6 @@
 const https = require('https');
 
-const url = 'https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=1';
+const url = 'https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=1';
 
 https.get(url, (resp) => {
     let data = '';

@@ -5,6 +5,8 @@ import { Tag, Tooltip } from "antd";
 import Image from "next/image";
 import { toast } from "react-toastify";
 
+const BLUR_DATA_URL = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUH/8QAIhAAAgEDBAMBAAAAAAAAAAAAAQIDAAQRBQYSITFBUWH/xAAVAQEBAAAAAAAAAAAAAAAAAAADBP/EABkRAAIDAQAAAAAAAAAAAAAAAAECAAMRIf/aAAwDAQACEQMRAD8AzHbW4bvbemVNO4Ril/O7ykO5HokDwB9NKvNy7gv7VrW51G4aNxhgGxkH7SlKlbky5yTf/9k=";
+
 export default function ModalCard({ Movie }: { Movie: IMovie }) {
   const notify = () => {
     toast.error("Bạn phải đăng nhập để sử dụng tính năng này", {
@@ -13,6 +15,41 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
       theme: "dark",
     });
   };
+
+  const renderCardContent = () => (
+    <>
+      <Image
+        className="w-full h-auto rounded-[10px] lazy-image"
+        width={289}
+        height={162}
+        src={Movie.image}
+        alt={Movie.title}
+        loading="lazy"
+        placeholder="blur"
+        blurDataURL={BLUR_DATA_URL}
+        unoptimized
+      />
+      <div>
+        <div className="absolute left-[30px] max-[650px]:bottom-[68px] bottom-[71px] ">
+          <span className="text-[11px] max-[650px]:p-[5px] max-[650px]:text-[10px] px-[8px] py-[8px] bg-[#5e6070]">
+            PĐ {Movie.episodes}
+          </span>
+          <span className="text-[11px] max-[650px]:p-[5px] max-[650px]:text-[10px] px-[8px] py-[8px] bg-[#2ca35d]">
+            TM {Movie.explanation}
+          </span>
+        </div>
+        <div className="px-[16px] py-[12px]">
+          <h3 className="text-[14px] hover:text-[#FFD875] cursor-pointer pb-[5px] whitespace-nowrap overflow-hidden text-ellipsis">
+            {Movie.title}
+          </h3>
+          <p className="text-[12px] cursor-pointer text-[#aaa] whitespace-nowrap overflow-hidden text-ellipsis">
+            {Movie.subTitle}
+          </p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="relative">
       <div className="max-[1280px]:hidden">
@@ -128,69 +165,13 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
           }
         >
           <div className="pr-[10px] cursor-pointer max-[1024px]:px-[5px] relative movie-card-premium neon-glow">
-            <Image
-              className="w-full h-auto rounded-[10px] lazy-image"
-              width={289}
-              height={162}
-              src={Movie.image}
-              alt={Movie.title}
-              loading="lazy"
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUH/8QAIhAAAgEDBAMBAAAAAAAAAAAAAQIDAAQRBQYSITFBUWH/xAAVAQEBAAAAAAAAAAAAAAAAAAADBP/EABkRAAIDAQAAAAAAAAAAAAAAAAECAAMRIf/aAAwDAQACEQMRAD8AzHbW4bvbemVNO4Ril/O7ykO5HokDwB9NKvNy7gv7VrW51G4aNxhgGxkH7SlKlbky5yTf/9k="
-              unoptimized
-            />
-            <div>
-              <div className="absolute left-[30px] max-[650px]:bottom-[68px] bottom-[71px] ">
-                <span className="text-[11px] max-[650px]:p-[5px] max-[650px]:text-[10px] px-[8px] py-[8px] bg-[#5e6070]">
-                  PĐ {Movie.episodes}
-                </span>
-                <span className="text-[11px] max-[650px]:p-[5px] max-[650px]:text-[10px] px-[8px] py-[8px] bg-[#2ca35d]">
-                  TM {Movie.explanation}
-                </span>
-              </div>
-              <div className="px-[16px] py-[12px]">
-                <h3 className="text-[14px] hover:text-[#FFD875] cursor-pointer pb-[5px] whitespace-nowrap overflow-hidden text-ellipsis">
-                  {Movie.title}
-                </h3>
-                <p className="text-[12px] cursor-pointer text-[#aaa] whitespace-nowrap overflow-hidden text-ellipsis">
-                  {Movie.subTitle}
-                </p>
-              </div>
-            </div>
+            {renderCardContent()}
           </div>
         </Tooltip>
       </div>
 
       <div className="pr-[10px] max-[1280px]:block hidden cursor-pointer max-[1024px]:px-[5px] relative movie-card-hover">
-        <Image
-          className="w-full h-auto rounded-[10px] lazy-image"
-          width={289}
-          height={162}
-          src={Movie.image}
-          alt={Movie.title}
-          loading="lazy"
-          placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUH/8QAIhAAAgEDBAMBAAAAAAAAAAAAAQIDAAQRBQYSITFBUWH/xAAVAQEBAAAAAAAAAAAAAAAAAAADBP/EABkRAAIDAQAAAAAAAAAAAAAAAAECAAMRIf/aAAwDAQACEQMRAD8AzHbW4bvbemVNO4Ril/O7ykO5HokDwB9NKvNy7gv7VrW51G4aNxhgGxkH7SlKlbky5yTf/9k="
-          unoptimized
-        />
-        <div>
-          <div className="absolute left-[30px] max-[650px]:bottom-[68px] bottom-[71px] ">
-            <span className="text-[11px] max-[650px]:p-[5px] max-[650px]:text-[10px] px-[8px] py-[8px] bg-[#5e6070]">
-              PĐ {Movie.episodes}
-            </span>
-            <span className="text-[11px] max-[650px]:p-[5px] max-[650px]:text-[10px] px-[8px] py-[8px] bg-[#2ca35d]">
-              TM {Movie.explanation}
-            </span>
-          </div>
-          <div className="px-[16px] py-[12px]">
-            <h3 className="text-[14px] hover:text-[#FFD875] cursor-pointer pb-[5px] whitespace-nowrap overflow-hidden text-ellipsis">
-              {Movie.title}
-            </h3>
-            <p className="text-[12px] cursor-pointer text-[#aaa] whitespace-nowrap overflow-hidden text-ellipsis">
-              {Movie.subTitle}
-            </p>
-          </div>
-        </div>
+        {renderCardContent()}
       </div>
     </div>
   );

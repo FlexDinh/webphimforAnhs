@@ -1,3 +1,29 @@
+// Centralized fallback domain constants
+export const OPHIM_FALLBACK_DOMAINS = [
+  'https://ophim1.com',
+  'https://phimapi.com',
+] as const;
+
+export const IMAGE_CDN_DOMAINS = {
+  phimimg: 'https://phimimg.com',
+  ophimLive: 'https://img.ophim.live',
+  cdnOphim: 'https://cdn.ophim.live',
+  tmdb: 'https://image.tmdb.org',
+  nguonc: 'https://phim.nguonc.com',
+  imgur: 'https://i.imgur.com',
+} as const;
+
+export const ALLOWED_IMAGE_HOSTS = [
+  'img.ophim.live',
+  'phimimg.com',
+  'image.tmdb.org',
+  'phim.nguonc.com',
+  'ophim1.com',
+  'phimapi.com',
+  'cdn.ophim.live',
+  'i.imgur.com',
+] as const;
+
 export interface ManagedApiConfig {
   ophimBaseUrl: string;
   ophimImageCdn: string;

@@ -13,6 +13,70 @@ export default function MovieTheater({ Movie }: { Movie: IMovieNew }) {
       theme: "dark",
     });
   };
+
+  const renderCardContent = () => (
+    <>
+      <div className="relative h-0 rounded-[10px] w-full overflow-hidden block max-[750px]:pb-[70%] pb-[45%]">
+        <Image
+          src={Movie.logoImage}
+          className="w-full h-auto object-cover lazy-image"
+          width={500}
+          height={281}
+          alt={Movie.title}
+          loading="lazy"
+        />
+        <span className="text-white bg-[#5e6070] absolute bottom-0 left-[120px] rounded-t-sm text-[11px] px-[8px] py-[7px]">
+          P.Đề
+        </span>
+      </div>
+      <div className="flex gap-[20px] max-[750px]:hidden relative bottom-[50px] left-[20px] z-100">
+        <Image
+          src={Movie.image}
+          className="rounded-[10px]"
+          width={80}
+          height={120}
+          alt={Movie.title}
+        />
+        <div>
+          <div className="pt-[70px]">
+            <h1 className="text-[13px] max-w-[200px] text-white hover:text-[#FFD875] whitespace-nowrap overflow-hidden text-ellipsis">
+              {Movie.title}
+            </h1>
+            <h1 className="text-[#aaa] py-[2px] max-w-[200px] text-[12px] whitespace-nowrap overflow-hidden text-ellipsis">
+              {Movie.subTitle}
+            </h1>
+            <div className="flex items-center">
+              <span className="text-[#aaa] font-bold text-[13px]">
+                {Movie.quality}
+              </span>
+              <ul
+                role="list"
+                className="flex max-[750px] list-disc marker:text-[#ffffff30]"
+              >
+                <li className="text-[#aaa] ml-[20px] text-[12px]">
+                  {Movie.year}
+                </li>
+                <li className="text-[#aaa] ml-[20px] text-[12px]">
+                  {Movie.quality}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="pt-[10px] flex items-center justify-center hidden max-[750px]:flex">
+        <div>
+          <h1 className="text-[13px] max-w-[200px] text-white hover:text-[#FFD875] whitespace-nowrap overflow-hidden text-ellipsis">
+            {Movie.title}
+          </h1>
+          <h1 className="text-[#aaa] py-[2px] max-w-[200px] text-[12px] whitespace-nowrap overflow-hidden text-ellipsis">
+            {Movie.subTitle}
+          </h1>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="relative">
       <div className="max-[1280px]:hidden">
@@ -127,126 +191,12 @@ export default function MovieTheater({ Movie }: { Movie: IMovieNew }) {
           }
         >
           <div className="relative cursor-pointer mr-[16px] movie-card-hover">
-            <div className="relative h-0 rounded-[10px] w-full overflow-hidden block max-[750px]:pb-[70%] pb-[45%]">
-              <Image
-                src={Movie.logoImage}
-                className="w-full h-auto object-cover lazy-image"
-                width={500}
-                height={281}
-                alt={Movie.title}
-                loading="lazy"
-              />
-              <span className="text-white bg-[#5e6070] absolute bottom-0 left-[120px] rounded-t-sm text-[11px] px-[8px] py-[7px]">
-                P.Đề
-              </span>
-            </div>
-            <div className="flex gap-[20px] max-[750px]:hidden relative bottom-[50px] left-[20px] z-100">
-              <Image
-                src={Movie.image}
-                className="rounded-[10px]"
-                width={80}
-                height={120}
-                alt={Movie.title}
-              />
-              <div>
-                <div className="pt-[70px]">
-                  <h1 className="text-[13px] max-w-[200px] text-white hover:text-[#FFD875] whitespace-nowrap overflow-hidden text-ellipsis">
-                    {Movie.title}
-                  </h1>
-                  <h1 className="text-[#aaa] py-[2px] max-w-[200px] text-[12px] whitespace-nowrap overflow-hidden text-ellipsis">
-                    {Movie.subTitle}
-                  </h1>
-                  <div className="flex items-center">
-                    <span className="text-[#aaa] font-bold text-[13px]">
-                      {Movie.quality}
-                    </span>
-                    <ul
-                      role="list"
-                      className="flex max-[750px] list-disc marker:text-[#ffffff30]"
-                    >
-                      <li className="text-[#aaa] ml-[20px] text-[12px]">
-                        {Movie.year}
-                      </li>
-                      <li className="text-[#aaa] ml-[20px] text-[12px]">
-                        {Movie.quality}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="pt-[10px] flex items-center justify-center hidden max-[750px]:flex">
-              <div>
-                <h1 className="text-[13px] max-w-[200px] text-white hover:text-[#FFD875] whitespace-nowrap overflow-hidden text-ellipsis">
-                  {Movie.title}
-                </h1>
-                <h1 className="text-[#aaa] py-[2px] max-w-[200px] text-[12px] whitespace-nowrap overflow-hidden text-ellipsis">
-                  {Movie.subTitle}
-                </h1>
-              </div>
-            </div>
+            {renderCardContent()}
           </div>
         </Tooltip>
       </div>
       <div className="relative mr-[16px] max-[1280px]:block hidden cursor-pointer max-[1024px]:px-[5px] movie-card-hover">
-        <div className="relative h-0 rounded-[10px] w-full overflow-hidden block max-[750px]:pb-[70%] pb-[45%]">
-          <Image
-            src={Movie.logoImage}
-            className="w-full h-auto object-cover lazy-image"
-            width={500}
-            height={281}
-            alt={Movie.title}
-            loading="lazy"
-          />
-          <span className="text-white bg-[#5e6070] absolute bottom-0 left-[120px] rounded-t-sm text-[11px] px-[8px] py-[7px]">
-            P.Đề
-          </span>
-        </div>
-        <div className="flex gap-[20px] max-[750px]:hidden relative bottom-[50px] left-[20px] z-100">
-          <Image
-            src={Movie.image}
-            className="rounded-[10px]"
-            width={80}
-            height={120}
-            alt={Movie.title}
-          />
-          <div>
-            <div className="pt-[70px]">
-              <h1 className="text-[13px] max-w-[200px] text-white hover:text-[#FFD875] whitespace-nowrap overflow-hidden text-ellipsis">
-                {Movie.title}
-              </h1>
-              <h1 className="text-[#aaa] py-[2px] max-w-[200px] text-[12px] whitespace-nowrap overflow-hidden text-ellipsis">
-                {Movie.subTitle}
-              </h1>
-              <div className="flex items-center">
-                <span className="text-[#aaa] font-bold text-[13px]">
-                  {Movie.quality}
-                </span>
-                <ul
-                  role="list"
-                  className="flex max-[750px] list-disc marker:text-[#ffffff30]"
-                >
-                  <li className="text-[#aaa] ml-[20px] text-[12px]">
-                    {Movie.year}
-                  </li>
-                  <li className="text-[#aaa] ml-[20px] text-[12px]">
-                    {Movie.quality}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="pt-[10px] flex items-center justify-center hidden max-[750px]:flex">
-          <div>
-            <h1 className="text-[13px] max-w-[200px] text-white hover:text-[#FFD875] whitespace-nowrap overflow-hidden text-ellipsis">
-              {Movie.title}
-            </h1>
-            <h1 className="text-[#aaa] py-[2px] max-w-[200px] text-[12px] whitespace-nowrap overflow-hidden text-ellipsis">
-              {Movie.subTitle}
-            </h1>
-          </div>
-        </div>
+        {renderCardContent()}
       </div>
     </div>
   );

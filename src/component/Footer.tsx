@@ -32,7 +32,7 @@ export default function Footer() {
           <div className="animate-fade-in">
             <div className="flex items-center gap-[10px] mb-[16px]">
               <div className="w-[44px] h-[44px] rounded-xl bg-gradient-to-br from-[#FFD875] to-[#f0a500] flex items-center justify-center glow-gold">
-                <span className="text-white text-[20px]">🎬</span>
+                <span className="text-white text-[20px]" role="img" aria-label="Clapperboard">🎬</span>
               </div>
               <span className="text-[22px] font-bold text-white">
                 Ro<span className="text-[#FFD700] glow-text">Phim</span>
@@ -120,7 +120,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/5 mt-[40px] pt-[24px] flex flex-col md:flex-row justify-between items-center gap-[16px]">
           <p className="text-[#666] text-[13px]">
-            © 2025 RoPhim. Tất cả quyền được bảo lưu.
+            © {new Date().getFullYear()} RoPhim. Tất cả quyền được bảo lưu.
           </p>
           <p className="text-[#666] text-[13px] flex items-center gap-[6px]">
             Made with <FontAwesomeIcon icon={faHeart} className="text-[#e74c3c] animate-pulse" /> in Vietnam

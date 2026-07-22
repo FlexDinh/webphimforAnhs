@@ -64,6 +64,14 @@ export default function ContinueWatching() {
                     <div
                         key={`${item.movieSlug}-${item.episodeSlug || ""}`}
                         onClick={() => handleClick(item)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleClick(item);
+                            }
+                        }}
                         className="cursor-pointer group relative"
                     >
                         <div className="relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e] shadow-lg">

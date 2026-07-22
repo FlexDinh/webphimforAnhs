@@ -4,6 +4,26 @@
   --background: #ffffff;
   --foreground: #171717;
   --accent-color: #FFD700;
+
+  /* Z-Index Layer System */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-header: 300;
+  --z-overlay: 500;
+  --z-modal: 600;
+  --z-toast: 900;
+  --z-tooltip: 1000;
+
+  /* Color tokens */
+  --color-bg-primary: #0B0D13;
+  --color-bg-secondary: #0F111A;
+  --color-bg-card: #1E2545;
+  --color-bg-surface: #171C29;
+  --color-accent: #FFD875;
+  --color-accent-hover: #FFE4A0;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: rgba(255, 255, 255, 0.6);
 }
 
 @theme inline {
@@ -896,7 +916,7 @@ a:focus-visible {
   align-items: center;
   gap: 4px;
   padding: 10px 16px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
   transition: all 0.3s ease;
   min-height: 56px;
 }
@@ -1131,13 +1151,15 @@ a:focus-visible {
   button:focus-visible,
   a:focus-visible {
     outline: 3px solid #FFD875;
-    outline-offset: 4px;
+    outline-offset: 2px;
   }
 
   .tv-movie-grid button:focus-visible,
   .tv-row-card:focus-visible {
     transform: translateY(-8px) scale(1.025);
     box-shadow: 0 0 0 3px rgba(255, 216, 117, 0.45);
+    outline: 3px solid #FFD875;
+    outline-offset: 2px;
   }
 }
 
@@ -1337,7 +1359,7 @@ body.theater-active .tv-player-frame {
   left: 50%;
   transform: translateX(-50%);
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.6);
   opacity: 0;
   animation: swipeHintFade 3s ease-in-out infinite;
 }
@@ -1555,7 +1577,7 @@ body.theater-active .settings-panel-btn {
   align-items: center;
   gap: 4px;
   padding: 8px 16px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
   transition: all 0.2s ease;
   cursor: pointer;
   background: none;

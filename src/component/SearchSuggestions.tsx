@@ -146,7 +146,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
     return (
         <div
             ref={containerRef}
-            className="search-suggestions absolute top-full left-0 right-0 mt-[8px] bg-[#1E2030] rounded-[16px] border border-[#ffffff15] shadow-2xl overflow-hidden z-[9999] animate-fade-in"
+            className="search-suggestions absolute top-full left-0 right-0 mt-[8px] bg-[#1E2030] rounded-[16px] border border-[#ffffff15] shadow-2xl overflow-hidden z-[1000] animate-fade-in"
             style={{ touchAction: 'manipulation' }}
         >
             <div className="p-[8px] max-h-[70vh] overflow-y-auto">

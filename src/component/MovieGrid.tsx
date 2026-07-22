@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getImageUrl, OPhimMovie, OPhimResponse } from "@/lib/ophimApi";
@@ -20,13 +20,16 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
 
+  const fetchFnRef = useRef(fetchFunction);
+  fetchFnRef.current = fetchFunction;
+
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         setLoading(true);
         window.scrollTo({ top: 0, behavior: "smooth" });
 
-        const data = await fetchFunction(page);
+        const data = await fetchFnRef.current(page);
         setMovies(data.items);
         setTotalPages(data.pagination.totalPages);
       } catch (error) {
@@ -37,7 +40,7 @@ export default function MovieGrid({ fetchFunction }: MovieGridProps) {
     };
 
     fetchMovies();
-  }, [page, fetchFunction]);
+  }, [page]);
 
   if (loading) {
     return (

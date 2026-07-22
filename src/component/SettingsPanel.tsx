@@ -29,8 +29,9 @@ export default function SettingsPanel() {
 
             {/* Settings Modal */}
             {isOpen && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000] flex items-center justify-center p-[16px]">
-                    <div className="bg-[#1a1c2e] rounded-[16px] w-full max-w-[420px] max-h-[80vh] overflow-y-auto">
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-[16px]">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm z-[999]" onClick={() => setIsOpen(false)} />
+                    <div className="bg-[#1a1c2e] rounded-[16px] w-full max-w-[420px] max-h-[80vh] overflow-y-auto relative z-[1000]">
                         {/* Header */}
                         <div className="flex items-center justify-between p-[20px] border-b border-white/10">
                             <h2 className="text-white text-[18px] font-semibold flex items-center gap-[10px]">

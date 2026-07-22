@@ -95,8 +95,20 @@ export interface VideoSource {
   isWorking?: boolean;
 }
 
-export async function checkSourceAvailability(_url: string): Promise<boolean> {
-  return true;
+export async function checkSourceAvailability(url: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const response = await fetch(url, {
+      method: 'HEAD',
+      mode: 'no-cors',
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response.type === 'opaque' || response.ok;
+  } catch {
+    return false;
+  }
 }
 
 export function getTmdbMovieSources(tmdbId: string): VideoSource[] {

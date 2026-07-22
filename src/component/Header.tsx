@@ -187,6 +187,7 @@ export default function Header() {
                   }}
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="Tìm phim... (nhấn /)"
+                  aria-label="Tìm kiếm phim"
                   className="w-full rounded-full border border-white/10 bg-white/10 py-[10px] pl-[40px] pr-[16px] text-[14px] text-white placeholder-[#666] transition-all focus:border-[#FFD875]/50 focus:bg-white/15 focus:outline-none"
                 />
               </div>
@@ -222,6 +223,7 @@ export default function Header() {
                   setShowSuggestions(true);
                 }}
                 placeholder="Tìm phim, diễn viên..."
+                aria-label="Tìm kiếm phim"
                 className="w-full rounded-full border border-white/10 bg-white/10 py-[14px] pl-[44px] pr-[16px] text-[16px] text-white placeholder-[#666] focus:outline-none"
                 autoFocus
               />

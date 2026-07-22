@@ -61,13 +61,21 @@ export default function RelatedMovies({ currentMovie, className = "" }: RelatedM
     return (
         <div className={`${className}`}>
             <h2 className="text-white text-[18px] font-bold mb-[16px] flex items-center gap-[8px]">
-                🎬 Phim liên quan
+                <span role="img" aria-label="Phim">🎬</span> Phim liên quan
             </h2>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-[12px]">
                 {movies.map((movie) => (
                     <div
                         key={movie._id}
                         onClick={() => handleMovieClick(movie)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleMovieClick(movie);
+                            }
+                        }}
                         className="cursor-pointer group"
                     >
                         <div className="relative aspect-[2/3] rounded-[10px] overflow-hidden bg-[#2a2d3e]">
@@ -100,7 +108,7 @@ export default function RelatedMovies({ currentMovie, className = "" }: RelatedM
                                 <span className="text-[#888] text-[10px]">{movie.year}</span>
                                 {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
                                     <span className="text-[#FFD875] text-[10px]">
-                                        ⭐ {movie.tmdb.vote_average.toFixed(1)}
+                                        <span role="img" aria-label="Sao">⭐</span> {movie.tmdb.vote_average.toFixed(1)}
                                     </span>
                                 )}
                             </div>

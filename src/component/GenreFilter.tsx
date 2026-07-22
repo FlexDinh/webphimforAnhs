@@ -80,6 +80,8 @@ export default function GenreFilter({
                 {genres.length > displayLimit && (
                     <button
                         onClick={() => setExpanded(!expanded)}
+                        aria-expanded={expanded}
+                        aria-haspopup="listbox"
                         className="px-[14px] py-[8px] rounded-full text-[13px] bg-white/5 text-[#888] hover:text-white hover:bg-white/10 transition-colors flex items-center gap-[6px]"
                     >
                         {expanded ? (
