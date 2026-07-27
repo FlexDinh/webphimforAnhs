@@ -4,6 +4,7 @@ import { faBookmark, faFilm, faHome, faSearch, faTv } from "@fortawesome/free-so
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import { getRecentlyWatched } from "@/lib/movieUtils";
 
 const navItems = [
   { icon: faHome, label: "Trang chủ", path: "/" },
@@ -17,7 +18,12 @@ export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [visible, setVisible] = useState(true);
+  const [badgeCount, setBadgeCount] = useState(0);
   const lastScrollYRef = useRef(0);
+
+  useEffect(() => {
+    setBadgeCount(getRecentlyWatched().length);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,9 +49,16 @@ export default function BottomNav() {
           <button
             key={item.path}
             onClick={() => router.push(item.path)}
-            className={`bottom-nav-item ${pathname === item.path ? "active" : ""}`}
+            className={`bottom-nav-item relative ${pathname === item.path ? "active" : ""}`}
           >
-            <FontAwesomeIcon icon={item.icon} className="bottom-nav-icon" />
+            <div className="relative">
+              <FontAwesomeIcon icon={item.icon} className="bottom-nav-icon" />
+              {item.label === "Trang chủ" && badgeCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                  {badgeCount}
+                </span>
+              )}
+            </div>
             <span className="bottom-nav-label">{item.label}</span>
           </button>
         ))}

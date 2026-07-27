@@ -71,6 +71,10 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://phimapi.com" />
         <link rel="dns-prefetch" href="https://img.ophim.live" />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
+        <link rel="dns-prefetch" href="https://phimimg.com" />
+        <link rel="dns-prefetch" href="https://ophim1.com" />
+        <link rel="dns-prefetch" href="https://phim.nguonc.com" />
+        
         {/* Video streaming servers - DNS prefetch */}
         <link rel="dns-prefetch" href="https://vidsrc.xyz" />
         <link rel="dns-prefetch" href="https://vidsrc.me" />
@@ -79,13 +83,12 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://vidlink.pro" />
         <link rel="dns-prefetch" href="https://autoembed.co" />
         <link rel="dns-prefetch" href="https://moviesapi.club" />
-        <link rel="dns-prefetch" href="https://ophim1.com" />
-        <link rel="dns-prefetch" href="https://phim.nguonc.com" />
 
 
         {/* Preconnect for fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
         {/* Apple Touch Icon */}
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />

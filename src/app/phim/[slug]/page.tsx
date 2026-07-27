@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
+import DOMPurify from "isomorphic-dompurify";
 import { useParams, useRouter } from "next/navigation";
 import { getImageUrl } from "@/lib/ophimApi";
 import { getProxiedImageUrl } from "@/lib/imageProxy";
@@ -38,6 +39,7 @@ export default function MoviePage() {
     const [theaterMode, setTheaterMode] = useState(false);
     const [autoSelectNotice, setAutoSelectNotice] = useState<string | null>(null);
     const { preferences } = usePreferences();
+    const [episodeView, setEpisodeView] = useState<'list'|'grid'>('list');
 
     // Player loading state
     const [playerLoading, setPlayerLoading] = useState(false);
@@ -131,6 +133,20 @@ export default function MoviePage() {
                 case 'p':
                     // Previous episode
                     handlePrevEpisode();
+                    break;
+                case 'f':
+                    const iframe = document.querySelector('iframe');
+                    if (iframe) {
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen().catch(err => console.log(err));
+                        } else {
+                            iframe.requestFullscreen().catch(err => console.log(err));
+                        }
+                    }
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    // Optional: could send postMessage to iframe if API supported
                     break;
             }
         };
@@ -371,6 +387,9 @@ export default function MoviePage() {
                         <FontAwesomeIcon icon={theaterMode ? faSun : faMoon} className="text-[10px]" />
                         {theaterMode ? 'Bật đèn' : 'Tắt đèn'}
                     </button>
+                    <div className="ml-3 text-white/50 text-[11px] bg-black/50 px-2 py-1 rounded-md hidden sm:block">
+                        Phím tắt (?)
+                    </div>
 
                     {/* Right: Episode Nav + Auto-play toggle */}
                     <div className="flex items-center gap-[6px]">
@@ -659,6 +678,10 @@ export default function MoviePage() {
                             <span className="text-[#FFD875]">{String(movieData.episode_current || "")}</span>
                             {movieData.episode_total && ` / ${String(movieData.episode_total)}`}
                         </div>
+                        <div className="text-white/70 text-[14px] mb-[12px]">
+                            <span className="text-white">Nguồn phát: </span>
+                            <span className="text-[#3B82F6] font-semibold">{episodes[selectedServer]?.server_name?.toLowerCase().includes("thuyết minh") ? "NguonC" : episodes[selectedServer]?.server_name?.includes("KK") ? "KKPhim" : "OPhim"}</span>
+                        </div>
 
                         {movieData.category?.length > 0 && (
                             <div className="flex flex-wrap gap-[8px] mb-[16px]">
@@ -675,7 +698,7 @@ export default function MoviePage() {
 
                         {movieData.content && (
                             <div className="text-white/60 text-[14px] leading-relaxed max-h-[100px] overflow-y-auto">
-                                <div dangerouslySetInnerHTML={{ __html: String(movieData.content || "") }} />
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(String(movieData.content || "")) }} />
                             </div>
                         )}
                     </div>
@@ -801,8 +824,13 @@ export default function MoviePage() {
 
                         {/* Episode Buttons */}
                         <div>
-                            <p className="text-white/50 text-[12px] uppercase tracking-wider mb-[10px]">Chọn Tập</p>
-                            <div className="flex flex-wrap gap-[8px] max-h-[300px] overflow-y-auto">
+                            <div className="flex items-center justify-between mb-[10px]">
+                                <p className="text-white/50 text-[12px] uppercase tracking-wider">Chọn Tập</p>
+                                <button onClick={() => setEpisodeView(prev => prev === 'list' ? 'grid' : 'list')} className="text-[#FFD875] text-[12px] bg-[#FFD875]/10 px-2 py-1 rounded">
+                                    {episodeView === 'list' ? 'Chế độ lưới' : 'Chế độ danh sách'}
+                                </button>
+                            </div>
+                            <div className={`flex flex-wrap gap-[8px] max-h-[300px] overflow-y-auto ${episodeView === 'grid' ? 'grid grid-cols-6 gap-2' : ''}`}>
                                 {episodes[selectedServer]?.server_data.map((ep, idx) => (
                                     <button
                                         key={idx}
@@ -813,12 +841,12 @@ export default function MoviePage() {
                                             setHdSource(null);
                                             window.scrollTo({ top: 0, behavior: "smooth" });
                                         }}
-                                        className={`min-w-[60px] px-[16px] py-[10px] rounded-[10px] text-[13px] transition-all ${selectedEpisode?.slug === ep.slug
+                                        className={`${episodeView === 'grid' ? 'w-full text-center p-2' : 'min-w-[60px] px-[16px] py-[10px]'} rounded-[10px] text-[13px] transition-all ${selectedEpisode?.slug === ep.slug
                                             ? "bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black font-semibold shadow-lg shadow-[#FFD875]/20"
                                             : "bg-white/5 text-white hover:bg-white/15 border border-white/10"
                                             }`}
                                     >
-                                        {ep.name}
+                                        {episodeView === 'grid' ? (ep.name.match(/\d+/) ? ep.name.match(/\d+/)?.[0] : ep.name) : ep.name}
                                     </button>
                                 ))}
                             </div>

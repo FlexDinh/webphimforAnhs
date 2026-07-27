@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { searchMovies, getImageUrl, OPhimMovie } from "@/lib/ophimApi";
+import { searchKkPhimMovies } from "@/lib/kkphimApi";
 import { getProxiedImageUrl } from "@/lib/imageProxy";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faTimes, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -69,9 +70,24 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
             if (cancelled) return;
             setIsLoading(true);
             try {
-                const results = await searchMovies(query, 6);
+                const [ophimRes, kkphimRes] = await Promise.allSettled([
+                    searchMovies(query, 6),
+                    searchKkPhimMovies(query, 6)
+                ]);
+                
                 if (!cancelled) {
-                    setSuggestions(results);
+                    let results: any[] = [];
+                    if (ophimRes.status === 'fulfilled') {
+                        results = results.concat(ophimRes.value.map(r => ({...r, _source: 'ophim'})));
+                    }
+                    if (kkphimRes.status === 'fulfilled') {
+                        results = results.concat(kkphimRes.value.map(r => ({...r, _source: 'kkphim'})));
+                    }
+                    
+                    // Deduplicate by slug
+                    const uniqueResults = results.filter((v, i, a) => a.findIndex(t => (t.slug === v.slug)) === i);
+                    
+                    setSuggestions(uniqueResults.slice(0, 6));
                 }
             } catch (error) {
                 if (!cancelled) {
@@ -239,9 +255,16 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                                         ★ {movie.tmdb.vote_average.toFixed(1)}
                                     </span>
                                 )}
-                                <span className="text-[11px] text-[#888]">
-                                    {String(movie.year || "")}
-                                </span>
+                                {movie.year && (
+                                    <span className="text-[11px] text-[#888]">
+                                        {String(movie.year)}
+                                    </span>
+                                )}
+                                {(movie as any)._source && (
+                                    <span className={`source-badge source-badge-${(movie as any)._source} text-[10px] px-1 py-0.5 rounded font-bold uppercase`}>
+                                        {(movie as any)._source}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>

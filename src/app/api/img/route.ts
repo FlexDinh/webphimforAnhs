@@ -20,6 +20,18 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Missing url param", { status: 400 });
   }
 
+  if (imageUrl.length > 1000) {
+    return new NextResponse("URL too long", { status: 400 });
+  }
+  
+  // Reject large payloads or anything that isn't a GET
+  if (request.method !== 'GET' && request.headers.get("content-length")) {
+    const contentLength = parseInt(request.headers.get("content-length") || "0", 10);
+    if (contentLength > 1024) {
+      return new NextResponse("Payload Too Large", { status: 413 });
+    }
+  }
+
   // Validate URL
   let parsedUrl: URL;
   try {

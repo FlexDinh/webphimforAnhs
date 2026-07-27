@@ -16,6 +16,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { getImageUrl, OPhimMovie, searchMovies } from "@/lib/ophimApi";
+import { searchKkPhimMovies } from "@/lib/kkphimApi";
 import { getProxiedImageUrl } from "@/lib/imageProxy";
 import { extractAllGenres, extractAllYears, filterMoviesByGenres, filterMoviesByRating, filterMoviesByYear } from "@/lib/movieUtils";
 
@@ -91,6 +92,7 @@ function SearchContent() {
   const [sortBy, setSortBy] = useState<SortOption>("relevance");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [didYouMean, setDidYouMean] = useState<string[]>([]);
+  const [sourceFilter, setSourceFilter] = useState<"all" | "ophim" | "kkphim">("all");
 
   useEffect(() => {
     const normalizedQuery = query.trim();
@@ -104,9 +106,24 @@ function SearchContent() {
     const runSearch = async () => {
       setLoading(true);
       try {
-        const movies = await searchMovies(normalizedQuery, 48);
-        setResults(movies);
-        setDidYouMean(movies.length < 3 ? getSuggestions(normalizedQuery) : []);
+        const [ophimRes, kkphimRes] = await Promise.allSettled([
+          searchMovies(normalizedQuery, 48),
+          searchKkPhimMovies(normalizedQuery, 48)
+        ]);
+        
+        let merged: (OPhimMovie & { _source?: 'ophim' | 'kkphim' })[] = [];
+        if (ophimRes.status === 'fulfilled') {
+          merged = [...merged, ...ophimRes.value.map(m => ({ ...m, _source: 'ophim' as const }))];
+        }
+        if (kkphimRes.status === 'fulfilled') {
+          merged = [...merged, ...kkphimRes.value.map(m => ({ ...m, _source: 'kkphim' as const }))];
+        }
+        
+        // Remove duplicates by slug
+        const unique = Array.from(new Map(merged.map(item => [item.slug, item])).values());
+        
+        setResults(unique);
+        setDidYouMean(unique.length < 3 ? getSuggestions(normalizedQuery) : []);
       } catch (error) {
         console.error("Search error:", error);
       } finally {
@@ -120,7 +137,10 @@ function SearchContent() {
   const availableYears = useMemo(() => extractAllYears(results), [results]);
 
   const filteredResults = useMemo(() => {
-    let filtered = [...results];
+    let filtered = [...results] as (OPhimMovie & { _source?: 'ophim' | 'kkphim' })[];
+    if (sourceFilter !== "all") {
+      filtered = filtered.filter((m) => m._source === sourceFilter);
+    }
     if (selectedGenres.length > 0) filtered = filterMoviesByGenres(filtered, selectedGenres);
     if (selectedYear) filtered = filterMoviesByYear(filtered, selectedYear);
     if (minRating > 0) filtered = filterMoviesByRating(filtered, minRating);
@@ -180,6 +200,12 @@ function SearchContent() {
 
         {didYouMean.length > 0 && <div className="mb-[20px] text-center"><span className="text-[14px] text-white/50">Bạn có ý tìm: </span>{didYouMean.map((suggestion, index) => <button key={index} onClick={() => router.push(`/search?query=${encodeURIComponent(suggestion)}`)} className="mx-[4px] text-[14px] font-medium text-[#FFD875] hover:underline">&quot;{suggestion}&quot;</button>)}</div>}
 
+        <div className="mb-[24px] flex justify-center gap-3">
+          <button onClick={() => setSourceFilter("all")} className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-colors ${sourceFilter === "all" ? "bg-[#FFD875] text-black" : "bg-white/10 text-white hover:bg-white/20"}`}>Tất cả</button>
+          <button onClick={() => setSourceFilter("ophim")} className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-colors ${sourceFilter === "ophim" ? "bg-[#FFD875] text-black" : "bg-white/10 text-white hover:bg-white/20"}`}>OPhim</button>
+          <button onClick={() => setSourceFilter("kkphim")} className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-colors ${sourceFilter === "kkphim" ? "bg-[#FFD875] text-black" : "bg-white/10 text-white hover:bg-white/20"}`}>KKPhim</button>
+        </div>
+
         {query && <div className="mb-[20px] flex flex-wrap items-center justify-between gap-[12px]">
           <div>
             <h2 className="text-[22px] font-bold text-white">Kết quả: <span className="text-[#FFD875]">&quot;{query}&quot;</span></h2>
@@ -232,14 +258,15 @@ function SearchContent() {
         </div>}
 
         {loading ? <div className="flex justify-center py-[60px]"><FontAwesomeIcon icon={faSpinner} className="animate-spin text-[40px] text-[#FFD875]" /></div> : filteredResults.length > 0 ? <div className="tv-movie-grid grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {filteredResults.map((movie) => <button key={movie._id} onClick={() => router.push(`/phim/${movie.slug}`)} className="movie-card-premium group cursor-pointer text-left">
+          {filteredResults.map((movie: any) => <button key={movie._id || movie.slug} onClick={() => router.push(`/phim/${movie.slug}`)} className="movie-card-premium group cursor-pointer text-left relative">
             <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
               <Image src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))} alt={movie.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw" unoptimized />
               <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100"><div className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-[#FFD875]"><FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[14px] text-black" /></div></div>
               {movie.quality && <span className="absolute left-[8px] top-[8px] rounded bg-[#FFD875] px-[6px] py-[2px] text-[10px] font-semibold text-black">{movie.quality}</span>}
               {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && <span className="absolute right-[8px] top-[8px] flex items-center gap-[2px] rounded bg-black/70 px-[5px] py-[2px] text-[9px] font-bold text-[#FFD875]">★ {movie.tmdb.vote_average.toFixed(1)}</span>}
+              {movie._source && <span className={`absolute bottom-[8px] left-[8px] rounded px-[6px] py-[2px] text-[10px] font-bold text-white ${movie._source === 'ophim' ? 'bg-blue-600' : 'bg-red-600'}`}>{movie._source === 'ophim' ? 'OPhim' : 'KKPhim'}</span>}
             </div>
-            <div className="mt-[10px]"><h3 className="truncate text-[13px] font-medium text-white transition-colors group-hover:text-[#FFD875]">{String(movie.name || "")}</h3><p className="truncate text-[11px] text-white/40">{String(movie.origin_name || "")}</p><div className="mt-[4px] flex items-center gap-[6px]"><span className="text-[11px] text-[#888]">{String(movie.year || "")}</span>{movie.category && movie.category.length > 0 && <span className="truncate text-[10px] text-white/30">• {movie.category.slice(0, 2).map((item) => item.name).join(", ")}</span>}</div></div>
+            <div className="mt-[10px]"><h3 className="truncate text-[13px] font-medium text-white transition-colors group-hover:text-[#FFD875]">{String(movie.name || "")}</h3><p className="truncate text-[11px] text-white/40">{String(movie.origin_name || "")}</p><div className="mt-[4px] flex items-center gap-[6px]"><span className="text-[11px] text-[#888]">{String(movie.year || "")}</span>{movie.category && movie.category.length > 0 && <span className="truncate text-[10px] text-white/30">• {movie.category.slice(0, 2).map((item: any) => item.name).join(", ")}</span>}</div></div>
           </button>)}
         </div> : query ? <div className="py-[60px] text-center"><p className="text-[18px] text-white/60">Không tìm thấy kết quả nào</p><p className="mt-[8px] text-[14px] text-[#888]">Thử từ khóa khác hoặc nới bộ lọc để mở rộng danh sách.</p>{activeFilterCount > 0 && <button onClick={clearAllFilters} className="mt-[16px] rounded-full bg-[#FFD875]/20 px-[20px] py-[10px] text-[13px] text-[#FFD875] transition-colors hover:bg-[#FFD875]/30">Xóa bộ lọc</button>}</div> : <div className="py-[60px] text-center"><FontAwesomeIcon icon={faSearch} className="mb-[16px] text-[60px] text-white/20" /><p className="text-white/40">Nhập từ khóa để tìm phim</p></div>}
       </div>

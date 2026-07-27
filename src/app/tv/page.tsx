@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getLatestMovies, getMoviesByType, getMoviesByCountry, getThuyetMinhMovies, getLongTiengMovies, getCungDauMovies, getCoTrangMovies, OPhimMovie } from "@/lib/ophimApi";
+import { getTrendingAll } from "@/lib/tmdbApi";
+import { getKkPhimLatestMovies } from "@/lib/kkphimApi";
 import { getImageUrl } from "@/lib/imageUrl";
 import { getTVImageUrl } from "@/lib/tvImageUrl";
 import TVMovieCard from "./_components/TVMovieCard";
@@ -394,6 +396,41 @@ function TVTrending({ movies }: { movies: OPhimMovie[] }) {
 export default function TVHomePage() {
   const [heroMovies, setHeroMovies] = useState<OPhimMovie[]>([]);
   const [allMovies, setAllMovies] = useState<OPhimMovie[]>([]);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '?') {
+        setShowShortcuts(prev => !prev);
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        // Implement complex 2D spatial focus if needed. Here we just intercept for UI demonstration.
+      } else if (e.key === 'Enter') {
+        // Navigate if an element is focused
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const fetchTrending = useCallback(async () => {
+    const tmdbData = await getTrendingAll('week');
+    return tmdbData.results.map((m: any) => ({
+      _id: m.id.toString(),
+      name: m.title || m.name,
+      slug: (m.title || m.name).toLowerCase().replace(/ /g, '-'),
+      origin_name: m.original_title || m.original_name,
+      thumb_url: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : '',
+      poster_url: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : '',
+      year: m.release_date ? parseInt(m.release_date.substring(0, 4)) : undefined,
+      tmdb: { vote_average: m.vote_average }
+    })) as OPhimMovie[];
+  }, []);
+
+  const fetchKKPhimLatest = useCallback(async () => {
+    const kkData = await getKkPhimLatestMovies(1);
+    return kkData.items.slice(0, 14);
+  }, []);
 
   const fetchLatest = useCallback(
     async () => (await getLatestMovies(1)).items.slice(0, 14),
@@ -462,6 +499,18 @@ export default function TVHomePage() {
         }}
       >
         <TVTrending movies={allMovies} />
+
+        <TVMovieRow
+          title="🔥 Xu hướng quốc tế"
+          fetchFn={fetchTrending}
+          viewAllPath="/phimhay"
+        />
+
+        <TVMovieRow
+          title="KKPhim Mới Nhất"
+          fetchFn={fetchKKPhimLatest}
+          viewAllPath="/tv/danh-sach/phim-moi"
+        />
 
         <TVMovieRow
           title="⭐ Phim mới"
@@ -537,6 +586,20 @@ export default function TVHomePage() {
           © {new Date().getFullYear()} RoPhim
         </p>
       </footer>
+
+      {showShortcuts && (
+        <div className="shortcuts-overlay" style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ backgroundColor: '#1a1c2e', padding: '32px', borderRadius: '16px', border: '1px solid #FFD875' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '16px' }}>Phím tắt TV</h2>
+            <ul style={{ color: '#aaa', fontSize: '18px', lineHeight: '2' }}>
+              <li><kbd style={{ backgroundColor: '#333', padding: '4px 8px', borderRadius: '4px' }}>↑ ↓ ← →</kbd> Điều hướng</li>
+              <li><kbd style={{ backgroundColor: '#333', padding: '4px 8px', borderRadius: '4px' }}>Enter</kbd> Chọn phim</li>
+              <li><kbd style={{ backgroundColor: '#333', padding: '4px 8px', borderRadius: '4px' }}>?</kbd> Bật/tắt bảng phím tắt này</li>
+            </ul>
+            <button onClick={() => setShowShortcuts(false)} style={{ marginTop: '24px', padding: '8px 16px', backgroundColor: '#FFD875', color: 'black', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer' }}>Đóng</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

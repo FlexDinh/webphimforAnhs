@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import DOMPurify from "isomorphic-dompurify";
 import { useParams, useRouter } from "next/navigation";
 import { getImageUrl } from "@/lib/ophimApi";
 import { getTVImageUrl } from "@/lib/tvImageUrl";
@@ -124,7 +125,7 @@ export default function TVMoviePage() {
                 {m.category.map((c) => <span key={c.id} style={styles.tag}>{c.name}</span>)}
               </div>
             )}
-            {m.content && <div style={{ color: COLORS.textMuted, fontSize: FONT.sm, lineHeight: 1.7, maxHeight: 120, overflow: "auto" }} dangerouslySetInnerHTML={{ __html: m.content }} />}
+            {m.content && <div style={{ color: COLORS.textMuted, fontSize: FONT.sm, lineHeight: 1.7, maxHeight: 120, overflow: "auto" }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(m.content) }} />}
           </div>
         </div>
 

@@ -125,3 +125,5 @@ export function getKkPhimBaseUrl(): string {
 export function getNguonCBaseUrl(): string {
   return readManagedApiConfig().nguoncBaseUrl;
 }
+
+export const tmdbProxyPath = '/api/tmdb';

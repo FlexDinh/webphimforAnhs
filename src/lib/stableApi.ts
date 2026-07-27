@@ -295,21 +295,16 @@ export async function getUnifiedMovieDetail(slug: string): Promise<UnifiedRespon
     }
 
     const task = (async (): Promise<UnifiedResponse> => {
-        try {
-            const primary = await fetchFromOPhim(slug);
-            setCachedDetail(slug, primary);
-            return primary;
-        } catch {
-            // Continue to backup providers.
-        }
+        const ophimPromise = fetchFromOPhim(slug);
+        const fallbackPromise = (async () => {
+            const res = await Promise.any([fetchFromNguonC(slug), fetchFromKkPhim(slug)]);
+            return new Promise<UnifiedResponse>(resolve => setTimeout(() => resolve(res), 2000));
+        })();
 
         try {
-            const fallback = await Promise.any([
-                fetchFromNguonC(slug),
-                fetchFromKkPhim(slug),
-            ]);
-            setCachedDetail(slug, fallback);
-            return fallback;
+            const result = await Promise.any([ophimPromise, fallbackPromise]);
+            setCachedDetail(slug, result);
+            return result;
         } catch (error) {
             const stale = detailCache.get(cacheKey)?.data;
             if (stale) {

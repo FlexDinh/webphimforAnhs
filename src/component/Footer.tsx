@@ -21,6 +21,13 @@ export default function Footer() {
     { name: "Âu Mỹ", path: "/quoc-gia/au-my" },
   ];
 
+  const sources = ["OPhim", "KKPhim", "NguonC", "TMDB"];
+  const shortcuts = [
+    { key: "/", label: "Tìm kiếm" },
+    { key: "Esc", label: "Đóng" },
+    { key: "←→", label: "Chuyển tập" }
+  ];
+
   return (
     <footer className="bg-gradient-to-t from-[#0a0c14] to-[#0F111A] border-t border-white/5">
       {/* Decorative top gradient line */}
@@ -92,6 +99,36 @@ export default function Footer() {
                   >
                     {country.name}
                   </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Sources and Shortcuts */}
+          <div>
+            <h3 className="text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
+              <span className="w-[3px] h-[16px] gradient-accent rounded-full"></span>
+              Nguồn Phim
+            </h3>
+            <div className="flex flex-wrap gap-[8px] mb-[24px]">
+              {sources.map((src) => (
+                <span key={src} className="px-[10px] py-[4px] glass rounded-full text-[#888] text-[12px]">
+                  {src}
+                </span>
+              ))}
+            </div>
+
+            <h3 className="text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
+              <span className="w-[3px] h-[16px] gradient-accent rounded-full"></span>
+              Phím tắt
+            </h3>
+            <ul className="space-y-[8px]">
+              {shortcuts.map((sc) => (
+                <li key={sc.key} className="flex items-center gap-[10px] text-[#888] text-[13px]">
+                  <kbd className="bg-white/10 px-[6px] py-[2px] rounded text-white text-[11px] font-mono min-w-[24px] text-center">
+                    {sc.key}
+                  </kbd>
+                  {sc.label}
                 </li>
               ))}
             </ul>

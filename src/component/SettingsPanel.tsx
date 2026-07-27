@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { usePreferences, ACCENT_COLORS } from "@/lib/usePreferences";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCog, faTimes, faPalette, faServer, faEye, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCog, faTimes, faPalette, faServer, faEye, faCheck, faBolt, faFilm, faGaugeHigh } from "@fortawesome/free-solid-svg-icons";
 
 export default function SettingsPanel() {
     const [isOpen, setIsOpen] = useState(false);
@@ -125,6 +125,86 @@ export default function SettingsPanel() {
                                                         }`}
                                                 />
                                             </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* API Source Priority */}
+                            <div>
+                                <div className="flex items-center gap-[8px] mb-[12px]">
+                                    <FontAwesomeIcon icon={faFilm} className="text-[var(--accent-color)] text-[14px]" />
+                                    <span className="text-white text-[14px] font-medium">Nguồn phim ưu tiên</span>
+                                </div>
+                                <p className="text-white/40 text-[11px] mb-[10px]">Chọn nguồn API ưu tiên khi tải phim</p>
+                                <div className="flex flex-wrap gap-[8px]">
+                                    {[
+                                        { value: "auto", label: "Tự động", badge: "" },
+                                        { value: "ophim", label: "OPhim", badge: "source-badge-ophim" },
+                                        { value: "kkphim", label: "KKPhim", badge: "source-badge-kkphim" },
+                                        { value: "nguonc", label: "NguonC", badge: "source-badge-nguonc" },
+                                    ].map((option) => (
+                                        <button
+                                            key={option.value}
+                                            onClick={() => updatePreference("apiSource" as any, option.value as any)}
+                                            className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all ${(preferences as any).apiSource === option.value || (!( preferences as any).apiSource && option.value === "auto")
+                                                    ? "bg-[var(--accent-color)] text-black font-semibold"
+                                                    : "bg-white/5 text-white/70 hover:bg-white/10"
+                                                }`}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Performance Mode */}
+                            <div>
+                                <div className="flex items-center gap-[8px] mb-[12px]">
+                                    <FontAwesomeIcon icon={faBolt} className="text-[var(--accent-color)] text-[14px]" />
+                                    <span className="text-white text-[14px] font-medium">Chế độ hiệu suất</span>
+                                </div>
+                                <p className="text-white/40 text-[11px] mb-[10px]">Giảm animation & hiệu ứng để tải nhanh hơn</p>
+                                <button
+                                    onClick={() => {
+                                        const isPerf = document.documentElement.classList.contains('perf-mode');
+                                        document.documentElement.classList.toggle('perf-mode');
+                                        localStorage.setItem('rophim-perf-mode', isPerf ? 'false' : 'true');
+                                    }}
+                                    className="w-full flex items-center justify-between px-[14px] py-[10px] rounded-[10px] bg-white/5 hover:bg-white/10 transition-all"
+                                >
+                                    <span className="text-white/80 text-[13px] flex items-center gap-[8px]">
+                                        <FontAwesomeIcon icon={faGaugeHigh} className="text-[12px]" />
+                                        Chế độ nhẹ (giảm lag)
+                                    </span>
+                                    <div className="w-[40px] h-[22px] rounded-full transition-all relative bg-white/20">
+                                        <div className="absolute top-[2px] left-[2px] w-[18px] h-[18px] rounded-full bg-white transition-all" />
+                                    </div>
+                                </button>
+                            </div>
+
+                            {/* Preferred Quality */}
+                            <div>
+                                <div className="flex items-center gap-[8px] mb-[12px]">
+                                    <FontAwesomeIcon icon={faEye} className="text-[var(--accent-color)] text-[14px]" />
+                                    <span className="text-white text-[14px] font-medium">Chất lượng ưu tiên</span>
+                                </div>
+                                <div className="flex gap-[8px]">
+                                    {[
+                                        { value: "auto", label: "Tự động" },
+                                        { value: "1080p", label: "1080p" },
+                                        { value: "720p", label: "720p" },
+                                        { value: "480p", label: "480p" },
+                                    ].map((option) => (
+                                        <button
+                                            key={option.value}
+                                            onClick={() => updatePreference("quality" as any, option.value as any)}
+                                            className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all ${(preferences as any).quality === option.value || (!(preferences as any).quality && option.value === "auto")
+                                                    ? "bg-[var(--accent-color)] text-black font-semibold"
+                                                    : "bg-white/5 text-white/70 hover:bg-white/10"
+                                                }`}
+                                        >
+                                            {option.label}
                                         </button>
                                     ))}
                                 </div>

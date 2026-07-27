@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/component/Logo";
 import ContinueWatching from "@/component/ContinueWatching";
+import TrendingSection from "@/component/TrendingSection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleRight,
@@ -51,7 +52,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#0B0D13] pb-[92px] text-white min-[1024px]:pb-0">
-      <section className="border-b border-white/8 bg-[#10141E]">
+      <section className="border-b border-white/8 bg-[#10141E] animate-fade-in">
         <div className="tv-home-shell tv-home-hero mx-auto max-w-[1380px] px-4 pb-6 pt-5 sm:px-6 lg:px-8">
           <nav className="flex items-center justify-between gap-4">
             <button
@@ -142,7 +143,7 @@ export default function Home() {
       </section>
 
       <section className="tv-home-shell mx-auto max-w-[1380px] px-4 py-5 sm:px-6 lg:px-8">
-        <div className="tv-home-primary-grid grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="tv-home-primary-grid stagger-children grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {primaryRoutes.map((item) => (
             <button
               key={item.href}
@@ -213,6 +214,10 @@ export default function Home() {
 
         <div className="mt-6">
           <ContinueWatching />
+          <TrendingSection />
+        </div>
+        <div className="mt-8 text-center pb-4">
+          <p className="text-white/40 text-[13px]">Nhấn <kbd className="mx-1 rounded bg-white/10 px-2 py-1 font-mono text-[11px] text-white">/</kbd> để tìm kiếm nhanh</p>
         </div>
       </section>
     </main>

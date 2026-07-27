@@ -7,7 +7,7 @@ const DETAIL_REVALIDATE_SECONDS = 3600;
 const DEFAULT_TIMEOUT_MS = 8000;
 const CLIENT_CACHE_TTL_MS = 5 * 60 * 1000;
 const SEARCH_CACHE_TTL_MS = 45 * 1000;
-const MAX_CLIENT_CACHE_ENTRIES = 200;
+const MAX_CLIENT_CACHE_ENTRIES = 500;
 const DEFAULT_PAGE_SIZE = 24;
 
 export interface OPhimMovie {
@@ -112,7 +112,35 @@ async function fetchJsonWithTimeout<T>(
     const cached = isClient ? (clientCache.get(cacheKey) as CacheEntry<T> | undefined) : undefined;
 
     if (isClient && useClientCache) {
-        if (cached?.data && cached.expiresAt && cached.expiresAt > now) {
+        if (cached?.data) {
+            if (cached.expiresAt && cached.expiresAt > now) {
+                return cached.data;
+            } else if (!cached.promise) {
+                // Stale-while-revalidate
+                const bgPromise = (async () => {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), timeoutMs);
+                    try {
+                        const init: RequestInit & { next?: { revalidate: number } } = {
+                            signal: controller.signal,
+                        };
+                        if (forceNoStore) init.cache = "no-store";
+                        else if (!isClient && revalidateSeconds > 0) init.next = { revalidate: revalidateSeconds };
+                        
+                        const response = await fetch(url, init);
+                        if (response.ok) {
+                            const data = (await response.json()) as T;
+                            clientCache.set(cacheKey, { data, expiresAt: Date.now() + clientCacheTtlMs });
+                            trimClientCache();
+                        }
+                    } catch (e) {
+                        // ignore error
+                    } finally {
+                        clearTimeout(timer);
+                    }
+                })();
+                clientCache.set(cacheKey, { ...cached, promise: bgPromise });
+            }
             return cached.data;
         }
         if (cached?.promise) {
@@ -338,5 +366,14 @@ export async function getCungDauMovies(page: number = 1): Promise<OPhimResponse>
             return isCoTrang || isLongTieng;
         }),
     };
+}
+
+export function prefetchMoviePage(page: number) {
+    if (typeof window === "undefined") return;
+    const url = `/api/movies?path=/v1/api/danh-sach/phim-moi-cap-nhat&page=${page}`;
+    fetchJsonWithTimeout(url, {
+        revalidateSeconds: DEFAULT_REVALIDATE_SECONDS,
+        cacheKey: url,
+    }).catch(() => {});
 }
 

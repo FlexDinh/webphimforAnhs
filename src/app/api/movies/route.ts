@@ -61,8 +61,13 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const path = searchParams.get("path");
 
-  if (!path) {
-    return NextResponse.json({ error: "Missing path" }, { status: 400 });
+  if (!path || path.length > 200) {
+    return NextResponse.json({ error: "Missing or invalid path" }, { status: 400 });
+  }
+  
+  const contentLength = parseInt(request.headers.get("content-length") || "0", 10);
+  if (contentLength > 1024) {
+    return NextResponse.json({ error: "Payload Too Large" }, { status: 413 });
   }
 
   // Whitelist check — chỉ cho phép các path hợp lệ
