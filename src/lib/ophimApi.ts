@@ -94,6 +94,30 @@ function isAbortError(error: unknown): boolean {
     return error instanceof Error && error.name === "AbortError";
 }
 
+function toDirectKKPhimUrl(proxyUrl: string): string | null {
+    try {
+        const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+        const urlObj = new URL(proxyUrl, origin);
+        const path = urlObj.searchParams.get("path");
+        if (!path) return null;
+
+        let kkPath = path;
+        if (path.includes("phim-moi-cap-nhat")) {
+            kkPath = "/danh-sach/phim-moi-cap-nhat";
+        }
+
+        const page = urlObj.searchParams.get("page") || "1";
+        const keyword = urlObj.searchParams.get("keyword");
+        const p = new URLSearchParams();
+        if (page) p.set("page", page);
+        if (keyword) p.set("keyword", keyword);
+
+        return `https://phimapi.com${kkPath}${p.toString() ? "?" + p.toString() : ""}`;
+    } catch {
+        return null;
+    }
+}
+
 async function fetchJsonWithTimeout<T>(
     url: string,
     options: FetchJsonOptions = {}
@@ -173,10 +197,6 @@ async function fetchJsonWithTimeout<T>(
         }
     })();
 
-    if (isClient && useClientCache) {
-        clientCache.set(cacheKey, { ...cached, promise: requestPromise });
-    }
-
     try {
         const data = await requestPromise;
         if (isClient && useClientCache) {
@@ -188,6 +208,25 @@ async function fetchJsonWithTimeout<T>(
         }
         return data;
     } catch (error) {
+        // Fallback: Gọi trực tiếp KKPhim nếu serverless proxy bị lỗi
+        const directUrl = toDirectKKPhimUrl(url);
+        if (directUrl) {
+            try {
+                const directRes = await fetch(directUrl);
+                if (directRes.ok) {
+                    const directData = (await directRes.json()) as T;
+                    if (isClient && useClientCache) {
+                        clientCache.set(cacheKey, {
+                            data: directData,
+                            expiresAt: now + clientCacheTtlMs,
+                        });
+                        trimClientCache();
+                    }
+                    return directData;
+                }
+            } catch {}
+        }
+
         if (isClient && useClientCache) {
             if (cached?.data) {
                 return cached.data;
