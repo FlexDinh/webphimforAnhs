@@ -13,6 +13,7 @@ import { DEFAULT_MANAGED_API_CONFIG } from "@/lib/apiConfig";
  */
 
 export const maxDuration = 25; // Vercel Hobby: max 25s
+export const dynamic = "force-dynamic";
 
 const OPHIM_BASES = [
   DEFAULT_MANAGED_API_CONFIG.ophimBaseUrl,

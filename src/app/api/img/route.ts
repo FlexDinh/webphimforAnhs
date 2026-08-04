@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // Danh sách domain ảnh được phép proxy (whitelist)
 const ALLOWED_HOSTS = [
   "img.ophim.live",
