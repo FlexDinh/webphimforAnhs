@@ -44,8 +44,10 @@ export default function MoviePage() {
     // Player loading state
     const [playerLoading, setPlayerLoading] = useState(false);
     const [playerSlow, setPlayerSlow] = useState(false);
+    const [playerBlocked, setPlayerBlocked] = useState(false); // OpenResty/blocked detect
     const playerSlowTimerRef = useRef<NodeJS.Timeout | null>(null);
     const iframeKey = useRef(0);
+    const iframeLoadStartRef = useRef<number>(0); // timestamp khi bắt đầu load iframe
 
     // Auto-play next episode
     const [autoPlayEnabled, setAutoPlayEnabled] = useState(true);
@@ -215,21 +217,56 @@ export default function MoviePage() {
     const hasNextEpisode = selectedEpisodeIdx < currentServerData.length - 1;
     const hasPrevEpisode = selectedEpisodeIdx > 0;
 
+    // Auto switch to next server
+    const handleSwitchToNextServer = useCallback(() => {
+        if (!movie) return;
+        const eps = movie.episodes;
+        if (!eps || eps.length === 0) return;
+        const nextIdx = (selectedServer + 1) % eps.length;
+        setSelectedServer(nextIdx);
+        const ep = eps[nextIdx]?.server_data?.[selectedEpisodeIdx] || eps[nextIdx]?.server_data?.[0];
+        if (ep) {
+            setSelectedEpisode(ep);
+            setSelectedEpisodeIdx(eps[nextIdx]?.server_data?.[selectedEpisodeIdx] ? selectedEpisodeIdx : 0);
+        }
+        setUseHdSource(false);
+        setHdSource(null);
+        setPlayerBlocked(false);
+        setPlayerSlow(false);
+        setPlayerLoading(true);
+        iframeLoadStartRef.current = Date.now();
+        iframeKey.current += 1;
+        if (playerSlowTimerRef.current) clearTimeout(playerSlowTimerRef.current);
+        playerSlowTimerRef.current = setTimeout(() => setPlayerSlow(true), 10000);
+        setAutoSelectNotice(`⚡ Đã tự động đổi sang: ${eps[nextIdx]?.server_name}`);
+        setTimeout(() => setAutoSelectNotice(null), 3000);
+    }, [movie, selectedServer, selectedEpisodeIdx]);
+
     // Start loading player with slow-server detection
     const startPlayerLoad = useCallback(() => {
         setPlayerLoading(true);
         setPlayerSlow(false);
+        setPlayerBlocked(false);
+        iframeLoadStartRef.current = Date.now();
         iframeKey.current += 1;
         if (playerSlowTimerRef.current) clearTimeout(playerSlowTimerRef.current);
         playerSlowTimerRef.current = setTimeout(() => {
             setPlayerSlow(true);
-        }, 15000); // warn after 15s
+        }, 10000); // warn after 10s
     }, []);
 
     const handlePlayerLoaded = useCallback(() => {
+        const elapsed = Date.now() - iframeLoadStartRef.current;
         setPlayerLoading(false);
-        setPlayerSlow(false);
         if (playerSlowTimerRef.current) clearTimeout(playerSlowTimerRef.current);
+        setPlayerSlow(false);
+        // OpenResty/Nginx error pages load cực nhanh (< 900ms)
+        // Video player thật mất ít nhất 1-3s để init
+        if (elapsed < 900 && iframeLoadStartRef.current > 0) {
+            setPlayerBlocked(true);
+        } else {
+            setPlayerBlocked(false);
+        }
     }, []);
 
     const handleNextEpisode = useCallback(() => {
@@ -550,7 +587,7 @@ export default function MoviePage() {
                                 <button onClick={() => setPlayerSlow(false)} className="text-white/40 hover:text-white">✕</button>
                             </div>
                         )}
-                        {safeEpisodeEmbed ? (
+                        {safeEpisodeEmbed && !playerBlocked ? (
                             <iframe
                                 key={`ep-${iframeKey.current}-${selectedEpisode.slug}`}
                                 src={safeEpisodeEmbed}
@@ -565,7 +602,9 @@ export default function MoviePage() {
                         ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center bg-[#1a1c2e] gap-4 p-6">
                                 <div className="text-5xl mb-2">🔒</div>
-                                <p className="text-white/70 text-[15px] font-medium">Nguồn phim bị chặn</p>
+                                <p className="text-white/70 text-[15px] font-medium">
+                                    {playerBlocked ? "Nguồn phim bị chặn (OpenResty)" : "Nguồn phim không hợp lệ"}
+                                </p>
                                 <p className="text-white/40 text-[13px] text-center">Nguồn này không khả dụng. Hãy chọn server khác:</p>
                                 {episodes && episodes.length > 1 ? (
                                     <div className="flex flex-wrap gap-2 justify-center mt-2">
