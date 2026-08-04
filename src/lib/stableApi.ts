@@ -204,7 +204,8 @@ function setCachedDetail(slug: string, data: UnifiedResponse) {
 }
 
 async function fetchFromOPhim(slug: string): Promise<UnifiedResponse> {
-    const data = await fetchJsonWithTimeout<any>(`${getOPhimBaseUrl()}/phim/${slug}`, 4200);
+    // Gọi qua proxy để bypass CORS/block
+    const data = await fetchJsonWithTimeout<any>(`/api/movies?path=/phim/${slug}`, 8000);
     if (!data?.status) {
         throw new Error("OPhim returned invalid payload");
     }
@@ -216,7 +217,8 @@ async function fetchFromOPhim(slug: string): Promise<UnifiedResponse> {
 }
 
 async function fetchFromNguonC(slug: string): Promise<UnifiedResponse> {
-    const data = await fetchJsonWithTimeout<any>(`${getNguonCBaseUrl()}/film/${slug}`, 5000);
+    // NguonC gọi trực tiếp vì có CORS header
+    const data = await fetchJsonWithTimeout<any>(`${getNguonCBaseUrl()}/film/${slug}`, 6000);
     if (data?.status !== "success") {
         throw new Error("NguonC returned invalid payload");
     }
@@ -228,7 +230,8 @@ async function fetchFromNguonC(slug: string): Promise<UnifiedResponse> {
 }
 
 async function fetchFromKkPhim(slug: string): Promise<UnifiedResponse> {
-    const data = await fetchJsonWithTimeout<any>(`${getKkPhimBaseUrl()}/phim/${slug}`, 5000);
+    // Gọi qua proxy để bypass CORS/block
+    const data = await fetchJsonWithTimeout<any>(`/api/movies?path=/phim/${slug}`, 8000);
     if (!data?.status) {
         throw new Error("KKPhim returned invalid payload");
     }

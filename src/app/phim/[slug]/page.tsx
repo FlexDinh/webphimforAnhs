@@ -492,8 +492,31 @@ export default function MoviePage() {
                                 onLoad={handlePlayerLoaded}
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#1a1c2e]">
-                                <p className="text-white/50 text-[14px]">Nguồn phát này không hợp lệ hoặc đã bị chặn.</p>
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-[#1a1c2e] gap-4 p-6">
+                                <div className="text-5xl mb-2">🔒</div>
+                                <p className="text-white/70 text-[15px] font-medium">Nguồn HD bị chặn</p>
+                                <p className="text-white/40 text-[13px] text-center">Hãy thử chuyển sang nguồn khác bên dưới</p>
+                                {episodes && episodes.length > 1 && (
+                                    <div className="flex flex-wrap gap-2 justify-center mt-2">
+                                        {episodes.map((srv, idx) => (
+                                            <button key={idx}
+                                                onClick={() => {
+                                                    setSelectedServer(idx);
+                                                    const ep = srv.server_data?.[selectedEpisodeIdx] || srv.server_data?.[0];
+                                                    if (ep) { setSelectedEpisode(ep); setSelectedEpisodeIdx(ep === srv.server_data?.[selectedEpisodeIdx] ? selectedEpisodeIdx : 0); }
+                                                    setUseHdSource(false); setHdSource(null); startPlayerLoad();
+                                                }}
+                                                className={`px-4 py-2 rounded-full text-[12px] font-semibold transition-all ${
+                                                    idx === selectedServer
+                                                        ? 'bg-[#FFD875] text-black'
+                                                        : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
+                                                }`}
+                                            >
+                                                {srv.server_name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -540,8 +563,38 @@ export default function MoviePage() {
                                 onLoad={handlePlayerLoaded}
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#1a1c2e]">
-                                <p className="text-white/50 text-[14px]">Nguồn phát này không hợp lệ hoặc đã bị chặn.</p>
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-[#1a1c2e] gap-4 p-6">
+                                <div className="text-5xl mb-2">🔒</div>
+                                <p className="text-white/70 text-[15px] font-medium">Nguồn phim bị chặn</p>
+                                <p className="text-white/40 text-[13px] text-center">Nguồn này không khả dụng. Hãy chọn server khác:</p>
+                                {episodes && episodes.length > 1 ? (
+                                    <div className="flex flex-wrap gap-2 justify-center mt-2">
+                                        {episodes.map((srv, idx) => (
+                                            <button key={idx}
+                                                onClick={() => {
+                                                    setSelectedServer(idx);
+                                                    const ep = srv.server_data?.[selectedEpisodeIdx] || srv.server_data?.[0];
+                                                    if (ep) { setSelectedEpisode(ep); setSelectedEpisodeIdx(ep === srv.server_data?.[selectedEpisodeIdx] ? selectedEpisodeIdx : 0); }
+                                                    setUseHdSource(false); setHdSource(null); startPlayerLoad();
+                                                }}
+                                                className={`px-4 py-2 rounded-full text-[12px] font-semibold transition-all ${
+                                                    idx === selectedServer
+                                                        ? 'bg-[#FFD875] text-black'
+                                                        : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
+                                                }`}
+                                            >
+                                                {srv.server_name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => window.location.reload()}
+                                        className="px-5 py-2.5 rounded-full bg-[#FFD875] text-black text-[13px] font-semibold hover:bg-[#FFE49A] transition-colors"
+                                    >
+                                        🔄 Thử tải lại
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
