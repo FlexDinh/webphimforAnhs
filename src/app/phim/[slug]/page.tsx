@@ -217,6 +217,39 @@ export default function MoviePage() {
     const hasNextEpisode = selectedEpisodeIdx < currentServerData.length - 1;
     const hasPrevEpisode = selectedEpisodeIdx > 0;
 
+    // Detect DNS block or ISP block for current embed link
+    useEffect(() => {
+        if (!selectedEpisode?.link_embed && !hdSource) return;
+        const targetUrl = useHdSource ? hdSource : selectedEpisode?.link_embed;
+        if (!targetUrl) return;
+
+        try {
+            const urlObj = new URL(targetUrl.startsWith("//") ? `https:${targetUrl}` : targetUrl);
+            const checkOrigin = urlObj.origin;
+            
+            // Fire a lightweight no-cors request to test if the domain resolves
+            // If DNS is blocked (e.g. NXDOMAIN for vip.opstream10.com), fetch will throw immediately
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 4000);
+            
+            fetch(checkOrigin, { mode: 'no-cors', method: 'HEAD', signal: controller.signal })
+                .then(() => {
+                    clearTimeout(timeout);
+                    // Domain is reachable (though it might still return OpenResty error, handled by iframe onLoad)
+                })
+                .catch((err) => {
+                    clearTimeout(timeout);
+                    // Abort error means it just timed out. Network error means DNS blocked.
+                    if (err.name !== 'AbortError') {
+                        console.warn("Domain bị chặn (DNS/Connection):", checkOrigin);
+                        setPlayerBlocked(true);
+                    }
+                });
+        } catch (e) {
+            // Invalid URL
+        }
+    }, [selectedEpisode, hdSource, useHdSource]);
+
     // Auto switch to next server
     const handleSwitchToNextServer = useCallback(() => {
         if (!movie) return;
