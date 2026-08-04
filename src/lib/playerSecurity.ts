@@ -22,11 +22,19 @@ export function getSafeEmbedUrl(rawUrl?: string | null): string {
             return "";
         }
 
-        if (value.startsWith("//")) {
-            return `https:${value}`;
+        let safeUrl = value;
+        if (safeUrl.startsWith("//")) {
+            safeUrl = `https:${safeUrl}`;
+        }
+        
+        // Auto-bypass ISP DNS Block for OPhim streaming servers
+        // Many VN ISPs block vip.opstream10.com, opstream11.com, etc.
+        // We rewrite them to a known working unblocked proxy mirror.
+        if (safeUrl.includes("opstream")) {
+            safeUrl = safeUrl.replace(/https?:\/\/(vip\.)?opstream[0-9]*\.com/i, "https://vip.opstream16.com");
         }
 
-        return value;
+        return safeUrl;
     } catch {
         return "";
     }
