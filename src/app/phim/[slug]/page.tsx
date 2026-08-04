@@ -219,9 +219,8 @@ export default function MoviePage() {
 
     // Detect DNS block or ISP block for current embed link
     useEffect(() => {
-        if (!selectedEpisode?.link_embed && !hdSource) return;
-        const targetUrl = useHdSource ? hdSource : selectedEpisode?.link_embed;
-        if (!targetUrl) return;
+        if (!safeEpisodeEmbed) return;
+        const targetUrl = safeEpisodeEmbed;
 
         try {
             const urlObj = new URL(targetUrl.startsWith("//") ? `https:${targetUrl}` : targetUrl);
@@ -248,7 +247,7 @@ export default function MoviePage() {
         } catch (e) {
             // Invalid URL
         }
-    }, [selectedEpisode, hdSource, useHdSource]);
+    }, [safeEpisodeEmbed]);
 
     // Auto switch to next server
     const handleSwitchToNextServer = useCallback(() => {
