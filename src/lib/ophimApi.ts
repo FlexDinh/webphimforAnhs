@@ -200,9 +200,9 @@ async function fetchJsonWithTimeout<T>(
 
 function normalizeApiResponse(data: any): OPhimResponse {
     return {
-        status: data?.status === true || data?.status === "success",
+        status: data?.status === true || data?.status === "success" || Array.isArray(data?.items) || Array.isArray(data?.data?.items),
         msg: data?.msg || data?.message || "done",
-        items: data?.data?.items || [],
+        items: data?.items || data?.data?.items || [],
         pagination: parsePagination(data),
     };
 }
@@ -215,7 +215,7 @@ function parsePagination(data: any): OPhimResponse["pagination"] {
         totalPages: 1,
     };
 
-    const raw = data?.data?.params?.pagination || fallback;
+    const raw = data?.pagination || data?.data?.params?.pagination || fallback;
     const totalItems = Number(raw.totalItems || raw.total_items || fallback.totalItems);
     const totalItemsPerPage = Number(raw.totalItemsPerPage || raw.items_per_page || fallback.totalItemsPerPage);
     const currentPage = Number(raw.currentPage || raw.current_page || fallback.currentPage);

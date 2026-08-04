@@ -69,7 +69,11 @@ async function fetchOPhim(
   path: string,
   params: URLSearchParams,
 ): Promise<{ data: unknown; source: string }> {
-  const url = `${baseUrl}${path}${params.toString() ? "?" + params.toString() : ""}`;
+  let realPath = path;
+  if (baseUrl.includes("phimapi.com") && path === "/v1/api/danh-sach/phim-moi-cap-nhat") {
+    realPath = "/danh-sach/phim-moi-cap-nhat";
+  }
+  const url = `${baseUrl}${realPath}${params.toString() ? "?" + params.toString() : ""}`;
   const res = await timedFetch(url, baseUrl);
 
   if (!res.ok) throw new Error(`OPhim ${baseUrl} → ${res.status}`);
@@ -79,6 +83,25 @@ async function fetchOPhim(
     throw new Error(`OPhim ${baseUrl} blocked: ${data?.msg}`);
   }
   return { data, source: baseUrl };
+}
+
+// ─── KKPhim source ──────────────────────────────────────────────────────────
+
+async function fetchKKPhim(
+  path: string,
+  params: URLSearchParams,
+): Promise<{ data: unknown; source: string }> {
+  let realPath = path;
+  if (path === "/v1/api/danh-sach/phim-moi-cap-nhat") {
+    realPath = "/danh-sach/phim-moi-cap-nhat";
+  }
+  const url = `${KKPHIM_BASE}${realPath}${params.toString() ? "?" + params.toString() : ""}`;
+  const res = await timedFetch(url, KKPHIM_BASE);
+  if (!res.ok) throw new Error(`KKPhim → ${res.status}`);
+
+  const data = await res.json();
+  if (data?.status === false) throw new Error(`KKPhim blocked: ${data?.msg}`);
+  return { data, source: "kkphim" };
 }
 
 // ─── NguonC mapping & source ────────────────────────────────────────────────
@@ -220,21 +243,6 @@ async function fetchNguonc(
 
   const data = isDetail ? normalizeNguoncDetail(raw) : normalizeNguoncList(raw);
   return { data, source: "nguonc" };
-}
-
-// ─── KKPhim source ──────────────────────────────────────────────────────────
-
-async function fetchKKPhim(
-  path: string,
-  params: URLSearchParams,
-): Promise<{ data: unknown; source: string }> {
-  const url = `${KKPHIM_BASE}${path}${params.toString() ? "?" + params.toString() : ""}`;
-  const res = await timedFetch(url, KKPHIM_BASE);
-  if (!res.ok) throw new Error(`KKPhim → ${res.status}`);
-
-  const data = await res.json();
-  if (data?.status === false) throw new Error(`KKPhim blocked: ${data?.msg}`);
-  return { data, source: "kkphim" };
 }
 
 // ─── Response helper ────────────────────────────────────────────────────────

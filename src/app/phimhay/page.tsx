@@ -169,183 +169,14 @@ const MovieSection = memo(
 );
 MovieSection.displayName = "MovieSection";
 
-function HeroCarousel({ movies }: { movies: OPhimMovie[] }) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const router = useRouter();
-  const heroMovies = movies.slice(0, 6);
-
-  const goToSlide = useCallback(
-    (index: number) => {
-      if (isTransitioning || heroMovies.length === 0) return;
-      setIsTransitioning(true);
-      setCurrentSlide(index);
-      setTimeout(() => setIsTransitioning(false), 600);
-    },
-    [heroMovies.length, isTransitioning]
-  );
-
-  const nextSlide = useCallback(() => {
-    if (heroMovies.length === 0) return;
-    goToSlide((currentSlide + 1) % heroMovies.length);
-  }, [currentSlide, goToSlide, heroMovies.length]);
-
-  const prevSlide = useCallback(() => {
-    if (heroMovies.length === 0) return;
-    goToSlide((currentSlide - 1 + heroMovies.length) % heroMovies.length);
-  }, [currentSlide, goToSlide, heroMovies.length]);
-
-  useEffect(() => {
-    if (heroMovies.length === 0) return;
-    timerRef.current = setInterval(nextSlide, 6000);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [heroMovies.length, nextSlide]);
-
-  const pauseTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-  };
-
-  const resumeTimer = () => {
-    if (heroMovies.length === 0) return;
-    timerRef.current = setInterval(nextSlide, 6000);
-  };
-
-  if (heroMovies.length === 0) {
-    return <div className="tv-hero-carousel h-[60vh] min-h-[400px] w-full animate-pulse bg-gradient-to-br from-[#1a1c2e] to-[#0F111A]" />;
-  }
-
-  const current = heroMovies[currentSlide];
-
-  return (
-    <div className="tv-hero-carousel relative h-[65vh] min-h-[420px] max-h-[700px] overflow-hidden" onMouseEnter={pauseTimer} onMouseLeave={resumeTimer}>
-      {heroMovies.map((movie, index) => (
-        <div
-          key={movie._id}
-          className={`absolute inset-0 transition-opacity duration-700 ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
-        >
-          <Image
-            src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))}
-            alt={movie.name}
-            fill
-            className="object-cover"
-            priority={index === 0}
-            sizes="100vw"
-            unoptimized
-          />
-        </div>
-      ))}
-
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0F111A] via-[#0F111A]/60 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0F111A] via-transparent to-[#0F111A]/30" />
-
-      <div className="absolute bottom-[60px] left-0 right-0 z-10 px-[16px]">
-        <div className="container mx-auto max-w-[1400px]">
-          <div className="tv-hero-content max-w-[550px]">
-            <div className={`mb-[12px] flex items-center gap-[8px] transition-all duration-500 ${isTransitioning ? "translate-y-[10px] opacity-0" : "translate-y-0 opacity-100"}`}>
-              {current.quality && (
-                <span className="rounded-full bg-[#FFD875] px-[10px] py-[4px] text-[11px] font-semibold text-black">
-                  {current.quality}
-                </span>
-              )}
-              <span className="rounded-full bg-white/10 px-[10px] py-[4px] text-[11px] text-white backdrop-blur-sm">
-                {String(current.year || "")}
-              </span>
-              {current.tmdb?.vote_average && current.tmdb.vote_average > 0 && (
-                <span className="rounded-full bg-[#FFD875]/20 px-[10px] py-[4px] text-[11px] font-semibold text-[#FFD875] backdrop-blur-sm">
-                  ★ {current.tmdb.vote_average.toFixed(1)}
-                </span>
-              )}
-              {current.lang && (
-                <span className="rounded-full bg-white/10 px-[10px] py-[4px] text-[11px] text-white backdrop-blur-sm">
-                  {current.lang}
-                </span>
-              )}
-            </div>
-
-            <h1
-              className={`tv-hero-title mb-[6px] text-[28px] font-bold leading-tight text-white transition-all duration-500 lg:text-[40px] ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
-              style={{ transitionDelay: "0.05s" }}
-            >
-              {String(current.name || "")}
-            </h1>
-
-            <p
-              className={`tv-hero-subtitle mb-[20px] text-[14px] text-[#FFD875] transition-all duration-500 lg:text-[16px] ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
-              style={{ transitionDelay: "0.1s" }}
-            >
-              {String(current.origin_name || "")}
-            </p>
-
-            <div
-              className={`flex items-center gap-[12px] transition-all duration-500 ${isTransitioning ? "translate-y-[15px] opacity-0" : "translate-y-0 opacity-100"}`}
-              style={{ transitionDelay: "0.15s" }}
-            >
-              <button
-                onClick={() => router.push(`/phim/${current.slug}`)}
-                className="tv-hero-action flex items-center gap-[8px] rounded-full bg-gradient-to-r from-[#FFD875] to-[#f0a500] px-[28px] py-[14px] text-[14px] font-semibold text-black transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#FFD875]/30 active:scale-95"
-              >
-                <FontAwesomeIcon icon={faPlay} className="text-[12px]" />
-                Xem ngay
-              </button>
-              <button
-                onClick={() => router.push(`/phim/${current.slug}`)}
-                className="tv-hero-action flex items-center gap-[8px] rounded-full border border-white/10 bg-white/10 px-[24px] py-[14px] text-[14px] text-white backdrop-blur-sm transition-all hover:bg-white/20"
-              >
-                Chi tiết
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button
-        onClick={prevSlide}
-        className="absolute left-[16px] top-1/2 z-10 flex h-[44px] w-[44px] -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-all hover:bg-black/60 hover:opacity-100 sm:opacity-60"
-      >
-        <FontAwesomeIcon icon={faChevronLeft} className="text-[14px]" />
-      </button>
-      <button
-        onClick={nextSlide}
-        className="absolute right-[16px] top-1/2 z-10 flex h-[44px] w-[44px] -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-all hover:bg-black/60 hover:opacity-100 sm:opacity-60"
-      >
-        <FontAwesomeIcon icon={faChevronRight} className="text-[14px]" />
-      </button>
-
-      <div className="absolute bottom-[20px] left-1/2 z-10 flex -translate-x-1/2 items-center gap-[8px]">
-        {heroMovies.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`rounded-full transition-all duration-300 ${
-              index === currentSlide ? "h-[8px] w-[24px] bg-[#FFD875]" : "h-[8px] w-[8px] bg-white/30 hover:bg-white/50"
-            }`}
-          />
-        ))}
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0 z-10 h-[3px] bg-white/10">
-        <div
-          className="h-full bg-[#FFD875] transition-all"
-          style={{
-            width: `${((currentSlide + 1) / heroMovies.length) * 100}%`,
-            transition: "width 0.5s ease",
-          }}
-        />
-      </div>
-    </div>
-  );
-}
-
 const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
   const router = useRouter();
 
-  const trendingMovies = [...movies]
-    .filter((movie) => movie.tmdb?.vote_average && movie.tmdb.vote_average > 0)
-    .sort((a, b) => (b.tmdb?.vote_average || 0) - (a.tmdb?.vote_average || 0))
-    .slice(0, 10);
+  const trendingMovies = Array.isArray(movies) && movies.length > 0
+    ? [...movies]
+        .sort((a, b) => (b.tmdb?.vote_average || 0) - (a.tmdb?.vote_average || 0))
+        .slice(0, 10)
+    : [];
 
   if (trendingMovies.length === 0) return null;
 
@@ -393,7 +224,9 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
               </h4>
               <p className="truncate text-[11px] text-white/40">{String(movie.origin_name || "")}</p>
               <div className="mt-[4px] flex items-center gap-[6px]">
-                <span className="text-[11px] font-semibold text-[#FFD875]">★ {movie.tmdb?.vote_average?.toFixed(1)}</span>
+                <span className="text-[11px] font-semibold text-[#FFD875]">
+                  ★ {movie.tmdb?.vote_average ? movie.tmdb.vote_average.toFixed(1) : (movie.quality || "HD")}
+                </span>
                 <span className="text-[10px] text-white/30">•</span>
                 <span className="text-[10px] text-white/40">{String(movie.year || "")}</span>
               </div>
@@ -407,7 +240,6 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
 TrendingSection.displayName = "TrendingSection";
 
 export default function PhimHay() {
-  const [heroMovies, setHeroMovies] = useState<OPhimMovie[]>([]);
   const [trendingMovies, setTrendingMovies] = useState<OPhimMovie[]>([]);
   const { preferences } = usePreferences();
   const { hiddenSections } = preferences;
@@ -425,23 +257,18 @@ export default function PhimHay() {
   const fetchAuMySection = useCallback(async () => (await getMoviesByCountry("au-my", 1)).items.slice(0, 12), []);
 
   useEffect(() => {
-    // Chỉ fetch 1 page thay vì 2 → hero load nhanh hơn 50%
     getLatestMovies(1)
       .then((pageOne) => {
-        setHeroMovies(pageOne.items.slice(0, 8));
-        setTrendingMovies(pageOne.items);
+        setTrendingMovies(pageOne.items || []);
       })
       .catch(() => {
-        setHeroMovies([]);
         setTrendingMovies([]);
       });
   }, []);
 
   return (
     <div className="min-h-screen bg-[#0F111A]">
-      <HeroCarousel movies={heroMovies} />
-
-      <div className="container mx-auto max-w-[1400px] px-[16px] py-[30px]">
+      <div className="container mx-auto max-w-[1400px] px-[16px] pt-[20px] pb-[30px]">
         <ContinueWatching />
         <TrendingSection movies={trendingMovies} />
 

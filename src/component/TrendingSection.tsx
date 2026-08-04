@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getTrendingAll, getTMDBImageUrl, TMDBMovie } from "@/lib/tmdbApi";
+import { getLatestMovies, getImageUrl } from "@/lib/ophimApi";
+import { getProxiedImageUrl } from "@/lib/imageProxy";
 
 export default function TrendingSection() {
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
@@ -13,8 +15,42 @@ export default function TrendingSection() {
   useEffect(() => {
     setLoading(true);
     getTrendingAll(timeWindow)
-      .then((data) => setMovies(data.results?.slice(0, 10) || []))
-      .catch(() => setMovies([]))
+      .then((data) => {
+        if (data?.results && data.results.length > 0) {
+          setMovies(data.results.slice(0, 10));
+        } else {
+          return getLatestMovies(1).then((latest) => {
+            const mapped: TMDBMovie[] = (latest.items || []).slice(0, 10).map((m: any) => ({
+              id: m._id || m.slug,
+              title: m.name,
+              name: m.name,
+              poster_path: m.poster_url || m.thumb_url,
+              backdrop_path: m.poster_url || m.thumb_url,
+              overview: '',
+              genre_ids: [],
+              vote_average: m.tmdb?.vote_average || 8.5,
+              media_type: 'movie',
+            }));
+            setMovies(mapped);
+          });
+        }
+      })
+      .catch(() => {
+        return getLatestMovies(1).then((latest) => {
+          const mapped: TMDBMovie[] = (latest.items || []).slice(0, 10).map((m: any) => ({
+            id: m._id || m.slug,
+            title: m.name,
+            name: m.name,
+            poster_path: m.poster_url || m.thumb_url,
+            backdrop_path: m.poster_url || m.thumb_url,
+            overview: '',
+            genre_ids: [],
+            vote_average: m.tmdb?.vote_average || 8.5,
+            media_type: 'movie',
+          }));
+          setMovies(mapped);
+        }).catch(() => setMovies([]));
+      })
       .finally(() => setLoading(false));
   }, [timeWindow]);
 
@@ -60,7 +96,11 @@ export default function TrendingSection() {
                   </span>
                   <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-[#2a2d3e] shadow-lg z-10 ml-6">
                     <Image
-                      src={getTMDBImageUrl(movie.poster_path || '', 'w342')}
+                      src={
+                        movie.poster_path?.startsWith('http') || movie.poster_path?.startsWith('/')
+                          ? getProxiedImageUrl(getImageUrl(movie.poster_path))
+                          : getTMDBImageUrl(movie.poster_path || '', 'w342')
+                      }
                       alt={movie.title || movie.name || 'Movie poster'}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
