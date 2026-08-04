@@ -285,14 +285,21 @@ export async function GET(request: NextRequest) {
     if (key !== "path") params.set(key, value);
   });
 
-  // Race tất cả nguồn song song — ai nhanh nhất và hợp lệ thì thắng
+  const errors: string[] = [];
+
+  const wrapSource = async (name: string, p: Promise<{ data: unknown; source: string }>) => {
+    try {
+      return await p;
+    } catch (e: any) {
+      errors.push(`${name}: ${e?.message || String(e)}`);
+      throw e;
+    }
+  };
+
   const sources = [
-    // OPhim mirrors
-    ...OPHIM_BASES.map((base) => fetchOPhim(base, path, params)),
-    // NguonC
-    fetchNguonc(path, params),
-    // KKPhim (cùng format OPhim)
-    fetchKKPhim(path, params),
+    ...OPHIM_BASES.map((base) => wrapSource(`OPhim(${base})`, fetchOPhim(base, path, params))),
+    wrapSource("NguonC", fetchNguonc(path, params)),
+    wrapSource("KKPhim", fetchKKPhim(path, params)),
   ];
 
   try {
@@ -300,7 +307,7 @@ export async function GET(request: NextRequest) {
     return makeResponse(data, source);
   } catch {
     return NextResponse.json(
-      { error: "All upstream sources failed" },
+      { error: "All upstream sources failed", details: errors },
       { status: 502 },
     );
   }
