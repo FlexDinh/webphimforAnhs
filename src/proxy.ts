@@ -112,7 +112,7 @@ function timingSafeEqualText(leftText: string, rightText: string) {
   return result === 0;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const ip = getClientIp(request);
 
