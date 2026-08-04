@@ -55,7 +55,7 @@ async function timedFetch(url: string, baseUrl: string, timeoutMs = TIMEOUT_MS) 
     return await fetch(url, {
       signal: ctrl.signal,
       headers: { ...BROWSER_HEADERS, Referer: `${baseUrl}/`, Origin: baseUrl },
-      next: { revalidate: CACHE_SECONDS },
+      cache: "no-store",
     });
   } finally {
     clearTimeout(timer);
@@ -70,7 +70,7 @@ async function fetchOPhim(
   params: URLSearchParams,
 ): Promise<{ data: unknown; source: string }> {
   let realPath = path;
-  if (baseUrl.includes("phimapi.com") && path === "/v1/api/danh-sach/phim-moi-cap-nhat") {
+  if (baseUrl.includes("phimapi.com") && path.includes("phim-moi-cap-nhat")) {
     realPath = "/danh-sach/phim-moi-cap-nhat";
   }
   const url = `${baseUrl}${realPath}${params.toString() ? "?" + params.toString() : ""}`;
@@ -92,7 +92,7 @@ async function fetchKKPhim(
   params: URLSearchParams,
 ): Promise<{ data: unknown; source: string }> {
   let realPath = path;
-  if (path === "/v1/api/danh-sach/phim-moi-cap-nhat") {
+  if (path.includes("phim-moi-cap-nhat")) {
     realPath = "/danh-sach/phim-moi-cap-nhat";
   }
   const url = `${KKPHIM_BASE}${realPath}${params.toString() ? "?" + params.toString() : ""}`;

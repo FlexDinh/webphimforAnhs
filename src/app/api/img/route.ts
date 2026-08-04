@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
 
     let upstream = await fetch(imageUrl, {
       signal: controller.signal,
+      cache: "no-store",
       headers: {
         "User-Agent":
           "Mozilla/5.0 (compatible; RoPhimBot/1.0; +https://rophim.vercel.app)",
