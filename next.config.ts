@@ -67,6 +67,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: '**.ophim1.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'phimapi.com',
       },
       {

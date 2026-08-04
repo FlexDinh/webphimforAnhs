@@ -15,6 +15,10 @@ export function getImageUrl(path: string | null | undefined): string {
   if (!value) return PLACEHOLDER_IMAGE;
 
   if (value.startsWith("http://") || value.startsWith("https://")) {
+    // Tự động thay thế tên miền ảnh bị chết/chặn của OPhim sang tên miền dự phòng
+    if (value.includes("img.ophim.live")) {
+      return value.replace("img.ophim.live", "img.ophim1.com");
+    }
     return value;
   }
 
