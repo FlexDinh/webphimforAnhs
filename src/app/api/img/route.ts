@@ -27,9 +27,9 @@ export async function GET(request: NextRequest) {
     return new NextResponse("URL too long", { status: 400 });
   }
   
-  // Tự động chuyển domain bị chết sang domain dự phòng
-  if (imageUrl.includes("img.ophim.live")) {
-    imageUrl = imageUrl.replace("img.ophim.live", "img.ophim1.com");
+  // Tự động chuyển domain bị chết sang phimimg.com
+  if (imageUrl.includes("ophim")) {
+    imageUrl = imageUrl.replace(/https?:\/\/(img\.)?ophim[0-9]*\.(live|com)/i, "https://phimimg.com");
   }
 
   // Reject large payloads or anything that isn't a GET

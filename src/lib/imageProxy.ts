@@ -46,8 +46,8 @@ export function getProxiedImageUrl(url: string | null | undefined): string {
   if (!value) return "/placeholder.svg";
   if (!value.startsWith("http")) return value;
   
-  if (value.includes("img.ophim.live")) {
-    value = value.replace("img.ophim.live", "img.ophim1.com");
+  if (value.includes("ophim")) {
+    value = value.replace(/https?:\/\/(img\.)?ophim[0-9]*\.(live|com)/i, "https://phimimg.com");
   }
 
   if (shouldProxy(value)) {
