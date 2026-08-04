@@ -1,15 +1,17 @@
-// RoPhim Service Worker v3 - Offline + Image CDN Cache Strategy
-const CACHE_NAME = "rophim-v3";
-const IMAGE_CACHE_NAME = "rophim-images-v3";
+// RoPhim Service Worker v5 - Auto Clear Stale Cache Strategy
+const CACHE_NAME = "rophim-v5";
+const IMAGE_CACHE_NAME = "rophim-images-v5";
 const IMAGE_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 ngày
 
 // Domains ảnh CDN ngoài cần cache
 const IMAGE_CDN_ORIGINS = [
   "img.ophim.live",
+  "img.ophim1.com",
   "phimimg.com",
   "phim.nguonc.com",
   "image.tmdb.org",
   "ophim1.com",
+  "phimapi.com",
 ];
 
 const STATIC_ASSETS = ["/phimhay", "/manifest.json", "/favicon.ico"];
@@ -28,7 +30,7 @@ function isExternalImage(url) {
 function isCacheExpired(response) {
   if (!response) return true;
   const dateHeader = response.headers.get("sw-cached-at");
-  if (!dateHeader) return false; // không có metadata → coi như còn dùng được
+  if (!dateHeader) return false;
   const cachedAt = parseInt(dateHeader, 10);
   const ageSeconds = (Date.now() - cachedAt) / 1000;
   return ageSeconds > IMAGE_CACHE_TTL_SECONDS;
@@ -45,7 +47,7 @@ self.addEventListener("install", (event) => {
 });
 
 // ──────────────────────────────────────────────
-// Activate: xóa cache cũ
+// Activate: xóa tất cả cache v3/v4 cũ
 // ──────────────────────────────────────────────
 self.addEventListener("activate", (event) => {
   event.waitUntil(
@@ -61,7 +63,7 @@ self.addEventListener("activate", (event) => {
 });
 
 // ──────────────────────────────────────────────
-// Fetch: chiến lược riêng cho ảnh CDN vs page thường
+// Fetch: Network-First cho JS/CSS tĩnh để không bị dính file cũ
 // ──────────────────────────────────────────────
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
@@ -86,15 +88,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Network-first cho ảnh đã optimize (/_next/image) - để tận dụng CDN Vercel
-  if (parsed.pathname.startsWith("/_next/image")) {
-    event.respondWith(networkFirstWithCache(event.request, CACHE_NAME));
-    return;
-  }
-
-  // Stale-while-revalidate cho static assets
+  // Network-First cho tất cả /_next/static/ để luôn tải bản build JS mới nhất
   if (parsed.pathname.startsWith("/_next/static/")) {
-    event.respondWith(cacheFirst(event.request, CACHE_NAME));
+    event.respondWith(networkFirstWithCache(event.request, CACHE_NAME));
     return;
   }
 
