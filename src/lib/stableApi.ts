@@ -217,30 +217,68 @@ async function fetchFromOPhim(slug: string): Promise<UnifiedResponse> {
     return normalized;
 }
 
-async function fetchFromNguonC(slug: string): Promise<UnifiedResponse> {
-    // NguonC gọi trực tiếp vì có CORS header
-    const data = await fetchJsonWithTimeout<any>(`${getNguonCBaseUrl()}/film/${slug}`, 6000);
-    if (data?.status !== "success") {
-        throw new Error("NguonC returned invalid payload");
+async function fetchFromNguonC(slug: string, getMovieName: () => Promise<string | undefined>): Promise<UnifiedResponse> {
+    try {
+        const data = await fetchJsonWithTimeout<any>(`${getNguonCBaseUrl()}/film/${slug}`, 6000);
+        if (data?.status === "success") {
+            const normalized = normalizeNguonC(data);
+            if (isUsableDetail(normalized)) {
+                normalized.episodes.forEach(s => s.server_name = `NguonC - ${s.server_name}`);
+                return normalized;
+            }
+        }
+    } catch {}
+
+    const movieName = await getMovieName();
+    if (movieName) {
+        try {
+            const searchData = await fetchJsonWithTimeout<any>(`${getNguonCBaseUrl()}/films/search?keyword=${encodeURIComponent(movieName)}`, 6000);
+            const firstMatch = searchData?.data?.items?.[0];
+            if (firstMatch?.slug) {
+                const data = await fetchJsonWithTimeout<any>(`${getNguonCBaseUrl()}/film/${firstMatch.slug}`, 6000);
+                if (data?.status === "success") {
+                    const normalized = normalizeNguonC(data);
+                    if (isUsableDetail(normalized)) {
+                        normalized.episodes.forEach(s => s.server_name = `NguonC - ${s.server_name}`);
+                        return normalized;
+                    }
+                }
+            }
+        } catch {}
     }
-    const normalized = normalizeNguonC(data);
-    if (!isUsableDetail(normalized)) {
-        throw new Error("NguonC normalized payload is not usable");
-    }
-    return normalized;
+    throw new Error("NguonC fetch failed");
 }
 
-async function fetchFromKkPhim(slug: string): Promise<UnifiedResponse> {
-    // Gọi qua proxy để bypass CORS/block
-    const data = await fetchJsonWithTimeout<any>(`/api/movies?path=/phim/${slug}`, 8000);
-    if (!data?.status) {
-        throw new Error("KKPhim returned invalid payload");
+async function fetchFromKkPhim(slug: string, getMovieName: () => Promise<string | undefined>): Promise<UnifiedResponse> {
+    try {
+        const data = await fetchJsonWithTimeout<any>(`${getKkPhimBaseUrl()}/phim/${slug}`, 6000);
+        if (data?.status) {
+            const normalized = normalizeOPhim(data);
+            if (isUsableDetail(normalized)) {
+                normalized.episodes.forEach(s => s.server_name = `KKPhim - ${s.server_name}`);
+                return normalized;
+            }
+        }
+    } catch {}
+
+    const movieName = await getMovieName();
+    if (movieName) {
+        try {
+            const searchData = await fetchJsonWithTimeout<any>(`${getKkPhimBaseUrl()}/v1/api/tim-kiem?keyword=${encodeURIComponent(movieName)}`, 6000);
+            const firstMatch = searchData?.data?.items?.[0];
+            if (firstMatch?.slug) {
+                const data = await fetchJsonWithTimeout<any>(`${getKkPhimBaseUrl()}/phim/${firstMatch.slug}`, 6000);
+                if (data?.status) {
+                    const normalized = normalizeOPhim(data);
+                    if (isUsableDetail(normalized)) {
+                        normalized.episodes.forEach(s => s.server_name = `KKPhim - ${s.server_name}`);
+                        return normalized;
+                    }
+                }
+            }
+        } catch {}
     }
-    const normalized = normalizeOPhim(data);
-    if (!isUsableDetail(normalized)) {
-        throw new Error("KKPhim normalized payload is not usable");
-    }
-    return normalized;
+    throw new Error("KKPhim fetch failed");
 }
 
 export async function getBestStream(slug: string) {
@@ -300,45 +338,54 @@ export async function getUnifiedMovieDetail(slug: string): Promise<UnifiedRespon
 
     const task = (async (): Promise<UnifiedResponse> => {
         const ophimPromise = fetchFromOPhim(slug);
-        const fallbackPromise = (async () => {
-            const res = await Promise.any([fetchFromNguonC(slug), fetchFromKkPhim(slug)]);
-            return new Promise<UnifiedResponse>(resolve => setTimeout(() => resolve(res), 2000));
-        })();
+        const getMovieName = async () => (await ophimPromise.catch(() => null))?.movie?.name;
 
-        try {
-            const result = await Promise.any([ophimPromise, fallbackPromise]);
-            
-            // Tích hợp thêm các nguồn quốc tế TMDB (nếu là phim lẻ và có tmdb id)
-            if (result.movie?.type === 'single' && result.movie?.tmdb?.id) {
-                const tmdbId = result.movie.tmdb.id;
-                const tmdbServers = TMDB_SOURCES.map(source => ({
-                    server_name: `TMDB - ${source.name} (${source.quality})`,
-                    server_data: [{
-                        name: "Full",
-                        slug: "full",
-                        filename: "Full",
-                        link_embed: source.getMovieUrl ? source.getMovieUrl(tmdbId) : "",
-                        link_m3u8: "",
-                    }]
-                })).filter(s => s.server_data[0].link_embed);
-                
-                result.episodes = [...result.episodes, ...tmdbServers];
-            }
+        const results = await Promise.allSettled([
+            ophimPromise,
+            fetchFromKkPhim(slug, getMovieName),
+            fetchFromNguonC(slug, getMovieName)
+        ]);
 
-            setCachedDetail(slug, result);
-            return result;
-        } catch (error) {
-            const stale = detailCache.get(cacheKey)?.data;
-            if (stale) {
-                return stale;
+        const finalResult: UnifiedResponse = {
+            status: false,
+            movie: {} as any,
+            episodes: []
+        };
+
+        for (const res of results) {
+            if (res.status === 'fulfilled' && res.value?.status) {
+                if (!finalResult.status) {
+                    finalResult.status = true;
+                    finalResult.movie = res.value.movie;
+                }
+                finalResult.episodes = [...finalResult.episodes, ...res.value.episodes];
             }
-            console.error("All providers failed for movie slug:", slug, error);
-            return {
-                status: false,
-                movie: {} as UnifiedMovie,
-                episodes: [],
-            };
         }
+
+        if (!finalResult.status) {
+            console.error("All providers failed for movie slug:", slug);
+            return finalResult;
+        }
+
+        // Tích hợp thêm các nguồn quốc tế TMDB (nếu là phim lẻ và có tmdb id)
+        if (finalResult.movie?.type === 'single' && finalResult.movie?.tmdb?.id) {
+            const tmdbId = finalResult.movie.tmdb.id;
+            const tmdbServers = TMDB_SOURCES.map(source => ({
+                server_name: `TMDB - ${source.name} (${source.quality})`,
+                server_data: [{
+                    name: "Full",
+                    slug: "full",
+                    filename: "Full",
+                    link_embed: source.getMovieUrl ? source.getMovieUrl(tmdbId) : "",
+                    link_m3u8: "",
+                }]
+            })).filter(s => s.server_data[0].link_embed);
+            
+            finalResult.episodes = [...finalResult.episodes, ...tmdbServers];
+        }
+
+        setCachedDetail(slug, finalResult);
+        return finalResult;
     })();
 
     detailCache.set(cacheKey, {
