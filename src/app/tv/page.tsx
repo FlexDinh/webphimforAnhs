@@ -7,6 +7,7 @@ import { getTrendingAll } from "@/lib/tmdbApi";
 import { getKkPhimLatestMovies } from "@/lib/kkphimApi";
 import { getImageUrl } from "@/lib/imageUrl";
 import { getTVImageUrl } from "@/lib/tvImageUrl";
+import { generateSlug } from "@/lib/movieClassification";
 import TVMovieCard from "./_components/TVMovieCard";
 import { COLORS, FONT, SPACING, RADIUS, styles } from "./_components/TVStyles";
 
@@ -418,7 +419,7 @@ export default function TVHomePage() {
     return tmdbData.results.map((m: any) => ({
       _id: m.id.toString(),
       name: m.title || m.name,
-      slug: (m.title || m.name).toLowerCase().replace(/ /g, '-'),
+      slug: generateSlug(m.title || m.name),
       origin_name: m.original_title || m.original_name,
       thumb_url: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : '',
       poster_url: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : '',

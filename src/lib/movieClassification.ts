@@ -16,6 +16,11 @@ export function normalizeLookupText(value?: string | null): string {
         .trim();
 }
 
+export function generateSlug(value?: string | null): string {
+    if (!value) return "";
+    return normalizeLookupText(value).replace(/\s+/g, "-");
+}
+
 export function matchesMovieType(movie: Pick<OPhimMovie, "type">, typeSlug: string): boolean {
     const movieType = normalizeLookupText(movie.type);
 

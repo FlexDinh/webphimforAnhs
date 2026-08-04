@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getTrendingAll, getTMDBImageUrl, TMDBMovie } from "@/lib/tmdbApi";
 import { getLatestMovies, getImageUrl } from "@/lib/ophimApi";
 import { getProxiedImageUrl } from "@/lib/imageProxy";
+import { generateSlug } from "@/lib/movieClassification";
 
 export default function TrendingSection() {
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
@@ -84,7 +85,7 @@ export default function TrendingSection() {
             ))
           ) : (
             movies.map((movie, index) => {
-              const slug = (movie.title || movie.name || "").toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+              const slug = generateSlug(movie.title || movie.name || "");
               return (
                 <div 
                   key={movie.id}
