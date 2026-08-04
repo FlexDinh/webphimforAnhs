@@ -289,17 +289,10 @@ export default function MoviePage() {
     }, []);
 
     const handlePlayerLoaded = useCallback(() => {
-        const elapsed = Date.now() - iframeLoadStartRef.current;
         setPlayerLoading(false);
         if (playerSlowTimerRef.current) clearTimeout(playerSlowTimerRef.current);
         setPlayerSlow(false);
-        // OpenResty/Nginx error pages load cực nhanh (< 900ms)
-        // Video player thật mất ít nhất 1-3s để init
-        if (elapsed < 900 && iframeLoadStartRef.current > 0) {
-            setPlayerBlocked(true);
-        } else {
-            setPlayerBlocked(false);
-        }
+        // We removed the elapsed < 900ms hack because it falsely triggers when iframes are cached
     }, []);
 
     const handleNextEpisode = useCallback(() => {

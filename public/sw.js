@@ -1,6 +1,6 @@
 // RoPhim Service Worker v5 - Auto Clear Stale Cache Strategy
-const CACHE_NAME = "rophim-v5";
-const IMAGE_CACHE_NAME = "rophim-images-v5";
+const CACHE_NAME = "rophim-v6";
+const IMAGE_CACHE_NAME = "rophim-images-v6";
 const IMAGE_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 ngày
 
 // Domains ảnh CDN ngoài cần cache
@@ -106,7 +106,11 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(event.request))
+      .catch(async () => {
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) return cachedResponse;
+        return new Response("Network error and not found in cache", { status: 503, statusText: "Service Unavailable" });
+      })
   );
 });
 
@@ -165,7 +169,7 @@ async function networkFirstWithCache(request, cacheName) {
   } catch {
     const cached = await cache.match(request);
     if (cached) return cached;
-    throw new Error("Network error and no cache available");
+    return new Response("Network error and not found in cache", { status: 503, statusText: "Service Unavailable" });
   }
 }
 
