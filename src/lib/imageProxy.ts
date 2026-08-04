@@ -14,6 +14,7 @@ const IMAGE_PROXY_BASE = "/api/img";
 // Domain được proxy qua /api/img
 const PROXY_HOSTS = [
   "img.ophim.live",
+  "img.ophim1.com",
   "phimimg.com",
   "image.tmdb.org",
   "phim.nguonc.com",
@@ -41,9 +42,14 @@ function shouldProxy(url: string): boolean {
  */
 export function getProxiedImageUrl(url: string | null | undefined): string {
   if (!url) return "/placeholder.svg";
-  const value = String(url).trim();
+  let value = String(url).trim();
   if (!value) return "/placeholder.svg";
   if (!value.startsWith("http")) return value;
+  
+  if (value.includes("img.ophim.live")) {
+    value = value.replace("img.ophim.live", "img.ophim1.com");
+  }
+
   if (shouldProxy(value)) {
     return `${IMAGE_PROXY_BASE}?url=${encodeURIComponent(value)}`;
   }

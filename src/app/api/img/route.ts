@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Danh sách domain ảnh được phép proxy (whitelist)
 const ALLOWED_HOSTS = [
   "img.ophim.live",
+  "img.ophim1.com",
   "phimimg.com",
   "image.tmdb.org",
   "phim.nguonc.com",
@@ -14,7 +15,7 @@ const ALLOWED_HOSTS = [
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const imageUrl = searchParams.get("url");
+  let imageUrl = searchParams.get("url");
 
   if (!imageUrl) {
     return new NextResponse("Missing url param", { status: 400 });
@@ -24,6 +25,11 @@ export async function GET(request: NextRequest) {
     return new NextResponse("URL too long", { status: 400 });
   }
   
+  // Tự động chuyển domain bị chết sang domain dự phòng
+  if (imageUrl.includes("img.ophim.live")) {
+    imageUrl = imageUrl.replace("img.ophim.live", "img.ophim1.com");
+  }
+
   // Reject large payloads or anything that isn't a GET
   if (request.method !== 'GET' && request.headers.get("content-length")) {
     const contentLength = parseInt(request.headers.get("content-length") || "0", 10);
@@ -59,7 +65,7 @@ export async function GET(request: NextRequest) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
 
-    const upstream = await fetch(imageUrl, {
+    let upstream = await fetch(imageUrl, {
       signal: controller.signal,
       headers: {
         "User-Agent":
@@ -69,6 +75,21 @@ export async function GET(request: NextRequest) {
         Referer: parsedUrl.origin,
       },
     });
+
+    if (!upstream.ok && imageUrl.includes("img.ophim1.com")) {
+      // Fallback sang phimimg.com nếu img.ophim1.com cũng không tìm thấy
+      const fallbackUrl = imageUrl.replace("img.ophim1.com", "phimimg.com");
+      try {
+        const fbRes = await fetch(fallbackUrl, {
+          signal: controller.signal,
+          headers: {
+            "User-Agent": "Mozilla/5.0 (compatible; RoPhimBot/1.0)",
+            Accept: "image/*",
+          },
+        });
+        if (fbRes.ok) upstream = fbRes;
+      } catch {}
+    }
 
     clearTimeout(timeout);
 
