@@ -16,9 +16,9 @@ export const maxDuration = 25; // Vercel Hobby: max 25s
 export const dynamic = "force-dynamic";
 
 const OPHIM_BASES = [
+  "https://phimapi.com",
   DEFAULT_MANAGED_API_CONFIG.ophimBaseUrl,
   "https://ophim1.com",
-  "https://phimapi.com",
 ].filter((v, i, a) => a.indexOf(v) === i); // unique
 
 const NGUONC_BASE = "https://phim.nguonc.com/api";
@@ -298,9 +298,9 @@ export async function GET(request: NextRequest) {
   };
 
   const sources = [
+    wrapSource("KKPhim", fetchKKPhim(path, params)),
     ...OPHIM_BASES.map((base) => wrapSource(`OPhim(${base})`, fetchOPhim(base, path, params))),
     wrapSource("NguonC", fetchNguonc(path, params)),
-    wrapSource("KKPhim", fetchKKPhim(path, params)),
   ];
 
   try {

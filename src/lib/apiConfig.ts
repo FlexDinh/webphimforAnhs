@@ -36,8 +36,8 @@ export const API_CONFIG_STORAGE_KEY = "rophim.api.config.v1";
 export const API_CONFIG_CHANGE_EVENT = "rophim-api-config-change";
 
 export const DEFAULT_MANAGED_API_CONFIG: ManagedApiConfig = {
-  ophimBaseUrl: process.env.NEXT_PUBLIC_OPHIM_BASE_URL || "https://ophim1.com",
-  ophimImageCdn: process.env.NEXT_PUBLIC_OPHIM_IMAGE_CDN || "https://img.ophim.live",
+  ophimBaseUrl: process.env.NEXT_PUBLIC_OPHIM_BASE_URL || "https://phimapi.com",
+  ophimImageCdn: process.env.NEXT_PUBLIC_OPHIM_IMAGE_CDN || "https://phimimg.com",
   kkphimBaseUrl: process.env.NEXT_PUBLIC_KKPHIM_BASE_URL || "https://phimapi.com",
   nguoncBaseUrl: process.env.NEXT_PUBLIC_NGUONC_BASE_URL || "https://phim.nguonc.com/api",
 };

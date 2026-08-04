@@ -178,8 +178,6 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
         .slice(0, 10)
     : [];
 
-  if (trendingMovies.length === 0) return null;
-
   return (
     <section className="mb-[40px]">
       <div className="mb-[16px] flex items-center gap-[10px]">
@@ -193,7 +191,18 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
       </div>
 
       <div className="tv-trending-grid grid grid-cols-1 gap-[12px] sm:grid-cols-2 lg:grid-cols-5">
-        {trendingMovies.map((movie, index) => (
+        {trendingMovies.length === 0
+          ? [...Array(10)].map((_, i) => (
+              <div key={i} className="flex items-center gap-[12px] rounded-[12px] bg-white/5 p-[12px]">
+                <div className="h-[28px] w-[28px] rounded bg-[#2a2d3e] animate-pulse" />
+                <div className="h-[65px] w-[45px] flex-shrink-0 rounded-[8px] bg-[#2a2d3e] animate-pulse" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-[12px] w-3/4 rounded bg-[#2a2d3e] animate-pulse" />
+                  <div className="h-[10px] w-1/2 rounded bg-[#2a2d3e] animate-pulse" />
+                </div>
+              </div>
+            ))
+          : trendingMovies.map((movie, index) => (
           <button
             key={movie._id}
             onClick={() => router.push(`/phim/${movie.slug}`)}
@@ -240,6 +249,7 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
 TrendingSection.displayName = "TrendingSection";
 
 export default function PhimHay() {
+  const router = useRouter();
   const [trendingMovies, setTrendingMovies] = useState<OPhimMovie[]>([]);
   const { preferences } = usePreferences();
   const { hiddenSections } = preferences;
@@ -268,7 +278,32 @@ export default function PhimHay() {
 
   return (
     <div className="min-h-screen bg-[#0F111A]">
-      <div className="container mx-auto max-w-[1400px] px-[16px] pt-[20px] pb-[30px]">
+      <div className="container mx-auto max-w-[1400px] px-[16px] pt-[90px] pb-[30px]">
+        <div className="mb-[24px] flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-[#1B1E2E] via-[#141724] to-[#0F111A] p-[20px] border border-white/8 shadow-xl">
+          <div>
+            <h1 className="text-[22px] font-extrabold text-white sm:text-[28px] flex items-center gap-2">
+              🎬 Kho Phim Hay
+            </h1>
+            <p className="mt-[4px] text-[13px] text-white/60">
+              Phim mới cập nhật liên tục, tốc độ cao, hỗ trợ Vietsub & Thuyết minh
+            </p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => router.push("/phim-moi")}
+              className="inline-flex items-center gap-[6px] rounded-lg bg-[#FFD875] px-[16px] py-[8px] text-[13px] font-bold text-black transition hover:bg-[#FFE49A]"
+            >
+              Phim mới hôm nay
+            </button>
+            <button
+              onClick={() => router.push("/phim-bo")}
+              className="inline-flex items-center gap-[6px] rounded-lg bg-white/10 px-[16px] py-[8px] text-[13px] font-semibold text-white transition hover:bg-white/20"
+            >
+              Phim bộ
+            </button>
+          </div>
+        </div>
+
         <ContinueWatching />
         <TrendingSection movies={trendingMovies} />
 
