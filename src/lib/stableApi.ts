@@ -5,6 +5,7 @@ import {
     getOPhimBaseUrl,
     getOPhimMovieImageBase,
 } from "./apiConfig.ts";
+import { TMDB_SOURCES } from "./streamingApi";
 
 const DETAIL_CACHE_TTL_MS = 10 * 60 * 1000;
 const DETAIL_REVALIDATE_SECONDS = 300;
@@ -306,6 +307,24 @@ export async function getUnifiedMovieDetail(slug: string): Promise<UnifiedRespon
 
         try {
             const result = await Promise.any([ophimPromise, fallbackPromise]);
+            
+            // Tích hợp thêm các nguồn quốc tế TMDB (nếu là phim lẻ và có tmdb id)
+            if (result.movie?.type === 'single' && result.movie?.tmdb?.id) {
+                const tmdbId = result.movie.tmdb.id;
+                const tmdbServers = TMDB_SOURCES.map(source => ({
+                    server_name: `TMDB - ${source.name} (${source.quality})`,
+                    server_data: [{
+                        name: "Full",
+                        slug: "full",
+                        filename: "Full",
+                        link_embed: source.getMovieUrl ? source.getMovieUrl(tmdbId) : "",
+                        link_m3u8: "",
+                    }]
+                })).filter(s => s.server_data[0].link_embed);
+                
+                result.episodes = [...result.episodes, ...tmdbServers];
+            }
+
             setCachedDetail(slug, result);
             return result;
         } catch (error) {
