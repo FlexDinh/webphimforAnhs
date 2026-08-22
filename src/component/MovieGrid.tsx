@@ -90,13 +90,12 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
 
   if (loading) {
     return (
-      <div className="tv-movie-grid stagger-children grid grid-cols-2 gap-[16px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="tv-movie-grid stagger-children cinema-stagger grid grid-cols-2 gap-[10px] sm:grid-cols-3 sm:gap-[14px] md:grid-cols-4 lg:grid-cols-5 lg:gap-[18px] xl:grid-cols-6">
         {Array.from({ length: 18 }).map((_, index) => (
           <div key={index} className="animate-pulse">
-            <div className="aspect-[2/3] rounded-[12px] bg-[#2a2d3e] skeleton-shimmer" 
-                 style={{ background: 'linear-gradient(90deg, #2a2d3e 25%, #3a3d4e 50%, #2a2d3e 75%)' }} />
-            <div className="mt-[10px] h-[14px] w-[80%] rounded bg-[#2a2d3e]" />
-            <div className="mt-[6px] h-[12px] w-[60%] rounded bg-[#2a2d3e]" />
+            <div className="aspect-[2/3] rounded-[12px] bg-[#1C2133] cinema-skeleton" />
+            <div className="mt-[10px] h-[14px] w-[80%] rounded bg-[#1C2133]" />
+            <div className="mt-[6px] h-[12px] w-[60%] rounded bg-[#1C2133]" />
           </div>
         ))}
       </div>
@@ -105,7 +104,7 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
 
   return (
     <div>
-      <div className="tv-movie-grid stagger-children grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="tv-movie-grid stagger-children cinema-stagger grid grid-cols-2 gap-[10px] sm:grid-cols-3 sm:gap-[14px] md:grid-cols-4 lg:grid-cols-5 lg:gap-[18px] xl:grid-cols-6">
         {movies.map((movie, index) => (
           <button
             key={`${movie._id}-${index}`}
@@ -117,7 +116,7 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
             }}
             className="group cursor-pointer text-left transition-transform active:scale-[0.98]"
           >
-            <div className="movie-card-premium touch-feedback relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e] shadow-lg">
+            <div className="movie-card-premium cinema-poster touch-feedback relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e] shadow-lg">
               <Image
                 src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))}
                 alt={movie.name}
@@ -129,13 +128,13 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
                 loading={index < 6 ? "eager" : "lazy"}
               />
 
-              <div className="card-overlay absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-transparent to-transparent p-[12px]">
-                <span className="text-[13px] font-medium text-white">Xem ngay</span>
+              <div className="card-overlay absolute inset-0 flex items-end bg-gradient-to-t from-black/85 via-black/20 to-transparent p-[12px]">
+                <span className="text-[12px] font-semibold tracking-wide text-white">Xem ngay</span>
               </div>
 
               <div className="absolute left-[8px] top-[8px] flex flex-col gap-[4px]">
                 {movie.quality && (
-                  <span className="rounded bg-[#FFD875] px-[6px] py-[2px] text-[10px] font-semibold text-black">
+                  <span className="cinema-badge cinema-badge-quality">
                     {movie.quality}
                   </span>
                 )}
@@ -148,7 +147,7 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
 
               {movie.episode_current && (
                 <div className="absolute bottom-[8px] right-[8px]">
-                  <span className="rounded bg-black/70 px-[6px] py-[2px] text-[10px] text-white">
+                  <span className="rounded bg-black/60 backdrop-blur-sm px-[6px] py-[2px] text-[10px] text-white">
                     {movie.episode_current}
                   </span>
                 </div>
@@ -156,13 +155,13 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
             </div>
 
             <div className="mt-[10px]">
-              <h3 className="truncate text-[14px] font-medium text-white transition-colors group-hover:text-[#FFD875]">
+              <h3 className="truncate text-[13px] font-semibold text-white transition-colors group-hover:text-[#FFD875]">
                 {movie.name || ""}
               </h3>
               <div className="mt-[4px] flex items-center gap-[8px]">
-                <span className="text-[12px] text-[#888]">{String(movie.year)}</span>
+                <span className="text-[11px] text-[#6B7280]">{String(movie.year)}</span>
                 {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
-                  <span className="text-[11px] text-[#FFD875]">★ {movie.tmdb.vote_average.toFixed(1)}</span>
+                  <span className="text-[11px] text-[#FFD875]/90">★ {movie.tmdb.vote_average.toFixed(1)}</span>
                 )}
               </div>
             </div>
@@ -189,7 +188,7 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
           <button
             onClick={() => setPage((current) => Math.max(1, current - 1))}
             disabled={page === 1}
-            className="rounded-full bg-[#ffffff15] px-[20px] py-[10px] text-[14px] text-white transition-colors hover:bg-[#ffffff25] disabled:cursor-not-allowed disabled:opacity-50"
+            className="cinema-btn-ghost px-[18px] py-[9px] text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             ← Trước
           </button>
@@ -197,15 +196,15 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
           <div className="flex items-center gap-[4px]">
             {page > 2 && (
               <>
-                <button onClick={() => setPage(1)} className="h-[36px] w-[36px] rounded-full bg-[#ffffff10] text-[13px] text-white hover:bg-[#ffffff20]">
+                <button onClick={() => setPage(1)} className="h-[36px] w-[36px] rounded-full bg-[#171B28] text-[13px] text-white hover:bg-[#1C2133]">
                   1
                 </button>
-                {page > 3 && <span className="px-[4px] text-[#888]">...</span>}
+                {page > 3 && <span className="px-[4px] text-[#6B7280]">...</span>}
               </>
             )}
 
             {page > 1 && (
-              <button onClick={() => setPage(page - 1)} className="h-[36px] w-[36px] rounded-full bg-[#ffffff10] text-[13px] text-white hover:bg-[#ffffff20]">
+              <button onClick={() => setPage(page - 1)} className="h-[36px] w-[36px] rounded-full bg-[#171B28] text-[13px] text-white hover:bg-[#1C2133]">
                 {page - 1}
               </button>
             )}
@@ -215,15 +214,15 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
             </button>
 
             {page < totalPages && (
-              <button onClick={() => setPage(page + 1)} className="h-[36px] w-[36px] rounded-full bg-[#ffffff10] text-[13px] text-white hover:bg-[#ffffff20]">
+              <button onClick={() => setPage(page + 1)} className="h-[36px] w-[36px] rounded-full bg-[#171B28] text-[13px] text-white hover:bg-[#1C2133]">
                 {page + 1}
               </button>
             )}
 
             {page < totalPages - 1 && (
               <>
-                {page < totalPages - 2 && <span className="px-[4px] text-[#888]">...</span>}
-                <button onClick={() => setPage(totalPages)} className="h-[36px] w-[36px] rounded-full bg-[#ffffff10] text-[13px] text-white hover:bg-[#ffffff20]">
+                {page < totalPages - 2 && <span className="px-[4px] text-[#6B7280]">...</span>}
+                <button onClick={() => setPage(totalPages)} className="h-[36px] w-[36px] rounded-full bg-[#171B28] text-[13px] text-white hover:bg-[#1C2133]">
                   {totalPages}
                 </button>
               </>
@@ -233,7 +232,7 @@ export default function MovieGrid({ fetchFunction, infiniteScroll = false }: Mov
           <button
             onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
             disabled={page === totalPages}
-            className="rounded-full bg-[#FFD875] px-[20px] py-[10px] text-[14px] font-semibold text-black transition-colors hover:bg-[#FFD875]/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="cinema-btn-primary transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             Tiếp →
           </button>

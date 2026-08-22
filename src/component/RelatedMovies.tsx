@@ -43,12 +43,12 @@ export default function RelatedMovies({ currentMovie, className = "" }: RelatedM
     if (loading) {
         return (
             <div className={`${className}`}>
-                <h2 className="text-white text-[18px] font-bold mb-[16px]">Phim liên quan</h2>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-[12px]">
+                <h2 className="cinema-heading-md text-[16px] mb-[16px]">Phim liên quan</h2>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-[10px] sm:gap-[14px]">
                     {Array.from({ length: 6 }).map((_, i) => (
                         <div key={i} className="animate-pulse">
-                            <div className="aspect-[2/3] rounded-[10px] bg-[#2a2d3e]"></div>
-                            <div className="mt-[8px] h-[12px] bg-[#2a2d3e] rounded w-[80%]"></div>
+                            <div className="cinema-skeleton aspect-[2/3] rounded-[12px]"></div>
+                            <div className="mt-[8px] h-[12px] bg-[#1C2133] rounded-[12px] w-[80%]"></div>
                         </div>
                     ))}
                 </div>
@@ -60,10 +60,10 @@ export default function RelatedMovies({ currentMovie, className = "" }: RelatedM
 
     return (
         <div className={`${className}`}>
-            <h2 className="text-white text-[18px] font-bold mb-[16px] flex items-center gap-[8px]">
+            <h2 className="cinema-heading-md text-[16px] mb-[16px] flex items-center gap-[8px]">
                 <span role="img" aria-label="Phim">🎬</span> Phim liên quan
             </h2>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-[12px]">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-[10px] sm:gap-[14px]">
                 {movies.map((movie) => (
                     <div
                         key={movie._id}
@@ -78,7 +78,7 @@ export default function RelatedMovies({ currentMovie, className = "" }: RelatedM
                         }}
                         className="cursor-pointer group"
                     >
-                        <div className="relative aspect-[2/3] rounded-[10px] overflow-hidden bg-[#2a2d3e]">
+                        <div className="cinema-poster relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e]">
                             <Image
                                 src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))}
                                 alt={movie.name}
@@ -88,24 +88,28 @@ export default function RelatedMovies({ currentMovie, className = "" }: RelatedM
                                 unoptimized
                             />
                             {/* Hover Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-[8px]">
-                                <span className="text-white text-[11px]">Xem ngay</span>
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-full bg-[#FFD875] flex items-center justify-center shadow-[0_0_15px_rgba(255,216,117,0.5)]">
+                                    <svg className="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                </div>
                             </div>
                             {/* Quality Badge */}
                             {movie.quality && (
                                 <div className="absolute top-[6px] left-[6px]">
-                                    <span className="px-[5px] py-[2px] bg-[#FFD875] text-black text-[9px] font-bold rounded">
+                                    <span className="cinema-badge cinema-badge-quality">
                                         {movie.quality}
                                     </span>
                                 </div>
                             )}
                         </div>
                         <div className="mt-[8px]">
-                            <h3 className="text-white text-[12px] font-medium truncate group-hover:text-[#FFD875] transition-colors">
+                            <h3 className="text-white text-[12px] font-semibold truncate group-hover:text-[#FFD875] transition-colors">
                                 {movie.name}
                             </h3>
                             <div className="flex items-center gap-[6px] mt-[2px]">
-                                <span className="text-[#888] text-[10px]">{movie.year}</span>
+                                <span className="text-[#6B7280] text-[11px]">{movie.year}</span>
                                 {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
                                     <span className="text-[#FFD875] text-[10px]">
                                         <span role="img" aria-label="Sao">⭐</span> {movie.tmdb.vote_average.toFixed(1)}

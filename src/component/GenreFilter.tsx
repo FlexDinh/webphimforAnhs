@@ -45,7 +45,7 @@ export default function GenreFilter({
                     <FontAwesomeIcon icon={faFilter} className="text-[#FFD875] text-[14px]" />
                     <span className="text-white text-[14px] font-medium">Lọc theo thể loại</span>
                     {selectedGenres.length > 0 && (
-                        <span className="px-[8px] py-[2px] bg-[#FFD875] text-black text-[11px] font-bold rounded-full">
+                        <span className="px-[8px] py-[2px] bg-[#FFD875] text-[#0A0C14] text-[10px] font-bold rounded-full">
                             {selectedGenres.length}
                         </span>
                     )}
@@ -53,7 +53,7 @@ export default function GenreFilter({
                 {selectedGenres.length > 0 && (
                     <button
                         onClick={clearAll}
-                        className="text-[12px] text-[#888] hover:text-white transition-colors flex items-center gap-[4px]"
+                        className="text-[12px] text-red-400/80 hover:text-red-400 transition-colors flex items-center gap-[4px]"
                     >
                         <FontAwesomeIcon icon={faTimes} className="text-[10px]" />
                         Xóa tất cả
@@ -67,10 +67,7 @@ export default function GenreFilter({
                     <button
                         key={genre}
                         onClick={() => toggleGenre(genre)}
-                        className={`px-[14px] py-[8px] rounded-full text-[13px] transition-all duration-200 active:scale-95 ${selectedGenres.includes(genre)
-                                ? "bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black font-semibold shadow-lg shadow-[#FFD875]/20"
-                                : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
-                            }`}
+                        className={`cinema-pill ${selectedGenres.includes(genre) ? 'active' : ''}`}
                     >
                         {genre}
                     </button>
@@ -82,7 +79,7 @@ export default function GenreFilter({
                         onClick={() => setExpanded(!expanded)}
                         aria-expanded={expanded}
                         aria-haspopup="listbox"
-                        className="px-[14px] py-[8px] rounded-full text-[13px] bg-white/5 text-[#888] hover:text-white hover:bg-white/10 transition-colors flex items-center gap-[6px]"
+                        className="cinema-btn-ghost text-[12px] px-[14px] py-[8px] flex items-center gap-[6px]"
                     >
                         {expanded ? (
                             <>

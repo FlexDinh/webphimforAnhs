@@ -41,14 +41,14 @@ export default function WatchlistPage() {
     if (!mounted) return null;
 
     return (
-        <div className="min-h-screen bg-[#0F111A] pt-[90px] pb-[100px]">
+        <div className="min-h-screen bg-[#0A0C14] pt-[90px] pb-[100px]">
             <div className="container max-w-[1400px] mx-auto px-[16px]">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-[30px]">
                     <div className="flex items-center gap-[16px]">
                         <button
                             onClick={() => router.back()}
-                            className="p-[10px] rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                            className="p-[10px] rounded-full bg-[#171B28] hover:bg-[#1C2133] border border-white/6 transition-colors"
                         >
                             <FontAwesomeIcon icon={faArrowLeft} className="text-[14px]" />
                         </button>
@@ -57,8 +57,8 @@ export default function WatchlistPage() {
                                 <FontAwesomeIcon icon={faBookmark} className="text-black text-[16px]" />
                             </div>
                             <div>
-                                <h1 className="text-white text-[24px] font-bold">Xem Sau</h1>
-                                <p className="text-white/50 text-[13px]">{items.length} phim đã lưu</p>
+                                <h1 className="cinema-heading-lg text-white text-[24px] font-bold">Xem Sau</h1>
+                                <p className="text-[#6B7280] text-[13px]">{items.length} phim đã lưu</p>
                             </div>
                         </div>
                     </div>
@@ -66,7 +66,7 @@ export default function WatchlistPage() {
                     {items.length > 0 && (
                         <button
                             onClick={handleClearAll}
-                            className="px-[16px] py-[8px] rounded-full text-[12px] bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors flex items-center gap-[6px]"
+                            className="px-[16px] py-[8px] rounded-full text-[12px] bg-red-500/8 text-red-400 hover:bg-red-500/15 transition-colors flex items-center gap-[6px]"
                         >
                             <FontAwesomeIcon icon={faTrash} className="text-[10px]" />
                             Xóa tất cả
@@ -77,16 +77,16 @@ export default function WatchlistPage() {
                 {/* Empty State */}
                 {items.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-[80px]">
-                        <div className="w-[80px] h-[80px] rounded-full bg-white/5 flex items-center justify-center mb-[20px]">
+                        <div className="w-[80px] h-[80px] rounded-full bg-[#171B28] flex items-center justify-center mb-[20px]">
                             <FontAwesomeIcon icon={faFilm} className="text-[30px] text-white/20" />
                         </div>
-                        <h2 className="text-white text-[18px] font-semibold mb-[8px]">Chưa có phim nào</h2>
+                        <h2 className="cinema-heading-md text-white text-[18px] font-semibold mb-[8px]">Chưa có phim nào</h2>
                         <p className="text-white/50 text-[14px] mb-[24px] text-center max-w-[300px]">
                             Nhấn nút &quot;Xem sau&quot; trên trang phim để lưu phim vào đây
                         </p>
                         <button
                             onClick={() => router.push("/phimhay")}
-                            className="px-[24px] py-[12px] bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black font-semibold rounded-full hover:shadow-lg hover:shadow-[#FFD875]/30 transition-all text-[14px] flex items-center gap-[8px]"
+                            className="cinema-btn-primary px-[24px] py-[12px] rounded-full text-[14px] flex items-center gap-[8px]"
                         >
                             <FontAwesomeIcon icon={faPlay} className="text-[12px]" />
                             Khám phá phim
@@ -96,7 +96,7 @@ export default function WatchlistPage() {
 
                 {/* Watchlist Grid */}
                 {items.length > 0 && (
-                    <div className="tv-movie-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-[12px] sm:gap-[16px]">
+                    <div className="tv-movie-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-[10px] sm:gap-[14px]">
                         {items.map((item) => (
                             <div
                                 key={item.slug}
@@ -104,7 +104,7 @@ export default function WatchlistPage() {
                             >
                                 <div
                                     onClick={() => router.push(`/phim/${item.slug}`)}
-                                    className="relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e] shadow-lg"
+                                    className="cinema-poster relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e] shadow-lg"
                                 >
                                     <Image
                                         src={getProxiedImageUrl(getImageUrl(item.poster_url))}
@@ -120,7 +120,7 @@ export default function WatchlistPage() {
 
                                     {/* Play Icon */}
                                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div className="w-[50px] h-[50px] rounded-full bg-[#FFD875] flex items-center justify-center shadow-lg">
+                                        <div className="w-[50px] h-[50px] rounded-full bg-gradient-to-br from-[#FFD875] to-[#F0B840] shadow-[0_4px_16px_rgba(255,216,117,0.3)] flex items-center justify-center">
                                             <FontAwesomeIcon icon={faPlay} className="text-black text-[18px] ml-[2px]" />
                                         </div>
                                     </div>
@@ -131,7 +131,7 @@ export default function WatchlistPage() {
                                             e.stopPropagation();
                                             handleRemove(item.slug);
                                         }}
-                                        className="absolute top-[8px] right-[8px] w-[30px] h-[30px] rounded-full bg-black/60 text-white/70 hover:text-red-400 hover:bg-black/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10"
+                                        className="absolute top-[8px] right-[8px] w-[30px] h-[30px] rounded-full bg-black/50 backdrop-blur-sm text-white/70 hover:text-white hover:bg-red-500/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10"
                                         title="Xóa khỏi danh sách"
                                     >
                                         <FontAwesomeIcon icon={faTrash} className="text-[11px]" />
@@ -140,7 +140,7 @@ export default function WatchlistPage() {
                                     {/* Quality Badge */}
                                     {item.quality && (
                                         <div className="absolute top-[8px] left-[8px]">
-                                            <span className="px-[8px] py-[4px] bg-[#FFD875] text-black text-[10px] font-bold rounded">
+                                            <span className="cinema-badge cinema-badge-quality">
                                                 {item.quality}
                                             </span>
                                         </div>
@@ -148,17 +148,17 @@ export default function WatchlistPage() {
 
                                     {/* Added Date */}
                                     <div className="absolute bottom-0 left-0 right-0 p-[10px]">
-                                        <p className="text-[10px] text-white/50">
+                                        <p className="text-[10px] text-white/40">
                                             Đã lưu {formatDate(item.addedAt)}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="mt-[10px]" onClick={() => router.push(`/phim/${item.slug}`)}>
-                                    <h3 className="text-white text-[14px] font-medium truncate group-hover:text-[#FFD875] transition-colors">
+                                    <h3 className="text-white text-[13px] font-semibold truncate group-hover:text-[#FFD875] transition-colors">
                                         {item.name}
                                     </h3>
-                                    <p className="text-white/40 text-[12px] truncate">
+                                    <p className="text-[#6B7280] text-[11px] truncate">
                                         {item.origin_name} {item.year ? `• ${item.year}` : ""}
                                     </p>
                                 </div>

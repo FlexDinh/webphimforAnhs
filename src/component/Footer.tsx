@@ -29,11 +29,11 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-t from-[#0a0c14] to-[#0F111A] border-t border-white/5">
+    <footer className="bg-[#06070C] border-t border-white/4">
       {/* Decorative top gradient line */}
       <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD875] to-transparent opacity-30" />
 
-      <div className="container max-w-[1400px] mx-auto px-[16px] py-[50px]">
+      <div className="container max-w-[1400px] mx-auto px-[16px] py-16 lg:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[40px]">
           {/* Brand */}
           <div className="animate-fade-in">
@@ -66,7 +66,7 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h3 className="text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
+            <h3 className="cinema-label text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
               <span className="w-[3px] h-[16px] gradient-accent rounded-full"></span>
               Danh mục
             </h3>
@@ -75,7 +75,7 @@ export default function Footer() {
                 <li key={cat.path}>
                   <a
                     onClick={() => router.push(cat.path)}
-                    className="text-[#888] text-[14px] hover:text-[#FFD875] cursor-pointer transition-colors haptic"
+                    className="text-[13px] text-[#6B7280] hover:text-[#9CA3B4] cursor-pointer transition-colors haptic"
                   >
                     {cat.name}
                   </a>
@@ -86,7 +86,7 @@ export default function Footer() {
 
           {/* Countries */}
           <div>
-            <h3 className="text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
+            <h3 className="cinema-label text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
               <span className="w-[3px] h-[16px] gradient-accent rounded-full"></span>
               Quốc gia
             </h3>
@@ -95,7 +95,7 @@ export default function Footer() {
                 <li key={country.path}>
                   <a
                     onClick={() => router.push(country.path)}
-                    className="text-[#888] text-[14px] hover:text-[#FFD875] cursor-pointer transition-colors haptic"
+                    className="text-[13px] text-[#6B7280] hover:text-[#9CA3B4] cursor-pointer transition-colors haptic"
                   >
                     {country.name}
                   </a>
@@ -106,26 +106,26 @@ export default function Footer() {
 
           {/* Sources and Shortcuts */}
           <div>
-            <h3 className="text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
+            <h3 className="cinema-label text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
               <span className="w-[3px] h-[16px] gradient-accent rounded-full"></span>
               Nguồn Phim
             </h3>
             <div className="flex flex-wrap gap-[8px] mb-[24px]">
               {sources.map((src) => (
-                <span key={src} className="px-[10px] py-[4px] glass rounded-full text-[#888] text-[12px]">
+                <span key={src} className="px-[10px] py-[4px] glass backdrop-blur-sm rounded-full text-[#888] text-[12px]">
                   {src}
                 </span>
               ))}
             </div>
 
-            <h3 className="text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
+            <h3 className="cinema-label text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
               <span className="w-[3px] h-[16px] gradient-accent rounded-full"></span>
               Phím tắt
             </h3>
             <ul className="space-y-[8px]">
               {shortcuts.map((sc) => (
                 <li key={sc.key} className="flex items-center gap-[10px] text-[#888] text-[13px]">
-                  <kbd className="bg-white/10 px-[6px] py-[2px] rounded text-white text-[11px] font-mono min-w-[24px] text-center">
+                  <kbd className="bg-[#171B28] border border-white/8 px-[6px] py-[2px] rounded text-white/70 text-[11px] font-mono min-w-[24px] text-center">
                     {sc.key}
                   </kbd>
                   {sc.label}
@@ -136,7 +136,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
+            <h3 className="cinema-label text-white font-semibold text-[16px] mb-[16px] flex items-center gap-2">
               <span className="w-[3px] h-[16px] gradient-accent rounded-full"></span>
               Liên hệ
             </h3>
@@ -155,11 +155,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-white/5 mt-[40px] pt-[24px] flex flex-col md:flex-row justify-between items-center gap-[16px]">
-          <p className="text-[#666] text-[13px]">
+        <div className="cinema-divider mt-[40px] pt-[24px] flex flex-col md:flex-row justify-between items-center gap-[16px]">
+          <p className="text-[#6B7280] text-[13px]">
             © {new Date().getFullYear()} RoPhim. Tất cả quyền được bảo lưu.
           </p>
-          <p className="text-[#666] text-[13px] flex items-center gap-[6px]">
+          <p className="text-[#6B7280] text-[13px] flex items-center gap-[6px]">
             Made with <FontAwesomeIcon icon={faHeart} className="text-[#e74c3c] animate-pulse" /> in Vietnam
           </p>
         </div>

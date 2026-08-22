@@ -17,7 +17,7 @@ export function getImageUrl(path: string | null | undefined): string {
   if (value.startsWith("http://") || value.startsWith("https://")) {
     // Tự động thay thế tên miền ảnh bị chết/chặn của OPhim sang phimimg.com
     if (value.includes("ophim")) {
-      return value.replace(/https?:\/\/(img\.)?ophim[0-9]*\.(live|com)/i, "https://phimimg.com");
+      return value.replace(/https?:\/\/([a-z0-9]+\.)?ophim[0-9]*\.(live|com)/i, "https://phimimg.com");
     }
     return value;
   }

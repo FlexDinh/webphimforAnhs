@@ -6,8 +6,8 @@ export const OPHIM_FALLBACK_DOMAINS = [
 
 export const IMAGE_CDN_DOMAINS = {
   phimimg: 'https://phimimg.com',
-  ophimLive: 'https://img.ophim.live',
-  cdnOphim: 'https://cdn.ophim.live',
+  ophimLive: 'https://phimimg.com',
+  cdnOphim: 'https://phimimg.com',
   tmdb: 'https://image.tmdb.org',
   nguonc: 'https://phim.nguonc.com',
   imgur: 'https://i.imgur.com',

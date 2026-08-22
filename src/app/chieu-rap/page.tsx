@@ -110,62 +110,60 @@ export default function ChieuRapPage() {
   const hasActiveFilter = selectedGenre || selectedYear > 0 || searchQuery.trim();
 
   return (
-    <div className="min-h-screen bg-[#0F111A] pb-[60px] pt-[90px]">
+    <div className="min-h-screen bg-[#0A0C14] pb-[60px] pt-[90px]">
       <div className="container mx-auto max-w-[1400px] px-[16px]">
 
         {/* Hero Header */}
-        <div className="mb-[32px] overflow-hidden rounded-[28px] border border-[#FFD875]/20 bg-[linear-gradient(135deg,rgba(255,216,117,0.14),rgba(255,165,0,0.06),rgba(255,255,255,0.03))] px-[24px] py-[28px] sm:px-[36px]">
+        <div className="mb-[32px] overflow-hidden rounded-[20px] border border-[#FFD875]/20 bg-[linear-gradient(135deg,rgba(255,216,117,0.1),rgba(255,255,255,0.02))] px-[24px] py-[28px] sm:px-[36px] shadow-sm">
           <div className="flex flex-col gap-[16px] sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="mb-[6px] text-[11px] font-bold uppercase tracking-[0.25em] text-[#FFD875]">
                 🎬 Đang chiếu tại rạp
               </p>
-              <h1 className="mb-[8px] text-[32px] font-bold text-white sm:text-[36px]">
+              <h1 className="cinema-heading-xl tracking-[-0.02em] mb-[12px]">
                 Phim Chiếu Rạp
               </h1>
-              <p className="max-w-[600px] text-[14px] leading-6 text-[#888]">
+              <p className="max-w-[600px] text-[15px] leading-relaxed text-[#6B7280]">
                 Tổng hợp {totalItems > 0 ? totalItems.toLocaleString() : "hàng trăm"} tựa phim đang và sắp chiếu rạp. Cập nhật liên tục từ OPhim.
               </p>
             </div>
             <div className="flex items-center gap-[12px]">
-              <div className="rounded-[16px] border border-[#FFD875]/20 bg-[#FFD875]/10 px-[20px] py-[14px] text-center">
+              <div className="rounded-[16px] border border-[#FFD875]/20 bg-[#FFD875]/10 px-[20px] py-[14px] text-center backdrop-blur-sm">
                 <div className="text-[28px] font-bold text-[#FFD875]">{totalItems > 0 ? totalItems.toLocaleString() : "—"}</div>
-                <div className="text-[11px] text-[#888]">Tổng phim</div>
+                <div className="text-[11px] uppercase tracking-wider text-[#FFD875]/70">Tổng phim</div>
               </div>
-              <div className="rounded-[16px] border border-white/10 bg-white/5 px-[20px] py-[14px] text-center">
-                <div className="text-[28px] font-bold text-white">{totalPages}</div>
-                <div className="text-[11px] text-[#888]">Trang</div>
+              <div className="rounded-[16px] border border-white/10 bg-white/5 px-[20px] py-[14px] text-center backdrop-blur-sm">
+                <div className="text-[28px] font-bold text-white/90">{totalPages}</div>
+                <div className="text-[11px] uppercase tracking-wider text-[#6B7280]">Trang</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters Bar */}
-        <div className="mb-[28px] flex flex-col gap-[12px]">
+        <div className="mb-[32px] flex flex-col gap-[16px] bg-[#0E1019] border border-white/6 rounded-[14px] p-[16px]">
           {/* Search */}
           <div className="relative">
-            <span className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#666]">🔍</span>
+            <span className="absolute left-[16px] top-1/2 -translate-y-1/2 text-[#6B7280]">🔍</span>
             <input
               type="text"
               placeholder="Tìm trong trang này..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-[12px] border border-white/10 bg-white/5 py-[11px] pl-[40px] pr-[16px] text-[14px] text-white placeholder-[#555] outline-none focus:border-[#FFD875]/50 focus:bg-white/8 transition-colors"
+              className="w-full rounded-[12px] border border-white/10 bg-[#0A0C14] py-[12px] pl-[44px] pr-[16px] text-[14px] text-white placeholder-[#6B7280] outline-none focus:border-[#FFD875]/50 transition-colors"
             />
           </div>
 
           {/* Genre + Year + Sort */}
-          <div className="flex flex-wrap gap-[8px]">
+          <div className="flex flex-wrap items-center justify-between gap-[12px]">
             {/* Genre pills */}
-            <div className="flex flex-wrap gap-[6px]">
+            <div className="flex flex-wrap gap-[8px]">
               {GENRES.map((g) => (
                 <button
                   key={g.value}
                   onClick={() => setSelectedGenre(g.value)}
-                  className={`rounded-full px-[14px] py-[7px] text-[13px] font-medium transition-all ${
-                    selectedGenre === g.value
-                      ? "bg-[#FFD875] text-black shadow-[0_0_16px_rgba(255,216,117,0.3)]"
-                      : "bg-white/8 text-[#aaa] hover:bg-white/15 hover:text-white"
+                  className={`cinema-pill px-[14px] py-[6px] text-[13px] ${
+                    selectedGenre === g.value ? "active" : ""
                   }`}
                 >
                   {g.label}
@@ -173,15 +171,15 @@ export default function ChieuRapPage() {
               ))}
             </div>
 
-            <div className="ml-auto flex items-center gap-[8px]">
+            <div className="flex items-center gap-[10px]">
               {/* Year filter */}
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="rounded-[10px] border border-white/10 bg-[#1a1d2e] px-[12px] py-[8px] text-[13px] text-white outline-none focus:border-[#FFD875]/50"
+                className="cursor-pointer appearance-none rounded-[10px] border border-white/10 bg-[#0A0C14] px-[16px] py-[8px] text-[13px] text-white outline-none focus:border-[#FFD875]/50 transition-colors"
               >
                 {YEARS.map((y) => (
-                  <option key={y.value} value={y.value}>{y.label}</option>
+                  <option key={y.value} value={y.value} className="bg-[#0A0C14]">{y.label}</option>
                 ))}
               </select>
 
@@ -189,10 +187,10 @@ export default function ChieuRapPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-[10px] border border-white/10 bg-[#1a1d2e] px-[12px] py-[8px] text-[13px] text-white outline-none focus:border-[#FFD875]/50"
+                className="cursor-pointer appearance-none rounded-[10px] border border-white/10 bg-[#0A0C14] px-[16px] py-[8px] text-[13px] text-white outline-none focus:border-[#FFD875]/50 transition-colors"
               >
                 {SORT_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
+                  <option key={s.value} value={s.value} className="bg-[#0A0C14]">{s.label}</option>
                 ))}
               </select>
             </div>
@@ -200,13 +198,13 @@ export default function ChieuRapPage() {
 
           {/* Active filter summary */}
           {hasActiveFilter && (
-            <div className="flex items-center justify-between rounded-[10px] bg-[#FFD875]/10 px-[14px] py-[9px]">
-              <span className="text-[13px] text-[#FFD875]">
+            <div className="mt-[4px] flex items-center justify-between rounded-[10px] bg-[#FFD875]/10 px-[16px] py-[10px] border border-[#FFD875]/20">
+              <span className="text-[13px] font-medium text-[#FFD875]">
                 Đang lọc — hiển thị {filteredMovies.length} / {allMovies.length} phim trang này
               </span>
               <button
                 onClick={() => { setSelectedGenre(""); setSelectedYear(0); setSearchQuery(""); setSortBy("newest"); }}
-                className="text-[12px] text-[#888] underline hover:text-white"
+                className="text-[13px] font-medium text-red-400 hover:text-red-300 transition-colors"
               >
                 Xoá bộ lọc
               </button>
@@ -219,20 +217,20 @@ export default function ChieuRapPage() {
           <div className="tv-movie-grid grid grid-cols-2 gap-[14px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {Array.from({ length: 24 }).map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-[2/3] rounded-[14px] bg-[#2a2d3e]" />
-                <div className="mt-[10px] h-[14px] w-[80%] rounded bg-[#2a2d3e]" />
-                <div className="mt-[6px] h-[12px] w-[60%] rounded bg-[#2a2d3e]" />
+                <div className="aspect-[2/3] rounded-[14px] bg-[#141824]" />
+                <div className="mt-[10px] h-[14px] w-[80%] rounded bg-[#141824]" />
+                <div className="mt-[6px] h-[12px] w-[60%] rounded bg-[#141824]" />
               </div>
             ))}
           </div>
         ) : filteredMovies.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-[80px] text-center">
             <div className="mb-[16px] text-[60px]">🎭</div>
-            <h3 className="mb-[8px] text-[20px] font-semibold text-white">Không tìm thấy phim</h3>
-            <p className="text-[14px] text-[#666]">Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm</p>
+            <h3 className="mb-[8px] text-[20px] font-semibold text-white/90">Không tìm thấy phim</h3>
+            <p className="text-[15px] text-[#6B7280]">Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm</p>
             <button
               onClick={() => { setSelectedGenre(""); setSelectedYear(0); setSearchQuery(""); }}
-              className="mt-[20px] rounded-full bg-[#FFD875] px-[24px] py-[10px] text-[14px] font-semibold text-black hover:bg-[#FFD875]/90"
+              className="cinema-btn mt-[24px] rounded-full px-[24px] py-[12px] text-[14px] font-semibold"
             >
               Xoá bộ lọc
             </button>
@@ -243,33 +241,33 @@ export default function ChieuRapPage() {
               <button
                 key={movie._id}
                 onClick={() => router.push(`/phim/${movie.slug}`)}
-                className="group cursor-pointer text-left transition-transform active:scale-[0.97]"
+                className="group cursor-pointer text-left transition-transform active:scale-[0.98]"
               >
-                <div className="movie-card-hover relative aspect-[2/3] overflow-hidden rounded-[14px] bg-[#2a2d3e] shadow-lg">
+                <div className="cinema-poster relative aspect-[2/3] overflow-hidden rounded-[14px] bg-[#0D0F18]">
                   <Image
                     src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))}
                     alt={movie.name}
                     fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="object-cover"
                     sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
                     unoptimized
                   />
 
                   {/* Hover overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
-                    <span className="flex items-center gap-[6px] rounded-full bg-[#FFD875] px-[14px] py-[6px] text-[13px] font-semibold text-black shadow-lg">
-                      ▶ Xem ngay
-                    </span>
+                  <div className="absolute inset-0 hidden items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:flex">
+                    <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-gradient-to-tr from-[#FFD875] to-[#FDB022] shadow-[0_0_20px_rgba(255,216,117,0.4)] transition-transform duration-300 hover:scale-110">
+                      <span className="ml-[4px] text-[16px] text-[#08090F]">▶</span>
+                    </div>
                   </div>
 
                   {/* Top badges */}
                   <div className="absolute left-[8px] top-[8px] flex flex-col gap-[4px]">
                     {movie.quality && (
-                      <span className="rounded-[5px] bg-[#FFD875] px-[6px] py-[2px] text-[10px] font-bold text-black">
+                      <span className="cinema-badge cinema-badge-quality">
                         {movie.quality}
                       </span>
                     )}
-                    <span className="rounded-[5px] bg-[rgba(255,80,80,0.85)] px-[6px] py-[2px] text-[10px] font-bold text-white">
+                    <span className="cinema-badge bg-[rgba(255,80,80,0.9)] text-white shadow-sm backdrop-blur-md">
                       📽 Rạp
                     </span>
                   </div>
@@ -277,7 +275,7 @@ export default function ChieuRapPage() {
                   {/* Rating badge */}
                   {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
                     <div className="absolute right-[8px] top-[8px]">
-                      <span className="rounded-[5px] bg-black/70 px-[6px] py-[2px] text-[10px] font-semibold text-[#FFD875]">
+                      <span className="rounded-[6px] bg-black/80 px-[6px] py-[3px] text-[11px] font-semibold text-[#FFD875] shadow-sm backdrop-blur-md">
                         ★ {movie.tmdb.vote_average.toFixed(1)}
                       </span>
                     </div>
@@ -286,21 +284,21 @@ export default function ChieuRapPage() {
                   {/* Episode label */}
                   {movie.episode_current && movie.episode_current !== "Full" && (
                     <div className="absolute bottom-[8px] right-[8px]">
-                      <span className="rounded-[5px] bg-black/70 px-[6px] py-[2px] text-[10px] text-white">
+                      <span className="rounded-[6px] bg-black/80 px-[6px] py-[3px] text-[11px] font-medium text-white shadow-sm backdrop-blur-md">
                         {movie.episode_current}
                       </span>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-[10px]">
-                  <h3 className="truncate text-[14px] font-medium text-white transition-colors group-hover:text-[#FFD875]">
+                <div className="mt-[12px]">
+                  <h3 className="truncate text-[14px] font-semibold text-white/90 transition-colors group-hover:text-[#FFD875]">
                     {movie.name}
                   </h3>
                   <div className="mt-[4px] flex items-center gap-[8px]">
-                    <span className="text-[12px] text-[#666]">{movie.year}</span>
+                    <span className="text-[12px] text-[#6B7280]">{movie.year}</span>
                     {movie.type === "hoathinh" && (
-                      <span className="rounded bg-purple-600/80 px-[5px] py-[1px] text-[10px] text-white">Hoạt hình</span>
+                      <span className="rounded-[4px] bg-purple-500/20 px-[6px] py-[2px] text-[10px] font-medium text-purple-300 border border-purple-500/30">Hoạt hình</span>
                     )}
                   </div>
                 </div>
@@ -311,27 +309,27 @@ export default function ChieuRapPage() {
 
         {/* Pagination */}
         {!loading && totalPages > 1 && (
-          <div className="mt-[48px] flex flex-col items-center gap-[16px]">
-            <p className="text-[13px] text-[#666]">
+          <div className="mt-[48px] flex flex-col items-center gap-[20px]">
+            <p className="text-[13px] font-medium text-[#6B7280]">
               Trang {page} / {totalPages} — {totalItems.toLocaleString()} phim
             </p>
             <div className="flex items-center gap-[8px]">
               <button
                 onClick={() => handlePageChange(1)}
                 disabled={page === 1}
-                className="rounded-full bg-white/8 px-[14px] py-[9px] text-[13px] text-white transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40"
+                className="cinema-btn-ghost flex h-[44px] w-[44px] items-center justify-center rounded-full text-[14px] font-medium disabled:opacity-40"
               >
                 «
               </button>
               <button
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page === 1}
-                className="rounded-full bg-white/8 px-[20px] py-[9px] text-[14px] text-white transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40"
+                className="cinema-btn-ghost min-h-[44px] rounded-full px-[20px] py-[10px] text-[14px] font-medium disabled:opacity-40"
               >
                 Trước
               </button>
 
-              <div className="flex items-center gap-[4px]">
+              <div className="flex items-center gap-[6px]">
                 {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
                   let pageNum: number;
                   if (totalPages <= 5) {
@@ -348,10 +346,10 @@ export default function ChieuRapPage() {
                     <button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
-                      className={`h-[38px] w-[38px] rounded-full text-[14px] font-medium transition-all ${
+                      className={`flex h-[40px] w-[40px] items-center justify-center rounded-full text-[14px] font-medium transition-all ${
                         pageNum === page
-                          ? "bg-[#FFD875] text-black shadow-[0_0_14px_rgba(255,216,117,0.4)]"
-                          : "bg-white/8 text-white hover:bg-white/18"
+                          ? "bg-[#FFD875] text-[#08090F] shadow-[0_0_14px_rgba(255,216,117,0.3)]"
+                          : "bg-white/5 text-white hover:bg-white/10"
                       }`}
                     >
                       {pageNum}
@@ -363,14 +361,14 @@ export default function ChieuRapPage() {
               <button
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page === totalPages}
-                className="rounded-full bg-[#FFD875] px-[20px] py-[9px] text-[14px] font-semibold text-black transition hover:bg-[#FFD875]/90 disabled:cursor-not-allowed disabled:opacity-40"
+                className="cinema-btn min-h-[44px] rounded-full px-[20px] py-[10px] text-[14px] font-semibold disabled:opacity-40"
               >
                 Tiếp
               </button>
               <button
                 onClick={() => handlePageChange(totalPages)}
                 disabled={page === totalPages}
-                className="rounded-full bg-white/8 px-[14px] py-[9px] text-[13px] text-white transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40"
+                className="cinema-btn-ghost flex h-[44px] w-[44px] items-center justify-center rounded-full text-[14px] font-medium disabled:opacity-40"
               >
                 »
               </button>

@@ -19,7 +19,7 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
   const renderCardContent = () => (
     <>
       <Image
-        className="w-full h-auto rounded-[10px] lazy-image"
+        className="w-full h-auto rounded-[10px] lazy-image cinema-poster"
         width={289}
         height={162}
         src={Movie.image}
@@ -70,7 +70,7 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
             offset: [-80, 350],
           }}
           title={
-            <div className="bg-[#1E2545]  rounded-[10px]">
+            <div className="bg-[#131620] border border-white/8 rounded-[14px] overflow-hidden">
               <div className="relative">
                 <Image
                   className="w-full h-auto"
@@ -92,7 +92,7 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
               </div>
               <div className="px-[16px] pb-[12px]">
                 <div className="grid grid-cols-7 gap-[10px]">
-                  <button className="col-span-3 hover:opacity-[0.9] text-[13px] cursor-pointer font-semibold text-black bg-[#FFD875] rounded px-[18px] py-[10px]">
+                  <button className="col-span-3 hover:opacity-[0.9] text-[13px] cursor-pointer font-semibold cinema-btn-primary px-[18px] py-[10px]">
                     <FontAwesomeIcon
                       icon={faPlay}
                       style={{
@@ -131,7 +131,7 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
                 </div>
                 <div className="flex gap-[10px] pt-[20px]">
                   <div>
-                    <span className=" py-[4px] px-[6px] text-black bg-white font-bold rounded text-[12px]">
+                    <span className="cinema-badge cinema-badge-quality">
                       {Movie.quality}
                     </span>
                   </div>
@@ -154,9 +154,9 @@ export default function ModalCard({ Movie }: { Movie: IMovie }) {
                 <div>
                   <div className="mb-[24px] whitespace-nowrap overflow-hidden text-ellipsis mt-[12px] max-[750px]:mb-[10px]">
                     {Movie.typeMovie.map((type, idx) => (
-                      <Tag color="#ffffff10" key={idx}>
+                      <span className="inline-block mr-2 px-2 py-1 rounded bg-white/6 text-[#9CA3B4] text-[10px]" key={idx}>
                         {type}
-                      </Tag>
+                      </span>
                     ))}
                   </div>
                 </div>

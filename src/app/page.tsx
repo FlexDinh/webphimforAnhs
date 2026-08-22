@@ -51,8 +51,8 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0B0D13] pb-[92px] text-white min-[1024px]:pb-0">
-      <section className="border-b border-white/8 bg-[#10141E] animate-fade-in">
+    <main className="min-h-screen bg-[#0A0C14] pb-[92px] text-white min-[1024px]:pb-0">
+      <section className="border-b border-[#ffffff08] bg-[#0D0F18] cinema-animate-in">
         <div className="tv-home-shell tv-home-hero mx-auto max-w-[1380px] px-4 pb-6 pt-5 sm:px-6 lg:px-8">
           <nav className="flex items-center justify-between gap-4">
             <button
@@ -68,7 +68,7 @@ export default function Home() {
                 <button
                   key={item.href}
                   onClick={() => router.push(item.href)}
-                  className="min-h-[42px] rounded-md px-4 text-[14px] font-semibold text-white/78 transition hover:bg-white/8 hover:text-white"
+                  className="min-h-[42px] rounded-md px-4 text-[14px] font-semibold text-white/70 transition hover:bg-white/6 hover:text-white/90"
                 >
                   {item.label}
                 </button>
@@ -77,7 +77,7 @@ export default function Home() {
 
             <button
               onClick={() => router.push("/phimhay")}
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-[#FFD875] px-4 text-[14px] font-bold text-black transition hover:bg-[#FFE49A]"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-gradient-to-r from-[#FFD875] to-[#F0B840] px-4 text-[14px] font-bold text-black shadow-[0_2px_12px_rgba(255,216,117,0.25)] transition hover:brightness-110"
             >
               <FontAwesomeIcon icon={faPlay} className="text-xs" />
               Xem
@@ -86,16 +86,16 @@ export default function Home() {
 
           <div className="grid gap-5 pt-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
             <div>
-              <p className="mb-3 inline-flex rounded-md border border-[#FFD875]/28 bg-[#FFD875]/10 px-3 py-2 text-[13px] font-semibold text-[#FFD875]">
+              <p className="mb-3 inline-flex rounded-md border border-[#FFD875]/20 bg-[#FFD875]/8 px-3 py-2 text-[13px] font-semibold text-[#FFD875]">
                 Rổ Phim
               </p>
-              <h1 className="tv-home-title max-w-[720px] text-[34px] font-black leading-tight text-white sm:text-[46px] lg:text-[54px]">
+              <h1 className="tv-home-title cinema-heading-xl tracking-[-0.03em] max-w-[720px] text-[34px] font-black leading-tight text-white sm:text-[46px] lg:text-[54px]">
                 Tìm phim nhanh, xem tiếp gọn.
               </h1>
 
               <form
                 onSubmit={submitSearch}
-                className="mt-5 flex max-w-[720px] flex-col gap-3 rounded-lg border border-white/10 bg-[#171C29] p-2 sm:flex-row"
+                className="mt-5 flex max-w-[720px] flex-col gap-3 rounded-lg border border-white/6 bg-[#131620] p-2 sm:flex-row"
               >
                 <label className="relative flex min-h-[50px] flex-1 items-center">
                   <FontAwesomeIcon icon={faSearch} className="absolute left-4 text-sm text-white/42" />
@@ -103,12 +103,12 @@ export default function Home() {
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Tìm phim..."
-                    className="h-full w-full rounded-md border border-transparent bg-[#0E121B] py-3 pl-11 pr-4 text-[16px] text-white outline-none transition placeholder:text-white/40 focus:border-[#FFD875]/50"
+                    className="cinema-input h-full w-full rounded-md border border-transparent bg-[#0A0C14] py-3 pl-11 pr-4 text-[16px] text-white outline-none transition placeholder:text-white/40 focus:border-[#FFD875]/50"
                   />
                 </label>
                 <button
                   type="submit"
-                  className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-md bg-[#FFD875] px-6 text-[15px] font-bold text-black transition hover:bg-[#FFE49A]"
+                  className="cinema-btn-primary inline-flex min-h-[50px] items-center justify-center gap-2 rounded-md px-6 text-[15px] font-bold text-black transition"
                 >
                   <FontAwesomeIcon icon={faSearch} className="text-sm" />
                   Tìm kiếm
@@ -116,7 +116,7 @@ export default function Home() {
               </form>
             </div>
 
-            <div className="rounded-lg border border-white/10 bg-[#171C29] p-4">
+            <div className="rounded-lg border border-white/6 bg-[#131620] p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[13px] font-semibold text-white/52">Lối vào nhanh</p>
@@ -131,7 +131,7 @@ export default function Home() {
                   <button
                     key={item.href}
                     onClick={() => router.push(item.href)}
-                    className="min-h-[42px] rounded-md bg-white/6 px-3 text-left text-[13px] font-semibold text-white/74 transition hover:bg-white/10 hover:text-white"
+                    className="min-h-[42px] rounded-md bg-white/4 px-3 text-left text-[13px] font-semibold text-white/74 transition hover:bg-white/7 hover:text-white"
                   >
                     {item.label}
                   </button>
@@ -148,7 +148,7 @@ export default function Home() {
             <button
               key={item.href}
               onClick={() => router.push(item.href)}
-              className="group flex min-h-[86px] items-center justify-between rounded-lg border border-white/8 bg-[#111827] px-4 text-left transition hover:border-white/16 hover:bg-[#151D2B]"
+              className="group flex min-h-[86px] items-center justify-between rounded-lg border border-white/6 bg-[#0E1019] px-4 text-left transition hover:border-white/12 hover:bg-[#131620]"
             >
               <span className="flex items-center gap-3">
                 <span
@@ -167,7 +167,7 @@ export default function Home() {
         </div>
 
         <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="rounded-lg border border-white/8 bg-[#111827] p-4 sm:p-5">
+          <div className="rounded-lg border border-white/6 bg-[#0E1019] p-4 sm:p-5">
             <div className="mb-4 flex items-center justify-between gap-4">
               <h2 className="text-[20px] font-bold text-white">Khám phá thêm</h2>
               <button
@@ -182,7 +182,7 @@ export default function Home() {
                 <button
                   key={item.href}
                   onClick={() => router.push(item.href)}
-                  className="flex min-h-[48px] items-center justify-between rounded-md bg-white/5 px-4 text-left text-[14px] font-semibold text-white/74 transition hover:bg-white/10 hover:text-white"
+                  className="flex min-h-[48px] items-center justify-between rounded-md bg-white/4 px-4 text-left text-[14px] font-semibold text-white/74 transition hover:bg-white/7 hover:text-white"
                 >
                   {item.label}
                   <FontAwesomeIcon icon={faAngleRight} className="text-[11px] text-white/30" />
@@ -191,19 +191,19 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-white/8 bg-[#111827] p-4 sm:p-5">
+          <div className="rounded-lg border border-white/6 bg-[#0E1019] p-4 sm:p-5">
             <h2 className="text-[20px] font-bold text-white">Bắt đầu</h2>
             <div className="mt-4 grid gap-2">
               <button
                 onClick={() => router.push("/phimhay")}
-                className="flex min-h-[50px] items-center justify-between rounded-md bg-[#FFD875] px-4 text-left text-[14px] font-bold text-black transition hover:bg-[#FFE49A]"
+                className="cinema-btn-primary flex min-h-[50px] items-center justify-between rounded-md px-4 text-left text-[14px] font-bold text-black transition"
               >
                 Phim mới hôm nay
                 <FontAwesomeIcon icon={faAngleRight} className="text-[12px]" />
               </button>
               <button
                 onClick={() => router.push("/watchlist")}
-                className="flex min-h-[50px] items-center justify-between rounded-md bg-white/7 px-4 text-left text-[14px] font-semibold text-white transition hover:bg-white/12"
+                className="flex min-h-[50px] items-center justify-between rounded-md bg-white/4 px-4 text-left text-[14px] font-semibold text-white transition hover:bg-white/7"
               >
                 Danh sách xem
                 <FontAwesomeIcon icon={faAngleRight} className="text-[12px] text-white/40" />
@@ -217,7 +217,7 @@ export default function Home() {
           <TrendingSection />
         </div>
         <div className="mt-8 text-center pb-4">
-          <p className="text-white/40 text-[13px]">Nhấn <kbd className="mx-1 rounded bg-white/10 px-2 py-1 font-mono text-[11px] text-white">/</kbd> để tìm kiếm nhanh</p>
+          <p className="text-white/30 text-[13px]">Nhấn <kbd className="mx-1 rounded bg-white/6 px-2 py-1 font-mono text-[11px] text-white">/</kbd> để tìm kiếm nhanh</p>
         </div>
       </section>
     </main>

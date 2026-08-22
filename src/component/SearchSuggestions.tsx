@@ -162,13 +162,13 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
     return (
         <div
             ref={containerRef}
-            className="search-suggestions absolute top-full left-0 right-0 mt-[8px] bg-[#1E2030] rounded-[16px] border border-[#ffffff15] shadow-2xl overflow-hidden z-[1000] animate-fade-in"
+            className="search-suggestions cinema-dropdown absolute top-full left-0 right-0 mt-[8px] rounded-b-[14px] rounded-t-0 shadow-2xl overflow-hidden z-[1000] animate-fade-in"
             style={{ touchAction: 'manipulation' }}
         >
             <div className="p-[8px] max-h-[70vh] overflow-y-auto">
                 {/* Search History */}
                 {showHistory && (
-                    <>
+                    <div className="border-b border-white/5 pb-[8px] mb-[8px]">
                         <div className="flex items-center justify-between px-[12px] py-[8px]">
                             <p className="text-[12px] text-[#888] uppercase tracking-wider flex items-center gap-[6px]">
                                 <FontAwesomeIcon icon={faHistory} className="text-[10px]" />
@@ -176,7 +176,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                             </p>
                             <button
                                 onClick={handleClearHistory}
-                                className="text-[11px] text-red-400 hover:text-red-300 px-[8px] py-[4px] rounded"
+                                className="text-[11px] text-[#6B7280] hover:text-[#FFD875] px-[8px] py-[4px] rounded transition-colors"
                             >
                                 Xóa tất cả
                             </button>
@@ -186,14 +186,14 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                                 <button
                                     key={idx}
                                     onClick={() => handleHistoryClick(query)}
-                                    className="px-[12px] py-[8px] bg-white/10 hover:bg-white/20 text-white text-[13px] rounded-full flex items-center gap-[6px] transition-colors"
+                                    className="px-[12px] py-[8px] bg-[#171B28] border border-white/6 hover:bg-[#1C2133] text-[#9CA3B4] hover:text-white text-[13px] rounded-full flex items-center gap-[6px] transition-colors"
                                 >
                                     <FontAwesomeIcon icon={faSearch} className="text-[10px] text-[#888]" />
                                     {query}
                                 </button>
                             ))}
                         </div>
-                    </>
+                    </div>
                 )}
 
                 {/* Title */}
@@ -206,7 +206,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                 {/* Loading */}
                 {isLoading && (
                     <div className="flex justify-center py-[24px]">
-                        <div className="w-[28px] h-[28px] border-2 border-[#FFD875] border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-[24px] h-[24px] rounded-full bg-[#FFD875]/30 animate-pulse"></div>
                     </div>
                 )}
 
@@ -223,11 +223,11 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                         key={`${movie._id}-${index}`}
                         onClick={(e) => handleMovieClick(movie, e)}
                         onTouchEnd={(e) => handleMovieClick(movie, e)}
-                        className="flex items-center gap-[12px] p-[14px] rounded-[12px] cursor-pointer transition-all duration-200 hover:bg-[#ffffff10] active:bg-[#ffffff20] active:scale-[0.98] min-h-[80px]"
+                        className="cinema-dropdown-item flex items-center gap-[12px] p-[10px] rounded-[12px] cursor-pointer transition-all duration-200 hover:bg-white/4 active:bg-white/10 active:scale-[0.98] min-h-[80px]"
                         role="button"
                         tabIndex={0}
                     >
-                        <div className="w-[55px] h-[75px] rounded-[8px] overflow-hidden flex-shrink-0 relative bg-[#2a2d3e]">
+                        <div className="w-[55px] h-[75px] rounded-[6px] border border-white/6 overflow-hidden flex-shrink-0 relative bg-[#2a2d3e]">
                             <Image
                                 src={getProxiedImageUrl(getImageUrl(movie.thumb_url))}
                                 alt={movie.name}
@@ -238,10 +238,10 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                             />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h4 className="text-white text-[15px] font-medium truncate">
+                            <h4 className="text-[13px] font-semibold text-white/90 truncate">
                                 {String(movie.name || "")}
                             </h4>
-                            <p className="text-[#888] text-[13px] truncate">
+                            <p className="text-[11px] text-[#6B7280] truncate mt-[2px]">
                                 {String(movie.origin_name || "")}
                             </p>
                             <div className="flex items-center gap-[8px] mt-[6px]">
@@ -261,7 +261,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                                     </span>
                                 )}
                                 {(movie as any)._source && (
-                                    <span className={`source-badge source-badge-${(movie as any)._source} text-[10px] px-1 py-0.5 rounded font-bold uppercase`}>
+                                    <span className={`source-badge source-badge-${(movie as any)._source} text-[9px] px-1 py-0.5 rounded font-bold uppercase`}>
                                         {(movie as any)._source}
                                     </span>
                                 )}
@@ -280,7 +280,7 @@ export default function SearchSuggestions({ searchValue, isOpen, onClose }: Sear
                             e.preventDefault();
                             handleViewAll();
                         }}
-                        className="w-full text-center text-[14px] text-[#FFD875] font-medium py-[10px] rounded-xl hover:bg-[#FFD87510] active:bg-[#FFD87520] transition-colors min-h-[48px]"
+                        className="w-full text-center text-[14px] text-[#FFD875]/80 font-medium py-[10px] rounded-xl hover:text-[#FFD875] hover:bg-white/4 active:bg-white/10 transition-colors min-h-[48px]"
                     >
                         Xem tất cả kết quả cho &quot;{searchValue}&quot;
                     </button>

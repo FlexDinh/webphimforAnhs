@@ -24,6 +24,57 @@
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #a0a0a0;
   --color-text-muted: rgba(255, 255, 255, 0.6);
+
+  /* ===== CINEMATIC DESIGN TOKENS ===== */
+  /* Deep cinematic backgrounds — richer than pure black */
+  --cinema-bg-deep: #06070C;
+  --cinema-bg-base: #0A0C14;
+  --cinema-bg-raised: #0E1019;
+  --cinema-bg-surface: #131620;
+  --cinema-bg-card: #171B28;
+  --cinema-bg-card-hover: #1C2133;
+  --cinema-bg-elevated: #1F2435;
+  --cinema-bg-overlay: rgba(6, 7, 12, 0.92);
+
+  /* Warm accent palette */
+  --cinema-accent: #FFD875;
+  --cinema-accent-soft: #FFE4A0;
+  --cinema-accent-dim: rgba(255, 216, 117, 0.12);
+  --cinema-accent-glow: rgba(255, 216, 117, 0.08);
+
+  /* Refined text hierarchy */
+  --cinema-text-primary: #F0F0F2;
+  --cinema-text-secondary: #9CA3B4;
+  --cinema-text-tertiary: #6B7280;
+  --cinema-text-muted: rgba(255, 255, 255, 0.38);
+
+  /* Border system */
+  --cinema-border-subtle: rgba(255, 255, 255, 0.06);
+  --cinema-border-default: rgba(255, 255, 255, 0.09);
+  --cinema-border-strong: rgba(255, 255, 255, 0.14);
+  --cinema-border-accent: rgba(255, 216, 117, 0.22);
+
+  /* Shadow system */
+  --cinema-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --cinema-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --cinema-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --cinema-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --cinema-shadow-glow: 0 0 30px rgba(255, 216, 117, 0.08);
+
+  /* Transition presets */
+  --cinema-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --cinema-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --cinema-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --cinema-duration-fast: 200ms;
+  --cinema-duration-normal: 320ms;
+  --cinema-duration-slow: 500ms;
+
+  /* Spacing scale */
+  --cinema-radius-sm: 8px;
+  --cinema-radius-md: 12px;
+  --cinema-radius-lg: 16px;
+  --cinema-radius-xl: 20px;
+  --cinema-radius-pill: 100px;
 }
 
 @theme inline {
@@ -2005,4 +2056,416 @@ body {
   background: #FFD875;
   color: black;
   border-color: #FFD875;
+}
+
+/* ================================================ */
+/* CINEMATIC DESIGN SYSTEM — Phase 1 Utilities      */
+/* ================================================ */
+
+/* --- Cinematic Card Surfaces --- */
+.cinema-card {
+  background: var(--cinema-bg-card);
+  border: 1px solid var(--cinema-border-subtle);
+  border-radius: var(--cinema-radius-md);
+  transition: all var(--cinema-duration-normal) var(--cinema-ease);
+}
+.cinema-card:hover {
+  background: var(--cinema-bg-card-hover);
+  border-color: var(--cinema-border-default);
+  box-shadow: var(--cinema-shadow-card);
+  transform: translateY(-4px);
+}
+
+.cinema-card-flat {
+  background: var(--cinema-bg-card);
+  border: 1px solid var(--cinema-border-subtle);
+  border-radius: var(--cinema-radius-md);
+  transition: background var(--cinema-duration-fast) var(--cinema-ease),
+              border-color var(--cinema-duration-fast) var(--cinema-ease);
+}
+.cinema-card-flat:hover {
+  background: var(--cinema-bg-card-hover);
+  border-color: var(--cinema-border-default);
+}
+
+/* --- Cinematic Glass --- */
+.cinema-glass {
+  background: rgba(14, 16, 25, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--cinema-border-subtle);
+}
+
+.cinema-glass-light {
+  background: rgba(23, 27, 40, 0.65);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--cinema-border-default);
+}
+
+/* --- Cinematic Buttons --- */
+.cinema-btn-primary {
+  background: linear-gradient(135deg, #FFD875 0%, #F0B840 100%);
+  color: #0A0C14;
+  font-weight: 700;
+  border-radius: var(--cinema-radius-pill);
+  transition: all var(--cinema-duration-fast) var(--cinema-ease);
+  box-shadow: 0 2px 12px rgba(255, 216, 117, 0.25);
+}
+.cinema-btn-primary:hover {
+  box-shadow: 0 4px 20px rgba(255, 216, 117, 0.35);
+  transform: translateY(-1px);
+}
+.cinema-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 216, 117, 0.2);
+}
+
+.cinema-btn-ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cinema-text-primary);
+  border: 1px solid var(--cinema-border-subtle);
+  border-radius: var(--cinema-radius-pill);
+  transition: all var(--cinema-duration-fast) var(--cinema-ease);
+}
+.cinema-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--cinema-border-default);
+}
+
+.cinema-btn-accent-ghost {
+  background: var(--cinema-accent-dim);
+  color: var(--cinema-accent);
+  border: 1px solid var(--cinema-border-accent);
+  border-radius: var(--cinema-radius-pill);
+  font-weight: 600;
+  transition: all var(--cinema-duration-fast) var(--cinema-ease);
+}
+.cinema-btn-accent-ghost:hover {
+  background: rgba(255, 216, 117, 0.18);
+  box-shadow: 0 0 16px rgba(255, 216, 117, 0.1);
+}
+
+/* --- Cinematic Text --- */
+.cinema-heading-xl {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--cinema-text-primary);
+}
+
+.cinema-heading-lg {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--cinema-text-primary);
+}
+
+.cinema-heading-md {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--cinema-text-primary);
+}
+
+.cinema-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cinema-text-tertiary);
+}
+
+.cinema-body {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--cinema-text-secondary);
+}
+
+/* --- Cinematic Badges --- */
+.cinema-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.cinema-badge-gold {
+  background: linear-gradient(135deg, #FFD875, #F0B840);
+  color: #0A0C14;
+}
+
+.cinema-badge-dark {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  color: white;
+}
+
+.cinema-badge-quality {
+  background: linear-gradient(135deg, rgba(255, 216, 117, 0.9), rgba(240, 184, 64, 0.9));
+  color: #0A0C14;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* --- Cinematic Gradients --- */
+.cinema-gradient-hero {
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(10, 12, 20, 0.2) 25%,
+    rgba(10, 12, 20, 0.6) 55%,
+    rgba(10, 12, 20, 0.92) 80%,
+    var(--cinema-bg-base) 100%);
+}
+
+.cinema-gradient-card {
+  background: linear-gradient(180deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.75) 100%);
+}
+
+.cinema-gradient-header {
+  background: linear-gradient(180deg,
+    rgba(10, 12, 20, 0.95) 0%,
+    rgba(10, 12, 20, 0.82) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+/* --- Cinematic Section Layouts --- */
+.cinema-section {
+  padding: 24px 0;
+}
+.cinema-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+/* --- Cinematic Dividers --- */
+.cinema-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--cinema-border-default) 20%,
+    var(--cinema-border-default) 80%,
+    transparent 100%);
+}
+
+.cinema-divider-accent {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 216, 117, 0.2) 50%,
+    transparent 100%);
+}
+
+/* --- Cinematic Poster Card --- */
+.cinema-poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: var(--cinema-radius-md);
+  background: var(--cinema-bg-card);
+  box-shadow: var(--cinema-shadow-sm);
+  transition: all var(--cinema-duration-normal) var(--cinema-ease);
+}
+.cinema-poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  transition: border-color var(--cinema-duration-normal) var(--cinema-ease);
+}
+.cinema-poster img {
+  transition: transform var(--cinema-duration-slow) var(--cinema-ease);
+}
+
+.group:hover .cinema-poster {
+  box-shadow: var(--cinema-shadow-md);
+}
+.group:hover .cinema-poster::after {
+  border-color: rgba(255, 216, 117, 0.15);
+}
+.group:hover .cinema-poster img {
+  transform: scale(1.06);
+}
+
+/* --- Cinematic Animations --- */
+@keyframes cinemaFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cinemaSlideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes cinemaScaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes cinemaPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+.cinema-animate-in {
+  animation: cinemaFadeIn 0.45s var(--cinema-ease) forwards;
+}
+.cinema-animate-slide {
+  animation: cinemaSlideIn 0.4s var(--cinema-ease) forwards;
+}
+.cinema-animate-scale {
+  animation: cinemaScaleIn 0.35s var(--cinema-ease) forwards;
+}
+
+/* Staggered entrance for cinema grids */
+.cinema-stagger > * {
+  opacity: 0;
+  animation: cinemaFadeIn 0.4s var(--cinema-ease) forwards;
+}
+.cinema-stagger > *:nth-child(1) { animation-delay: 0.03s; }
+.cinema-stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.cinema-stagger > *:nth-child(3) { animation-delay: 0.09s; }
+.cinema-stagger > *:nth-child(4) { animation-delay: 0.12s; }
+.cinema-stagger > *:nth-child(5) { animation-delay: 0.15s; }
+.cinema-stagger > *:nth-child(6) { animation-delay: 0.18s; }
+.cinema-stagger > *:nth-child(7) { animation-delay: 0.21s; }
+.cinema-stagger > *:nth-child(8) { animation-delay: 0.24s; }
+.cinema-stagger > *:nth-child(9) { animation-delay: 0.27s; }
+.cinema-stagger > *:nth-child(10) { animation-delay: 0.30s; }
+.cinema-stagger > *:nth-child(n+11) { animation-delay: 0.33s; }
+
+/* --- Cinematic Scrollbar --- */
+.cinema-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.cinema-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cinema-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+.cinema-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* --- Cinematic Skeleton --- */
+.cinema-skeleton {
+  background: linear-gradient(90deg,
+    var(--cinema-bg-card) 0%,
+    rgba(255, 255, 255, 0.04) 40%,
+    var(--cinema-bg-card) 80%);
+  background-size: 300% 100%;
+  animation: cinemaShimmer 1.8s ease-in-out infinite;
+  border-radius: var(--cinema-radius-md);
+}
+@keyframes cinemaShimmer {
+  0% { background-position: 300% 0; }
+  100% { background-position: -300% 0; }
+}
+
+/* --- Cinematic Input --- */
+.cinema-input {
+  background: var(--cinema-bg-raised);
+  border: 1px solid var(--cinema-border-subtle);
+  border-radius: var(--cinema-radius-pill);
+  color: var(--cinema-text-primary);
+  transition: all var(--cinema-duration-fast) var(--cinema-ease);
+  outline: none;
+}
+.cinema-input::placeholder {
+  color: var(--cinema-text-muted);
+}
+.cinema-input:focus {
+  border-color: rgba(255, 216, 117, 0.35);
+  background: var(--cinema-bg-surface);
+  box-shadow: 0 0 0 3px rgba(255, 216, 117, 0.08);
+}
+
+/* --- Cinematic Progress Bar --- */
+.cinema-progress {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.cinema-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFD875, #F0B840);
+  border-radius: 2px;
+  transition: width 0.3s var(--cinema-ease);
+}
+
+/* --- Cinematic Pill / Chip --- */
+.cinema-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--cinema-radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cinema-text-secondary);
+  border: 1px solid var(--cinema-border-subtle);
+  transition: all var(--cinema-duration-fast) var(--cinema-ease);
+  cursor: pointer;
+}
+.cinema-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--cinema-text-primary);
+  border-color: var(--cinema-border-default);
+}
+.cinema-pill.active {
+  background: var(--cinema-accent);
+  color: #0A0C14;
+  border-color: var(--cinema-accent);
+  font-weight: 600;
+}
+
+/* --- Cinematic Dropdown --- */
+.cinema-dropdown {
+  background: var(--cinema-bg-elevated);
+  border: 1px solid var(--cinema-border-default);
+  border-radius: var(--cinema-radius-lg);
+  box-shadow: var(--cinema-shadow-lg);
+  overflow: hidden;
+  animation: cinemaScaleIn 0.2s var(--cinema-ease) forwards;
+}
+.cinema-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 13px;
+  color: var(--cinema-text-secondary);
+  transition: all var(--cinema-duration-fast) var(--cinema-ease);
+  text-align: left;
+}
+.cinema-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cinema-text-primary);
+}
+.cinema-dropdown-item.active {
+  color: var(--cinema-accent);
+  background: var(--cinema-accent-dim);
+}
+
+/* --- Refined body defaults --- */
+body {
+  background: var(--cinema-bg-base);
 }

@@ -56,8 +56,8 @@ export default function ContinueWatching() {
         <div className="mb-[40px]">
             <div className="flex items-center gap-[10px] mb-[20px]">
                 <FontAwesomeIcon icon={faHistory} className="text-[#FFD875] text-[18px]" />
-                <h2 className="text-white text-[20px] font-bold">Tiếp tục xem</h2>
-                <span className="text-white/40 text-[13px]">({items.length} phim)</span>
+                <h2 className="cinema-heading-lg text-[18px] text-white font-bold">Tiếp tục xem</h2>
+                <span className="cinema-label text-white/40 text-[13px]">({items.length} phim)</span>
             </div>
 
             {/* Swipe hint on mobile */}
@@ -83,7 +83,7 @@ export default function ContinueWatching() {
                             }}
                             className="cursor-pointer group relative"
                         >
-                            <div className="relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e] shadow-lg">
+                            <div className="relative aspect-[2/3] cinema-poster shadow-lg overflow-hidden rounded-[12px]">
                                 <Image
                                     src={getProxiedImageUrl(getImageUrl(item.posterUrl))}
                                     alt={item.movieName}
@@ -98,15 +98,15 @@ export default function ContinueWatching() {
 
                                 {/* Play Icon */}
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div className="w-[50px] h-[50px] rounded-full bg-[#FFD875] flex items-center justify-center shadow-lg">
-                                        <FontAwesomeIcon icon={faPlay} className="text-black text-[18px] ml-[2px]" />
+                                    <div className="w-[34px] h-[34px] rounded-full bg-[#FFD875] flex items-center justify-center shadow-md">
+                                        <FontAwesomeIcon icon={faPlay} className="text-black text-[12px] ml-[2px]" />
                                     </div>
                                 </div>
 
                                 {/* Remove Button */}
                                 <button
                                     onClick={(e) => handleRemove(e, item)}
-                                    className="absolute top-[8px] right-[8px] w-[28px] h-[28px] rounded-full bg-black/60 text-white/70 hover:text-white hover:bg-black/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10"
+                                    className="absolute top-[8px] right-[8px] w-[28px] h-[28px] rounded-full bg-black/50 backdrop-blur-sm text-white/70 hover:text-white hover:bg-red-500/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10"
                                 >
                                     <FontAwesomeIcon icon={faTimes} className="text-[12px]" />
                                 </button>
@@ -114,7 +114,7 @@ export default function ContinueWatching() {
                                 {/* Episode Badge */}
                                 {item.episodeName && (
                                     <div className="absolute top-[8px] left-[8px]">
-                                        <span className="px-[6px] py-[2px] bg-[#FFD875] text-black text-[10px] font-bold rounded">
+                                        <span className="cinema-badge cinema-badge-dark">
                                             {item.episodeName}
                                         </span>
                                     </div>
@@ -123,7 +123,7 @@ export default function ContinueWatching() {
                                 {/* Progress info at bottom */}
                                 <div className="absolute bottom-0 left-0 right-0 p-[10px]">
                                     <div className="flex items-center justify-between mb-[6px]">
-                                        <span className="text-white/70 text-[10px]">
+                                        <span className="text-[10px] text-[#6B7280]">
                                             {formatTime(item.currentTime)} / {formatTime(item.duration)}
                                         </span>
                                         <span className="text-[#FFD875] text-[10px] font-bold">
@@ -131,9 +131,9 @@ export default function ContinueWatching() {
                                         </span>
                                     </div>
                                     {/* Progress Bar */}
-                                    <div className="progress-bar">
+                                    <div className="cinema-progress">
                                         <div
-                                            className="progress-bar-fill"
+                                            className="cinema-progress-fill"
                                             style={{ width: `${percent}%` }}
                                         />
                                     </div>
@@ -142,7 +142,7 @@ export default function ContinueWatching() {
 
                             {/* Title */}
                             <div className="mt-[10px]">
-                                <h3 className="text-white text-[14px] font-medium truncate group-hover:text-[#FFD875] transition-colors">
+                                <h3 className="text-white text-[12px] font-semibold truncate group-hover:text-[#FFD875] transition-colors">
                                     {item.movieName}
                                 </h3>
                                 <p className="text-white/40 text-[11px] mt-[2px]">

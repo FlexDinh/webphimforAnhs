@@ -182,50 +182,50 @@ function SearchContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F111A] pb-[100px] pt-[90px]">
+    <div className="min-h-screen bg-[#0A0C14] pb-[100px] pt-[90px]">
       <div className="container mx-auto max-w-[1400px] px-[16px]">
         <div className="mb-[18px] flex flex-wrap items-end justify-between gap-[12px]">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#FFD875]">Tìm kiếm</p>
-            <h1 className="mt-[6px] text-[24px] font-semibold text-white sm:text-[30px]">Tìm phim</h1>
+            <p className="cinema-label text-[12px] font-semibold uppercase tracking-[0.2em] text-[#FFD875]">Tìm kiếm</p>
+            <h1 className="cinema-heading-xl mt-[6px] text-[26px] font-semibold text-white sm:text-[32px]">Tìm phim</h1>
           </div>
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); if (searchInput.trim()) router.push(`/search?query=${encodeURIComponent(searchInput.trim())}`); }} className="mb-[30px]">
           <div className="tv-search-box relative mx-auto max-w-[640px]">
             <FontAwesomeIcon icon={faSearch} className="absolute left-[20px] top-1/2 -translate-y-1/2 text-[18px] text-[#666]" />
-            <input type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Tìm phim, diễn viên, đạo diễn..." className="w-full rounded-full border border-white/10 bg-white/10 py-[16px] pl-[56px] pr-[20px] text-[16px] text-white placeholder-[#666] transition-all focus:border-[#FFD875]/50 focus:bg-white/15 focus:outline-none" autoFocus />
+            <input type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Tìm phim, diễn viên, đạo diễn..." className="cinema-input w-full py-[14px] pl-[52px] pr-[18px] text-[15px]" autoFocus />
           </div>
         </form>
 
-        {didYouMean.length > 0 && <div className="mb-[20px] text-center"><span className="text-[14px] text-white/50">Bạn có ý tìm: </span>{didYouMean.map((suggestion, index) => <button key={index} onClick={() => router.push(`/search?query=${encodeURIComponent(suggestion)}`)} className="mx-[4px] text-[14px] font-medium text-[#FFD875] hover:underline">&quot;{suggestion}&quot;</button>)}</div>}
+        {didYouMean.length > 0 && <div className="mb-[20px] text-center"><span className="text-[14px] text-white/50">Bạn có ý tìm: </span>{didYouMean.map((suggestion, index) => <button key={index} onClick={() => router.push(`/search?query=${encodeURIComponent(suggestion)}`)} className="mx-[4px] text-[14px] font-medium text-[#FFD875]/80 hover:text-[#FFD875] hover:underline">&quot;{suggestion}&quot;</button>)}</div>}
 
         <div className="mb-[24px] flex justify-center gap-3">
-          <button onClick={() => setSourceFilter("all")} className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-colors ${sourceFilter === "all" ? "bg-[#FFD875] text-black" : "bg-white/10 text-white hover:bg-white/20"}`}>Tất cả</button>
-          <button onClick={() => setSourceFilter("ophim")} className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-colors ${sourceFilter === "ophim" ? "bg-[#FFD875] text-black" : "bg-white/10 text-white hover:bg-white/20"}`}>OPhim</button>
-          <button onClick={() => setSourceFilter("kkphim")} className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-colors ${sourceFilter === "kkphim" ? "bg-[#FFD875] text-black" : "bg-white/10 text-white hover:bg-white/20"}`}>KKPhim</button>
+          <button onClick={() => setSourceFilter("all")} className={`cinema-pill ${sourceFilter === "all" ? "active" : ""}`}>Tất cả</button>
+          <button onClick={() => setSourceFilter("ophim")} className={`cinema-pill ${sourceFilter === "ophim" ? "active" : ""}`}>OPhim</button>
+          <button onClick={() => setSourceFilter("kkphim")} className={`cinema-pill ${sourceFilter === "kkphim" ? "active" : ""}`}>KKPhim</button>
         </div>
 
         {query && <div className="mb-[20px] flex flex-wrap items-center justify-between gap-[12px]">
           <div>
             <h2 className="text-[22px] font-bold text-white">Kết quả: <span className="text-[#FFD875]">&quot;{query}&quot;</span></h2>
-            <p className="mt-[2px] text-[13px] text-[#888]">{filteredResults.length} / {results.length} phim{activeFilterCount > 0 && ` (${activeFilterCount} bộ lọc đang áp dụng)`}</p>
+            <p className="mt-[2px] text-[13px] text-[#6B7280]">{filteredResults.length} / {results.length} phim{activeFilterCount > 0 && ` (${activeFilterCount} bộ lọc đang áp dụng)`}</p>
           </div>
           <div className="flex items-center gap-[8px]">
             <div className="relative">
-              <button onClick={() => setShowSortDropdown((v) => !v)} className="flex items-center gap-[6px] rounded-full border border-white/10 bg-white/10 px-[14px] py-[8px] text-[12px] text-white transition-all hover:bg-white/20">
+              <button onClick={() => setShowSortDropdown((v) => !v)} className="cinema-btn-ghost flex items-center gap-[6px]">
                 <FontAwesomeIcon icon={faSortAmountDown} className="text-[10px]" />
                 {SORT_OPTIONS.find((item) => item.value === sortBy)?.label}
                 <FontAwesomeIcon icon={faChevronDown} className="text-[8px]" />
               </button>
               {showSortDropdown && <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowSortDropdown(false)} />
-                <div className="absolute right-0 top-full z-50 mt-[4px] w-[210px] overflow-hidden rounded-[12px] border border-white/10 bg-[#1E2545] shadow-xl">
-                  {SORT_OPTIONS.map((option) => <button key={option.value} onClick={() => { setSortBy(option.value); setShowSortDropdown(false); }} className={`flex w-full items-center gap-[8px] px-[14px] py-[10px] text-left text-[13px] transition-colors ${sortBy === option.value ? "bg-[#FFD875]/10 text-[#FFD875]" : "text-white hover:bg-white/10"}`}><FontAwesomeIcon icon={option.icon} className="w-[14px] text-[10px]" />{option.label}</button>)}
+                <div className="cinema-dropdown absolute right-0 top-full z-50 mt-[4px] w-[210px]">
+                  {SORT_OPTIONS.map((option) => <button key={option.value} onClick={() => { setSortBy(option.value); setShowSortDropdown(false); }} className={`cinema-dropdown-item flex w-full items-center gap-[8px] ${sortBy === option.value ? "bg-[#FFD875]/10 text-[#FFD875]" : ""}`}><FontAwesomeIcon icon={option.icon} className="w-[14px] text-[10px]" />{option.label}</button>)}
                 </div>
               </>}
             </div>
-            <button onClick={() => setShowFilters((v) => !v)} className={`flex items-center gap-[6px] rounded-full border px-[14px] py-[8px] text-[12px] transition-all ${showFilters || activeFilterCount > 0 ? "border-[#FFD875]/40 bg-[#FFD875]/20 text-[#FFD875]" : "border-white/10 bg-white/10 text-white hover:bg-white/20"}`}>
+            <button onClick={() => setShowFilters((v) => !v)} className={`flex items-center gap-[6px] ${showFilters || activeFilterCount > 0 ? "cinema-btn-accent-ghost" : "cinema-btn-ghost"}`}>
               <FontAwesomeIcon icon={faFilter} className="text-[10px]" />
               Bộ lọc
               {activeFilterCount > 0 && <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#FFD875] text-[10px] font-bold text-black">{activeFilterCount}</span>}
@@ -233,47 +233,47 @@ function SearchContent() {
           </div>
         </div>}
 
-        {showFilters && results.length > 0 && <div className="mb-[24px] animate-fade-in rounded-[16px] border border-white/5 bg-[#1a1c2e] p-[20px]">
+        {showFilters && results.length > 0 && <div className="mb-[24px] animate-fade-in bg-[#0E1019] border border-white/6 rounded-[14px] p-[20px]">
           <div className="mb-[16px] flex items-center justify-between">
             <h3 className="flex items-center gap-[8px] text-[15px] font-semibold text-white"><FontAwesomeIcon icon={faFilter} className="text-[13px] text-[#FFD875]" />Bộ lọc nâng cao</h3>
             {activeFilterCount > 0 && <button onClick={clearAllFilters} className="flex items-center gap-[4px] text-[12px] text-red-400 hover:text-red-300"><FontAwesomeIcon icon={faTimes} className="text-[9px]" />Xóa bộ lọc</button>}
           </div>
           {availableGenres.length > 0 && <div className="mb-[16px]">
             <p className="mb-[8px] text-[11px] uppercase tracking-wider text-white/50">Thể loại</p>
-            <div className="flex flex-wrap gap-[6px]">{availableGenres.map((genre) => <button key={genre} onClick={() => setSelectedGenres((prev) => prev.includes(genre) ? prev.filter((item) => item !== genre) : [...prev, genre])} className={`rounded-full px-[12px] py-[6px] text-[11px] transition-all ${selectedGenres.includes(genre) ? "bg-[#FFD875] font-semibold text-black" : "bg-white/10 text-white/70 hover:bg-white/20"}`}>{genre}</button>)}</div>
+            <div className="flex flex-wrap gap-[6px]">{availableGenres.map((genre) => <button key={genre} onClick={() => setSelectedGenres((prev) => prev.includes(genre) ? prev.filter((item) => item !== genre) : [...prev, genre])} className={`cinema-pill ${selectedGenres.includes(genre) ? "active" : ""}`}>{genre}</button>)}</div>
           </div>}
           <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2">
             {availableYears.length > 0 && <div>
               <p className="mb-[8px] text-[11px] uppercase tracking-wider text-white/50"><FontAwesomeIcon icon={faCalendarAlt} className="mr-[4px]" />Năm sản xuất</p>
               <div className="flex flex-wrap gap-[6px]">
-                <button onClick={() => setSelectedYear(null)} className={`rounded-full px-[12px] py-[6px] text-[11px] transition-all ${!selectedYear ? "bg-[#FFD875] font-semibold text-black" : "bg-white/10 text-white/70 hover:bg-white/20"}`}>Tất cả</button>
-                {availableYears.slice(0, 10).map((year) => <button key={year} onClick={() => setSelectedYear(selectedYear === year ? null : year)} className={`rounded-full px-[12px] py-[6px] text-[11px] transition-all ${selectedYear === year ? "bg-[#FFD875] font-semibold text-black" : "bg-white/10 text-white/70 hover:bg-white/20"}`}>{year}</button>)}
+                <button onClick={() => setSelectedYear(null)} className={`cinema-pill ${!selectedYear ? "active" : ""}`}>Tất cả</button>
+                {availableYears.slice(0, 10).map((year) => <button key={year} onClick={() => setSelectedYear(selectedYear === year ? null : year)} className={`cinema-pill ${selectedYear === year ? "active" : ""}`}>{year}</button>)}
               </div>
             </div>}
             <div>
               <p className="mb-[8px] text-[11px] uppercase tracking-wider text-white/50"><FontAwesomeIcon icon={faStar} className="mr-[4px]" />Đánh giá tối thiểu</p>
-              <div className="flex items-center gap-[8px]">{[0, 5, 6, 7, 8, 9].map((rating) => <button key={rating} onClick={() => setMinRating(minRating === rating ? 0 : rating)} className={`flex items-center gap-[4px] rounded-full px-[12px] py-[6px] text-[11px] transition-all ${minRating === rating ? "bg-[#FFD875] font-semibold text-black" : "bg-white/10 text-white/70 hover:bg-white/20"}`}>{rating === 0 ? "Tất cả" : `★ ${rating}+`}</button>)}</div>
+              <div className="flex items-center gap-[8px]">{[0, 5, 6, 7, 8, 9].map((rating) => <button key={rating} onClick={() => setMinRating(minRating === rating ? 0 : rating)} className={`cinema-pill ${minRating === rating ? "active" : ""}`}>{rating === 0 ? "Tất cả" : `★ ${rating}+`}</button>)}</div>
             </div>
           </div>
         </div>}
 
         {loading ? <div className="flex justify-center py-[60px]"><FontAwesomeIcon icon={faSpinner} className="animate-spin text-[40px] text-[#FFD875]" /></div> : filteredResults.length > 0 ? <div className="tv-movie-grid grid grid-cols-2 gap-[12px] sm:grid-cols-3 sm:gap-[16px] md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filteredResults.map((movie: any) => <button key={movie._id || movie.slug} onClick={() => router.push(`/phim/${movie.slug}`)} className="movie-card-premium group cursor-pointer text-left relative">
-            <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
+            <div className="cinema-poster relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
               <Image src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))} alt={movie.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="(min-width: 2200px) 11vw, (min-width: 1600px) 13vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw" unoptimized />
-              <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100"><div className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-[#FFD875]"><FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[14px] text-black" /></div></div>
-              {movie.quality && <span className="absolute left-[8px] top-[8px] rounded bg-[#FFD875] px-[6px] py-[2px] text-[10px] font-semibold text-black">{movie.quality}</span>}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"><div className="flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gradient-to-br from-[#FFD875] to-[#F0B840] shadow-[0_0_20px_rgba(255,216,117,0.4)]"><FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[16px] text-black" /></div></div>
+              {movie.quality && <span className="cinema-badge cinema-badge-quality absolute left-[8px] top-[8px]">{movie.quality}</span>}
               {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && <span className="absolute right-[8px] top-[8px] flex items-center gap-[2px] rounded bg-black/70 px-[5px] py-[2px] text-[9px] font-bold text-[#FFD875]">★ {movie.tmdb.vote_average.toFixed(1)}</span>}
-              {movie._source && <span className={`absolute bottom-[8px] left-[8px] rounded px-[6px] py-[2px] text-[10px] font-bold text-white ${movie._source === 'ophim' ? 'bg-blue-600' : 'bg-red-600'}`}>{movie._source === 'ophim' ? 'OPhim' : 'KKPhim'}</span>}
+              {movie._source && <span className={`absolute bottom-[8px] left-[8px] rounded px-[6px] py-[2px] text-[10px] font-bold text-white backdrop-blur-sm ${movie._source === 'ophim' ? 'bg-blue-600/80' : 'bg-red-600/80'}`}>{movie._source === 'ophim' ? 'OPhim' : 'KKPhim'}</span>}
             </div>
-            <div className="mt-[10px]"><h3 className="truncate text-[13px] font-medium text-white transition-colors group-hover:text-[#FFD875]">{String(movie.name || "")}</h3><p className="truncate text-[11px] text-white/40">{String(movie.origin_name || "")}</p><div className="mt-[4px] flex items-center gap-[6px]"><span className="text-[11px] text-[#888]">{String(movie.year || "")}</span>{movie.category && movie.category.length > 0 && <span className="truncate text-[10px] text-white/30">• {movie.category.slice(0, 2).map((item: any) => item.name).join(", ")}</span>}</div></div>
+            <div className="mt-[10px]"><h3 className="truncate text-[13px] font-medium text-white transition-colors group-hover:text-[#FFD875]">{String(movie.name || "")}</h3><p className="truncate text-[11px] text-[#6B7280]">{String(movie.origin_name || "")}</p><div className="mt-[4px] flex items-center gap-[6px]"><span className="text-[11px] text-[#6B7280]">{String(movie.year || "")}</span>{movie.category && movie.category.length > 0 && <span className="truncate text-[10px] text-white/30">• {movie.category.slice(0, 2).map((item: any) => item.name).join(", ")}</span>}</div></div>
           </button>)}
-        </div> : query ? <div className="py-[60px] text-center"><p className="text-[18px] text-white/60">Không tìm thấy kết quả nào</p><p className="mt-[8px] text-[14px] text-[#888]">Thử từ khóa khác hoặc nới bộ lọc để mở rộng danh sách.</p>{activeFilterCount > 0 && <button onClick={clearAllFilters} className="mt-[16px] rounded-full bg-[#FFD875]/20 px-[20px] py-[10px] text-[13px] text-[#FFD875] transition-colors hover:bg-[#FFD875]/30">Xóa bộ lọc</button>}</div> : <div className="py-[60px] text-center"><FontAwesomeIcon icon={faSearch} className="mb-[16px] text-[60px] text-white/20" /><p className="text-white/40">Nhập từ khóa để tìm phim</p></div>}
+        </div> : query ? <div className="py-[60px] text-center"><p className="text-[18px] text-white/50">Không tìm thấy kết quả nào</p><p className="mt-[8px] text-[14px] text-[#6B7280]">Thử từ khóa khác hoặc nới bộ lọc để mở rộng danh sách.</p>{activeFilterCount > 0 && <button onClick={clearAllFilters} className="mt-[16px] rounded-full bg-[#FFD875]/20 px-[20px] py-[10px] text-[13px] text-[#FFD875] transition-colors hover:bg-[#FFD875]/30">Xóa bộ lọc</button>}</div> : <div className="py-[60px] text-center"><FontAwesomeIcon icon={faSearch} className="mb-[16px] text-[60px] text-white/20" /><p className="text-white/40">Nhập từ khóa để tìm phim</p></div>}
       </div>
     </div>
   );
 }
 
 export default function SearchPage() {
-  return <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#0F111A]"><FontAwesomeIcon icon={faSpinner} className="animate-spin text-[40px] text-[#FFD875]" /></div>}><SearchContent /></Suspense>;
+  return <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#0A0C14]"><FontAwesomeIcon icon={faSpinner} className="animate-spin text-[40px] text-[#FFD875]" /></div>}><SearchContent /></Suspense>;
 }

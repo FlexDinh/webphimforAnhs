@@ -38,7 +38,7 @@ export default function CountryFilter({
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
-                className="flex items-center gap-[10px] px-[16px] py-[10px] rounded-full bg-white/10 hover:bg-white/15 border border-white/10 transition-all"
+                className="cinema-btn-ghost flex items-center gap-[10px] px-[16px] py-[10px]"
             >
                 <FontAwesomeIcon icon={faGlobe} className="text-[#FFD875] text-[14px]" />
                 <span className="text-white text-[13px] font-medium">{selectedCountryName}</span>
@@ -58,17 +58,14 @@ export default function CountryFilter({
                     />
 
                     {/* Menu */}
-                    <div className="absolute top-full left-0 mt-[8px] w-[200px] bg-[#1E2545] rounded-[12px] border border-white/10 shadow-xl z-50 overflow-hidden animate-fade-in">
+                    <div className="absolute top-full left-0 mt-[8px] w-[200px] cinema-dropdown z-50 overflow-hidden animate-fade-in">
                         {/* All Countries Option */}
                         <button
                             onClick={() => {
                                 onCountrySelect("");
                                 setIsOpen(false);
                             }}
-                            className={`w-full px-[16px] py-[12px] text-left text-[13px] flex items-center gap-[10px] transition-colors ${!selectedCountry
-                                    ? "bg-[#FFD875]/20 text-[#FFD875]"
-                                    : "text-white hover:bg-white/10"
-                                }`}
+                            className={`cinema-dropdown-item w-full px-[16px] py-[12px] text-left flex items-center gap-[10px] ${!selectedCountry ? "active" : ""}`}
                         >
                             <span className="text-[16px]">🌍</span>
                             Tất cả quốc gia
@@ -86,10 +83,7 @@ export default function CountryFilter({
                                         onCountrySelect(country.slug);
                                         setIsOpen(false);
                                     }}
-                                    className={`w-full px-[16px] py-[10px] text-left text-[13px] transition-colors ${selectedCountry === country.slug
-                                            ? "bg-[#FFD875]/20 text-[#FFD875]"
-                                            : "text-white hover:bg-white/10"
-                                        }`}
+                                    className={`cinema-dropdown-item w-full px-[16px] py-[10px] text-left ${selectedCountry === country.slug ? "active" : ""}`}
                                 >
                                     {country.name}
                                 </button>

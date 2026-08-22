@@ -60,16 +60,16 @@ export default function TrendingSection() {
   return (
     <section className="mb-[40px] px-4">
       <div className="flex items-center justify-between mb-[20px]">
-        <h2 className="text-white text-[20px] font-bold">🔥 Trending</h2>
+        <h2 className="cinema-heading-lg text-[18px]">🔥 Trending</h2>
         <div className="flex bg-[#1E2030] rounded-full p-1">
           <button 
-            className={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${timeWindow === 'day' ? 'bg-[#FFD875] text-black' : 'text-white'}`}
+            className={`cinema-pill ${timeWindow === 'day' ? 'active' : ''}`}
             onClick={() => setTimeWindow('day')}
           >
             Hôm nay
           </button>
           <button 
-            className={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${timeWindow === 'week' ? 'bg-[#FFD875] text-black' : 'text-white'}`}
+            className={`cinema-pill ${timeWindow === 'week' ? 'active' : ''}`}
             onClick={() => setTimeWindow('week')}
           >
             Tuần này
@@ -78,7 +78,7 @@ export default function TrendingSection() {
       </div>
       
       <div className="relative">
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 stagger-children snap-x">
+        <div className="flex gap-4 overflow-x-auto cinema-scrollbar pb-4 stagger-children snap-x">
           {loading ? (
             Array.from({ length: 10 }).map((_, i) => (
               <div key={i} className="min-w-[150px] md:min-w-[200px] h-[225px] md:h-[300px] bg-[#2a2d3e] rounded-xl animate-pulse flex-shrink-0 snap-start" />
@@ -92,10 +92,10 @@ export default function TrendingSection() {
                   className="movie-card-premium relative min-w-[150px] md:min-w-[200px] cursor-pointer flex-shrink-0 snap-start group"
                   onClick={() => router.push(`/phim/${slug}`)}
                 >
-                  <span className="trending-number absolute -left-4 bottom-4 text-[100px] font-black text-transparent opacity-80 z-0 pointer-events-none stroke-white" style={{ WebkitTextStroke: '2px #444', color: 'transparent' }}>
+                  <span className="trending-number absolute -left-4 bottom-4 text-[100px] sm:text-[120px] font-black text-transparent z-0 pointer-events-none" style={{ WebkitTextStroke: '2px rgba(255,255,255,0.15)', color: 'transparent' }}>
                     {index + 1}
                   </span>
-                  <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-[#2a2d3e] shadow-lg z-10 ml-6">
+                  <div className="cinema-poster relative aspect-[2/3] rounded-[12px] overflow-hidden bg-[#2a2d3e] shadow-lg z-10 ml-6">
                     <Image
                       src={
                         movie.poster_path?.startsWith('http') || movie.poster_path?.startsWith('/')
@@ -109,11 +109,11 @@ export default function TrendingSection() {
                       unoptimized
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-xs font-bold text-[#FFD875]">
+                    <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-[11px] font-bold text-[#FFD875]/90">
                       ★ {movie.vote_average?.toFixed(1)}
                     </div>
                   </div>
-                  <h3 className="text-white text-sm font-medium mt-2 truncate pl-6 group-hover:text-[#FFD875] transition-colors">
+                  <h3 className="text-white text-[12px] font-semibold mt-2 truncate pl-6 group-hover:text-[#FFD875] transition-colors">
                     {movie.title || movie.name}
                   </h3>
                 </div>

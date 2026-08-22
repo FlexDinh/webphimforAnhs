@@ -37,9 +37,9 @@ import ContinueWatching from "@/component/ContinueWatching";
 const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="tv-row-card movie-card-premium neon-glow group w-[140px] flex-shrink-0 cursor-pointer text-left sm:w-[160px]"
+    className="tv-row-card movie-card-premium neon-glow group w-[150px] flex-shrink-0 cursor-pointer text-left sm:w-[170px]"
   >
-    <div className="relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
+    <div className="cinema-poster relative aspect-[2/3] overflow-hidden rounded-[12px] bg-[#2a2d3e]">
       <Image
         src={getProxiedImageUrl(getImageUrl(movie.poster_url || movie.thumb_url))}
         alt={typeof movie.name === "string" ? movie.name : "Movie"}
@@ -50,33 +50,33 @@ const MovieCard = memo(({ movie, onClick }: { movie: OPhimMovie; onClick: () => 
         unoptimized
       />
       <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent pb-[16px] opacity-0 transition-opacity group-hover:opacity-100">
-        <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#FFD875]">
+        <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-gradient-to-br from-[#FFD875] to-[#F0B840] shadow-[0_4px_16px_rgba(255,216,117,0.3)]">
           <FontAwesomeIcon icon={faPlay} className="ml-[2px] text-[12px] text-black" />
         </div>
       </div>
       {movie.quality && (
-        <span className="absolute left-[6px] top-[6px] rounded bg-[#FFD875] px-[5px] py-[2px] text-[9px] font-semibold text-black">
+        <span className="cinema-badge cinema-badge-quality absolute left-[6px] top-[6px]">
           {movie.quality}
         </span>
       )}
       {movie.tmdb?.vote_average && movie.tmdb.vote_average > 0 && (
-        <span className="absolute right-[6px] top-[6px] flex items-center gap-[2px] rounded bg-black/70 px-[5px] py-[2px] text-[9px] font-bold text-[#FFD875]">
+        <span className="absolute right-[6px] top-[6px] flex items-center gap-[2px] rounded bg-black/60 backdrop-blur-sm px-[5px] py-[2px] text-[9px] font-bold text-[#FFD875]">
           ★ {movie.tmdb.vote_average.toFixed(1)}
         </span>
       )}
     </div>
-    <h3 className="mt-[8px] truncate text-[12px] font-medium text-white transition-colors group-hover:text-[#FFD875]">
+    <h3 className="mt-[8px] truncate text-[13px] font-semibold tracking-[-0.01em] text-white transition-colors group-hover:text-[#FFD875]">
       {typeof movie.name === "string" ? movie.name : ""}
     </h3>
-    <p className="truncate text-[10px] text-white/40">{typeof movie.origin_name === "string" ? movie.origin_name : ""}</p>
+    <p className="truncate text-[10px] text-[#6B7280]">{typeof movie.origin_name === "string" ? movie.origin_name : ""}</p>
   </button>
 ));
 MovieCard.displayName = "MovieCard";
 
 const SkeletonCard = () => (
-  <div className="tv-row-card w-[140px] flex-shrink-0 sm:w-[160px]">
-    <div className="aspect-[2/3] rounded-[12px] bg-[#2a2d3e] animate-pulse" />
-    <div className="mt-[8px] h-[14px] w-3/4 rounded bg-[#2a2d3e] animate-pulse" />
+  <div className="tv-row-card w-[150px] flex-shrink-0 sm:w-[170px]">
+    <div className="cinema-skeleton aspect-[2/3] rounded-[12px] bg-[#2a2d3e] animate-pulse" />
+    <div className="mt-[8px] h-[14px] w-3/4 rounded bg-[#1C2133] animate-pulse" />
   </div>
 );
 
@@ -139,24 +139,24 @@ const MovieSection = memo(
     }, [shouldLoad]);
 
     return (
-      <section ref={sectionRef} className="tv-row-section mb-[40px]">
+      <section ref={sectionRef} className="tv-row-section mb-[40px] mt-[4px] border-b border-white/4 pb-[28px]">
         <div className="mb-[16px] flex items-center justify-between">
           <div className="flex items-center gap-[10px]">
-            <div className={`flex h-[36px] w-[36px] items-center justify-center rounded-lg ${gradient}`}>
+            <div className={`flex w-[32px] h-[32px] items-center justify-center rounded-lg ${gradient}`}>
               <FontAwesomeIcon icon={icon} className="text-[14px] text-white" />
             </div>
-            <h2 className="text-[18px] font-bold text-white">{title}</h2>
+            <h2 className="cinema-heading-md text-[17px] font-bold text-white">{title}</h2>
           </div>
           <button
             onClick={() => router.push(viewAllPath)}
-            className="flex items-center gap-[4px] text-[12px] text-white/60 transition-colors hover:text-[#FFD875]"
+            className="flex items-center gap-[4px] text-[12px] font-medium text-[#FFD875]/70 transition-colors hover:text-[#FFD875]"
           >
             Xem tất cả
             <FontAwesomeIcon icon={faAngleRight} className="text-[10px]" />
           </button>
         </div>
 
-        <div className="tv-horizontal-row scrollbar-hide flex gap-[12px] overflow-x-auto pb-[8px]">
+        <div className="tv-horizontal-row cinema-scrollbar scrollbar-hide flex gap-[12px] sm:gap-[14px] overflow-x-auto pb-[8px]">
           {loading
             ? [...Array(6)].map((_, index) => <SkeletonCard key={index} />)
             : movies.map((movie) => (
@@ -179,13 +179,13 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
     : [];
 
   return (
-    <section className="mb-[40px]">
+    <section className="mb-[40px] mt-[4px]">
       <div className="mb-[16px] flex items-center gap-[10px]">
-        <div className="flex h-[36px] w-[36px] items-center justify-center rounded-lg bg-gradient-to-br from-[#FF6B6B] to-[#ee5a24]">
+        <div className="flex h-[32px] w-[32px] items-center justify-center rounded-lg bg-gradient-to-br from-[#FF6B6B] to-[#ee5a24]">
           <FontAwesomeIcon icon={faFire} className="text-[14px] text-white" />
         </div>
-        <h2 className="text-[18px] font-bold text-white">Trending 🔥</h2>
-        <span className="rounded-full bg-red-500/20 px-[8px] py-[2px] text-[10px] font-bold uppercase tracking-wider text-red-400">
+        <h2 className="cinema-heading-md text-[17px] font-bold text-white">Trending 🔥</h2>
+        <span className="cinema-pill rounded-full bg-red-500/20 px-[8px] py-[2px] text-[10px] font-bold uppercase tracking-wider text-red-400">
           Hot
         </span>
       </div>
@@ -228,10 +228,10 @@ const TrendingSection = memo(({ movies }: { movies: OPhimMovie[] }) => {
             </div>
 
             <div className="min-w-0 flex-1">
-              <h4 className="truncate text-[13px] font-medium text-white transition-colors group-hover:text-[#FFD875]">
+              <h4 className="truncate text-[13px] font-semibold tracking-[-0.01em] text-white transition-colors group-hover:text-[#FFD875]">
                 {String(movie.name || "")}
               </h4>
-              <p className="truncate text-[11px] text-white/40">{String(movie.origin_name || "")}</p>
+              <p className="truncate text-[10px] text-[#6B7280]">{String(movie.origin_name || "")}</p>
               <div className="mt-[4px] flex items-center gap-[6px]">
                 <span className="text-[11px] font-semibold text-[#FFD875]">
                   ★ {movie.tmdb?.vote_average ? movie.tmdb.vote_average.toFixed(1) : (movie.quality || "HD")}
@@ -277,7 +277,7 @@ export default function PhimHay() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0F111A]">
+    <div className="min-h-screen bg-[#0A0C14]">
       <div className="container mx-auto max-w-[1400px] px-[16px] pt-[90px] pb-[30px]">
         <div className="mb-[24px] flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-[#1B1E2E] via-[#141724] to-[#0F111A] p-[20px] border border-white/8 shadow-xl">
           <div>
@@ -291,13 +291,13 @@ export default function PhimHay() {
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => router.push("/phim-moi")}
-              className="inline-flex items-center gap-[6px] rounded-lg bg-[#FFD875] px-[16px] py-[8px] text-[13px] font-bold text-black transition hover:bg-[#FFE49A]"
+              className="inline-flex items-center gap-[6px] rounded-lg bg-[#0E1019] border border-white/6 px-[16px] py-[8px] text-[13px] font-bold text-white transition hover:bg-[#131620] hover:border-white/10"
             >
               Phim mới hôm nay
             </button>
             <button
               onClick={() => router.push("/phim-bo")}
-              className="inline-flex items-center gap-[6px] rounded-lg bg-white/10 px-[16px] py-[8px] text-[13px] font-semibold text-white transition hover:bg-white/20"
+              className="inline-flex items-center gap-[6px] rounded-lg bg-[#0E1019] border border-white/6 px-[16px] py-[8px] text-[13px] font-semibold text-white transition hover:bg-[#131620] hover:border-white/10"
             >
               Phim bộ
             </button>

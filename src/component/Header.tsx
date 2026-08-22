@@ -93,8 +93,8 @@ export default function Header() {
     <header
       className={`tv-header fixed left-0 top-0 z-50 w-full px-[16px] text-white transition-all duration-500 ${
         scrolled
-          ? "header-premium shadow-[0_12px_40px_rgba(0,0,0,0.28)]"
-          : "bg-gradient-to-b from-black/80 via-black/40 to-transparent"
+          ? "cinema-glass shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+          : "bg-gradient-to-b from-[#0A0C14]/90 via-[#0A0C14]/40 to-transparent"
       }`}
     >
       <div className="container mx-auto max-w-[1400px]">
@@ -110,7 +110,7 @@ export default function Header() {
 
             <button
               onClick={() => router.push("/phimhay")}
-              className="flex cursor-pointer items-center gap-[8px] transition-transform active:scale-95"
+              className="flex cursor-pointer items-center gap-[8px] transition-all hover:opacity-80 active:scale-95"
               aria-label="Về trang phim mới"
             >
               <div className="tv-logo-frame h-[50px] w-[160px] sm:h-[60px] sm:w-[180px]">
@@ -124,10 +124,10 @@ export default function Header() {
               <button
                 key={item.path}
                 onClick={() => router.push(item.path)}
-                className={`flex items-center gap-[6px] whitespace-nowrap rounded-full px-[16px] py-[8px] text-[14px] transition-all ${
+                className={`flex items-center gap-[6px] whitespace-nowrap rounded-lg px-[14px] py-[7px] text-[13px] tracking-[-0.01em] transition-all ${
                   isActive(item.path)
-                    ? "bg-[#FFD875] font-semibold text-black"
-                    : "text-white/90 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#FFD875]/15 font-semibold text-[#FFD875]"
+                    : "font-medium text-white/90 hover:bg-white/10 hover:text-white"
                 }`}
               >
                 {item.icon && <FontAwesomeIcon icon={item.icon} className="text-[12px]" />}
@@ -138,10 +138,10 @@ export default function Header() {
             <div className="relative">
               <button
                 onClick={() => setShowCountryDropdown((value) => !value)}
-                className={`flex items-center gap-[6px] whitespace-nowrap rounded-full px-[16px] py-[8px] text-[14px] transition-all ${
+                className={`flex items-center gap-[6px] whitespace-nowrap rounded-lg px-[14px] py-[7px] text-[13px] tracking-[-0.01em] transition-all ${
                   pathname.startsWith("/quoc-gia")
-                    ? "bg-[#FFD875] font-semibold text-black"
-                    : "text-white/90 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#FFD875]/15 font-semibold text-[#FFD875]"
+                    : "font-medium text-white/90 hover:bg-white/10 hover:text-white"
                 }`}
               >
                 <FontAwesomeIcon icon={faGlobe} className="text-[12px]" />
@@ -151,7 +151,7 @@ export default function Header() {
               {showCountryDropdown && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowCountryDropdown(false)} />
-                  <div className="absolute left-0 top-full z-50 mt-[8px] w-[190px] overflow-hidden rounded-[14px] border border-white/10 bg-[#1E2545] shadow-xl">
+                  <div className="cinema-dropdown absolute left-0 top-full z-50 mt-[8px] w-[190px] overflow-hidden rounded-[14px] shadow-xl">
                     {COUNTRIES.map((country) => (
                       <button
                         key={country.slug}
@@ -159,7 +159,7 @@ export default function Header() {
                           router.push(`/quoc-gia/${country.slug}`);
                           setShowCountryDropdown(false);
                         }}
-                        className="block w-full px-[16px] py-[10px] text-left text-[13px] text-white transition-colors hover:bg-white/10"
+                        className="cinema-dropdown-item block w-full px-[16px] py-[10px] text-left text-[13px] text-white transition-colors"
                       >
                         {country.name}
                       </button>
@@ -188,7 +188,7 @@ export default function Header() {
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="Tìm phim... (nhấn /)"
                   aria-label="Tìm kiếm phim"
-                  className="w-full rounded-full border border-white/10 bg-white/10 py-[10px] pl-[40px] pr-[16px] text-[14px] text-white placeholder-[#666] transition-all focus:border-[#FFD875]/50 focus:bg-white/15 focus:outline-none"
+                  className="w-full rounded-full border border-white/8 bg-[#0E1019] py-[10px] pl-[40px] pr-[16px] text-[14px] text-white placeholder-[#666] transition-all focus:border-[#FFD875]/30 focus:bg-[#131620] focus:shadow-[0_0_0_3px_rgba(255,216,117,0.06)] focus:outline-none"
                 />
               </div>
             </form>
@@ -224,7 +224,7 @@ export default function Header() {
                 }}
                 placeholder="Tìm phim, diễn viên..."
                 aria-label="Tìm kiếm phim"
-                className="w-full rounded-full border border-white/10 bg-white/10 py-[14px] pl-[44px] pr-[16px] text-[16px] text-white placeholder-[#666] focus:outline-none"
+                className="w-full rounded-full border border-white/8 bg-[#0E1019] py-[14px] pl-[44px] pr-[16px] text-[16px] text-white placeholder-[#666] transition-all focus:border-[#FFD875]/30 focus:bg-[#131620] focus:shadow-[0_0_0_3px_rgba(255,216,117,0.06)] focus:outline-none"
                 autoFocus
               />
               <SearchSuggestions
@@ -246,10 +246,10 @@ export default function Header() {
                     router.push(item.path);
                     setOpenBarMenu(false);
                   }}
-                  className={`flex items-center gap-[12px] rounded-2xl px-[20px] py-[16px] text-[17px] transition-all active:scale-[0.98] ${
+                  className={`flex items-center gap-[12px] rounded-xl border px-[20px] py-[16px] text-[17px] transition-all active:scale-[0.98] ${
                     isActive(item.path)
-                      ? "bg-gradient-to-r from-[#FFD700] to-[#f0a500] font-bold text-black shadow-lg"
-                      : "bg-white/5 hover:bg-white/10"
+                      ? "border-[#FFD875]/30 bg-[#FFD875]/15 font-bold text-[#FFD875] shadow-lg"
+                      : "border-white/5 bg-[#131620] hover:bg-[#1a1e2d] text-white/90 hover:text-white"
                   }`}
                 >
                   {item.icon && <FontAwesomeIcon icon={item.icon} className="text-[18px]" />}
@@ -270,7 +270,7 @@ export default function Header() {
                         router.push(`/quoc-gia/${country.slug}`);
                         setOpenBarMenu(false);
                       }}
-                      className="rounded-xl bg-white/5 px-[16px] py-[12px] text-[14px] text-white transition-all hover:bg-white/10 active:scale-[0.98]"
+                      className="rounded-xl border border-white/5 bg-[#131620] px-[16px] py-[12px] text-[14px] text-white transition-all hover:bg-[#1a1e2d] active:scale-[0.98]"
                     >
                       {country.name}
                     </button>

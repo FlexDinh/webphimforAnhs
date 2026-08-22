@@ -385,10 +385,10 @@ export default function MoviePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#0F111A] flex items-center justify-center pt-[70px]">
+            <div className="min-h-screen bg-[#0A0C14] flex items-center justify-center pt-[70px]">
                 <div className="flex flex-col items-center gap-[16px]">
-                    <div className="w-[50px] h-[50px] border-4 border-[#FFD875] border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-white/60 text-[14px]">Đang tải phim...</p>
+                    <div className="w-[50px] h-[50px] border-4 border-[#FFD875]/25 border-t-[#FFD875] rounded-full animate-spin"></div>
+                    <p className="text-[#6B7280] text-[14px]">Đang tải phim...</p>
                 </div>
             </div>
         );
@@ -396,12 +396,12 @@ export default function MoviePage() {
 
     if (error || !movie) {
         return (
-            <div className="min-h-screen bg-[#0F111A] flex items-center justify-center pt-[70px]">
+            <div className="min-h-screen bg-[#0A0C14] flex items-center justify-center pt-[70px]">
                 <div className="text-center">
                     <p className="text-white text-[18px] mb-[16px]">{error || "Không tìm thấy phim"}</p>
                     <button
                         onClick={() => router.back()}
-                        className="px-[20px] py-[10px] bg-[#FFD875] text-black rounded-full font-semibold hover:bg-[#FFD875]/90 transition-colors"
+                        className="cinema-btn-primary px-[20px] py-[10px]"
                     >
                         Quay lại
                     </button>
@@ -415,10 +415,10 @@ export default function MoviePage() {
     const safeEpisodeEmbed = getSafeEmbedUrl(selectedEpisode?.link_embed);
 
     return (
-        <div className={`tv-watch-page min-h-screen bg-[#0F111A] pt-[70px] ${theaterMode ? 'theater-page' : ''}`}>
+        <div className={`tv-watch-page min-h-screen bg-[#0A0C14] cinema-animate-in pt-[70px] ${theaterMode ? 'theater-page' : ''}`}>
             {/* Auto-select notification toast */}
             {autoSelectNotice && (
-                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 z-[200] px-[20px] py-[12px] bg-gradient-to-r from-[#1e1e3f] to-[#2a1e3f] border border-[#FFD875]/40 rounded-full text-[#FFD875] text-[13px] font-medium shadow-xl animate-fade-in flex items-center gap-[8px]">
+                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 z-[200] px-[20px] py-[12px] bg-[#131620] border border-[#FFD875]/25 rounded-xl text-[#FFD875] text-[13px] font-medium shadow-xl animate-fade-in flex items-center gap-[8px]">
                     {autoSelectNotice}
                     <button onClick={() => setAutoSelectNotice(null)} className="ml-[8px] text-white/40 hover:text-white">
                         ✕
@@ -441,16 +441,16 @@ export default function MoviePage() {
                     {/* Left: Theater Mode */}
                     <button
                         onClick={() => setTheaterMode(!theaterMode)}
-                        className={`px-[12px] py-[6px] rounded-full text-[11px] font-medium transition-all flex items-center gap-[6px] ${theaterMode
-                            ? 'bg-[var(--accent-color)] text-black'
-                            : 'bg-black/50 text-white hover:bg-black/70'
+                        className={`cinema-pill text-[10px] px-[10px] py-[5px] flex items-center gap-[6px] ${theaterMode
+                            ? 'active'
+                            : ''
                             }`}
                         title="Theater Mode (T)"
                     >
                         <FontAwesomeIcon icon={theaterMode ? faSun : faMoon} className="text-[10px]" />
                         {theaterMode ? 'Bật đèn' : 'Tắt đèn'}
                     </button>
-                    <div className="ml-3 text-white/50 text-[11px] bg-black/50 px-2 py-1 rounded-md hidden sm:block">
+                    <div className="ml-3 text-white/50 text-[11px] bg-[#0A0C14]/70 backdrop-blur-sm px-2 py-1 rounded-md hidden sm:block">
                         Phím tắt (?)
                     </div>
 
@@ -460,9 +460,9 @@ export default function MoviePage() {
                         {currentServerData.length > 1 && (
                             <button
                                 onClick={() => setAutoPlayEnabled(!autoPlayEnabled)}
-                                className={`px-[10px] py-[6px] rounded-full text-[10px] font-medium transition-all ${autoPlayEnabled
-                                    ? 'bg-[#FFD875]/20 text-[#FFD875] border border-[#FFD875]/40'
-                                    : 'bg-black/50 text-white/60 border border-white/10'
+                                className={`cinema-pill text-[10px] px-[10px] py-[5px] ${autoPlayEnabled
+                                    ? 'active'
+                                    : 'bg-[#0A0C14]/60 text-white/60'
                                     }`}
                                 title="Tự động phát tập tiếp theo"
                             >
@@ -474,7 +474,7 @@ export default function MoviePage() {
                         {hasPrevEpisode && (
                             <button
                                 onClick={handlePrevEpisode}
-                                className="px-[10px] py-[6px] rounded-full text-[11px] bg-black/50 text-white hover:bg-black/70 flex items-center gap-[4px]"
+                                className="px-[10px] py-[6px] rounded-full text-[11px] bg-[#0A0C14]/70 backdrop-blur-sm text-white hover:bg-[#0A0C14]/90 border border-white/6 flex items-center gap-[4px]"
                                 title="Tập trước (P)"
                             >
                                 <FontAwesomeIcon icon={faBackwardStep} className="text-[10px]" />
@@ -485,7 +485,7 @@ export default function MoviePage() {
                         {hasNextEpisode && (
                             <button
                                 onClick={handleNextEpisode}
-                                className="px-[10px] py-[6px] rounded-full text-[11px] bg-black/50 text-white hover:bg-black/70 flex items-center gap-[4px]"
+                                className="px-[10px] py-[6px] rounded-full text-[11px] bg-[#0A0C14]/70 backdrop-blur-sm text-white hover:bg-[#0A0C14]/90 border border-white/6 flex items-center gap-[4px]"
                                 title="Tập sau (N)"
                             >
                                 <FontAwesomeIcon icon={faForwardStep} className="text-[10px]" />
@@ -497,7 +497,7 @@ export default function MoviePage() {
 
                 {/* Auto-play Next Episode Overlay */}
                 {showAutoPlayOverlay && hasNextEpisode && (
-                    <div className="absolute inset-0 z-30 bg-black/80 flex items-center justify-center">
+                    <div className="absolute inset-0 z-30 bg-[#0A0C14]/90 flex items-center justify-center">
                         <div className="text-center animate-fade-in">
                             <p className="text-white/60 text-[14px] mb-[8px]">Tập tiếp theo trong</p>
                             <div className="relative w-[80px] h-[80px] mx-auto mb-[16px]">
@@ -517,16 +517,16 @@ export default function MoviePage() {
                             <p className="text-[#FFD875] text-[16px] font-semibold mb-[4px]">
                                 {currentServerData[selectedEpisodeIdx + 1]?.name}
                             </p>
-                            <div className="flex items-center gap-[12px] justify-center mt-[16px]">
+                            <div className="flex items-center justify-center gap-[12px] mt-[16px]">
                                 <button
                                     onClick={cancelAutoPlay}
-                                    className="px-[20px] py-[10px] rounded-full bg-white/10 text-white text-[13px] hover:bg-white/20 transition-colors"
+                                    className="cinema-btn-ghost px-[20px] py-[10px]"
                                 >
                                     Hủy
                                 </button>
                                 <button
                                     onClick={() => { handleNextEpisode(); cancelAutoPlay(); }}
-                                    className="px-[20px] py-[10px] rounded-full bg-[#FFD875] text-black text-[13px] font-semibold hover:bg-[#FFD875]/90 transition-colors flex items-center gap-[6px]"
+                                    className="cinema-btn-primary px-[20px] py-[10px] flex items-center gap-[6px]"
                                 >
                                     <FontAwesomeIcon icon={faForwardStep} className="text-[11px]" />
                                     Phát ngay
@@ -587,14 +587,14 @@ export default function MoviePage() {
                     <div className="tv-player-frame mx-auto relative">
                         {/* Loading overlay */}
                         {playerLoading && (
-                            <div className="absolute inset-0 z-20 bg-black/80 flex flex-col items-center justify-center gap-[12px]">
+                            <div className="absolute inset-0 z-20 bg-[#0A0C14]/90 flex flex-col items-center justify-center gap-[12px]">
                                 <div className="w-[40px] h-[40px] border-4 border-[#FFD875]/30 border-t-[#FFD875] rounded-full animate-spin" />
-                                <p className="text-white/60 text-[13px]">Đang tải video...</p>
+                                <p className="text-[#6B7280] text-[13px]">Đang tải video...</p>
                             </div>
                         )}
                         {/* Slow server warning */}
                         {playerSlow && (
-                            <div className="absolute bottom-[16px] left-1/2 -translate-x-1/2 z-30 flex items-center gap-[10px] px-[16px] py-[10px] bg-black/90 border border-orange-500/50 rounded-full text-[12px] whitespace-nowrap">
+                            <div className="absolute bottom-[16px] left-1/2 -translate-x-1/2 z-30 flex items-center gap-[10px] px-[16px] py-[10px] bg-[#0A0C14]/95 border border-orange-500/30 rounded-xl text-[12px] whitespace-nowrap">
                                 <span className="text-orange-400">⚠️ Server đang chậm</span>
                                 <button
                                     onClick={() => {
@@ -606,7 +606,7 @@ export default function MoviePage() {
                                         setUseHdSource(false); setHdSource(null);
                                         startPlayerLoad();
                                     }}
-                                    className="px-[10px] py-[4px] bg-[#FFD875] text-black text-[11px] font-bold rounded-full hover:bg-[#FFE49A] transition-colors"
+                                    className="cinema-btn-primary px-[10px] py-[4px] text-[11px]"
                                 >
                                     Đổi server →
                                 </button>
@@ -700,9 +700,9 @@ export default function MoviePage() {
                         {/* Watchlist */}
                         <button
                             onClick={handleToggleWatchlist}
-                            className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all flex items-center gap-[6px] ${inWatchlist
-                                ? 'bg-[#FFD875]/20 text-[#FFD875] border border-[#FFD875]/40'
-                                : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
+                            className={`px-[14px] py-[8px] flex items-center gap-[6px] ${inWatchlist
+                                ? 'cinema-btn-accent-ghost'
+                                : 'cinema-btn-ghost'
                                 }`}
                             title={inWatchlist ? "Xóa khỏi danh sách" : "Thêm vào xem sau"}
                         >
@@ -713,7 +713,7 @@ export default function MoviePage() {
                         {/* Share */}
                         <button
                             onClick={handleShare}
-                            className="px-[14px] py-[8px] rounded-full text-[12px] bg-white/10 text-white hover:bg-white/20 border border-white/10 transition-all flex items-center gap-[6px]"
+                            className="cinema-btn-ghost px-[14px] py-[8px] flex items-center gap-[6px]"
                             title="Chia sẻ"
                         >
                             <FontAwesomeIcon icon={faShareNodes} className="text-[11px]" />
@@ -723,9 +723,9 @@ export default function MoviePage() {
                         {/* Copy Link */}
                         <button
                             onClick={handleCopyLink}
-                            className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all flex items-center gap-[6px] ${copied
-                                ? 'bg-green-500/20 text-green-400 border border-green-500/40'
-                                : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
+                            className={`px-[14px] py-[8px] flex items-center gap-[6px] ${copied
+                                ? 'cinema-btn-ghost text-green-400'
+                                : 'cinema-btn-ghost'
                                 }`}
                             title="Sao chép link"
                         >
@@ -756,48 +756,48 @@ export default function MoviePage() {
                             alt={movieData.name}
                             width={180}
                             height={270}
-                            className="rounded-[12px] w-full shadow-xl"
+                            className="cinema-poster rounded-[14px] w-full shadow-xl"
                             unoptimized
                         />
                     </div>
 
                     {/* Info */}
                     <div className="flex-1">
-                        <h1 className="text-[26px] lg:text-[32px] font-bold text-white mb-[8px]">
+                        <h1 className="cinema-heading-xl text-[24px] sm:text-[30px] font-bold text-white mb-[8px]">
                             {String(movieData.name || "")}
                         </h1>
-                        <p className="text-[#FFD875] text-[16px] mb-[16px]">
+                        <p className="text-[#6B7280] text-[14px] mb-[16px]">
                             {String(movieData.origin_name || "")}
                         </p>
 
                         <div className="flex flex-wrap gap-[10px] mb-[16px]">
                             {movieData.quality && (
-                                <span className="px-[12px] py-[5px] bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black text-[12px] font-semibold rounded-full">
+                                <span className="cinema-badge">
                                     {String(movieData.quality)}
                                 </span>
                             )}
                             {movieData.lang && (
-                                <span className="px-[12px] py-[5px] bg-white/10 text-white text-[12px] rounded-full border border-white/20">
+                                <span className="cinema-badge">
                                     {String(movieData.lang)}
                                 </span>
                             )}
-                            <span className="px-[12px] py-[5px] bg-white/10 text-white text-[12px] rounded-full border border-white/20">
+                            <span className="cinema-badge">
                                 {String(movieData.year)}
                             </span>
                             {movieData.time && (
-                                <span className="px-[12px] py-[5px] bg-white/10 text-white text-[12px] rounded-full border border-white/20">
+                                <span className="cinema-badge">
                                     {String(movieData.time)}
                                 </span>
                             )}
                         </div>
 
                         <div className="text-white/70 text-[14px] mb-[12px]">
-                            <span className="text-white">Trạng thái: </span>
+                            <span className="cinema-label text-white">Trạng thái: </span>
                             <span className="text-[#FFD875]">{String(movieData.episode_current || "")}</span>
                             {movieData.episode_total && ` / ${String(movieData.episode_total)}`}
                         </div>
                         <div className="text-white/70 text-[14px] mb-[12px]">
-                            <span className="text-white">Nguồn phát: </span>
+                            <span className="cinema-label text-white">Nguồn phát: </span>
                             <span className="text-[#3B82F6] font-semibold">{episodes[selectedServer]?.server_name?.toLowerCase().includes("thuyết minh") ? "NguonC" : episodes[selectedServer]?.server_name?.includes("KK") ? "KKPhim" : "OPhim"}</span>
                         </div>
 
@@ -806,7 +806,7 @@ export default function MoviePage() {
                                 {movieData.category.map((cat) => (
                                     <span
                                         key={cat.id}
-                                        className="px-[12px] py-[4px] border border-white/20 text-[12px] text-white/70 rounded-full hover:border-[#FFD875] hover:text-[#FFD875] cursor-pointer transition-colors"
+                                        className="cinema-pill text-[11px] py-[4px] px-[10px] cursor-pointer"
                                     >
                                         {cat.name}
                                     </span>
@@ -815,7 +815,7 @@ export default function MoviePage() {
                         )}
 
                         {movieData.content && (
-                            <div className="text-white/60 text-[14px] leading-relaxed max-h-[100px] overflow-y-auto">
+                            <div className="cinema-body leading-relaxed max-h-[100px] overflow-y-auto">
                                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(String(movieData.content || "")) }} />
                             </div>
                         )}
@@ -824,7 +824,7 @@ export default function MoviePage() {
 
                 {/* Server & Episodes */}
                 {episodes && episodes.length > 0 && (
-                    <div className="tv-episode-panel bg-[#1a1c2e] rounded-[16px] p-[20px] lg:p-[24px]">
+                    <div className="tv-episode-panel bg-[#0E1019] border border-white/6 rounded-[14px] p-[20px] lg:p-[24px]">
                         <h2 className="text-white text-[18px] font-semibold mb-[20px] flex items-center gap-[10px]">
                             <FontAwesomeIcon icon={faPlay} className="text-[#FFD875]" />
                             Danh sách tập phim
@@ -884,9 +884,9 @@ export default function MoviePage() {
                                             window.scrollTo({ top: 0, behavior: "smooth" });
                                         }}
                                         disabled={!movieData.tmdb?.id}
-                                        className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all flex items-center gap-[6px] disabled:opacity-40 disabled:cursor-not-allowed ${hdSource?.includes(source.id) || hdSource?.includes(source.id.replace("-", ""))
-                                            ? "bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black font-semibold"
-                                            : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
+                                        className={`cinema-pill flex items-center gap-[6px] disabled:opacity-40 disabled:cursor-not-allowed ${hdSource?.includes(source.id) || hdSource?.includes(source.id.replace("-", ""))
+                                            ? "active"
+                                            : ""
                                             }`}
                                     >
                                         <span>{source.icon || "🎬"}</span>
@@ -928,9 +928,9 @@ export default function MoviePage() {
                                                 window.scrollTo({ top: 0, behavior: "smooth" });
                                             }
                                         }}
-                                        className={`px-[16px] py-[10px] rounded-full text-[13px] whitespace-nowrap transition-all flex items-center gap-[8px] ${selectedServer === idx
-                                            ? "bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black font-semibold shadow-lg shadow-[#FFD875]/20"
-                                            : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
+                                        className={`cinema-pill whitespace-nowrap flex items-center gap-[8px] ${selectedServer === idx
+                                            ? "active"
+                                            : ""
                                             }`}
                                     >
                                         <FontAwesomeIcon icon={getServerIcon(server.server_name)} className="text-[12px]" />
@@ -944,7 +944,7 @@ export default function MoviePage() {
                         <div>
                             <div className="flex items-center justify-between mb-[10px]">
                                 <p className="text-white/50 text-[12px] uppercase tracking-wider">Chọn Tập</p>
-                                <button onClick={() => setEpisodeView(prev => prev === 'list' ? 'grid' : 'list')} className="text-[#FFD875] text-[12px] bg-[#FFD875]/10 px-2 py-1 rounded">
+                                <button onClick={() => setEpisodeView(prev => prev === 'list' ? 'grid' : 'list')} className="cinema-btn-ghost text-[11px]">
                                     {episodeView === 'list' ? 'Chế độ lưới' : 'Chế độ danh sách'}
                                 </button>
                             </div>
@@ -959,9 +959,9 @@ export default function MoviePage() {
                                             setHdSource(null);
                                             window.scrollTo({ top: 0, behavior: "smooth" });
                                         }}
-                                        className={`${episodeView === 'grid' ? 'w-full text-center p-2' : 'min-w-[60px] px-[16px] py-[10px]'} rounded-[10px] text-[13px] transition-all ${selectedEpisode?.slug === ep.slug
-                                            ? "bg-gradient-to-r from-[#FFD875] to-[#f0a500] text-black font-semibold shadow-lg shadow-[#FFD875]/20"
-                                            : "bg-white/5 text-white hover:bg-white/15 border border-white/10"
+                                        className={`${episodeView === 'grid' ? 'w-full text-center p-2' : 'min-w-[60px] px-[16px] py-[10px]'} rounded-lg text-[13px] transition-all ${selectedEpisode?.slug === ep.slug
+                                            ? "bg-[#FFD875]/15 border border-[#FFD875]/30 text-[#FFD875]"
+                                            : "bg-[#171B28] border border-white/5 text-white hover:bg-[#1C2133] hover:border-white/10"
                                             }`}
                                     >
                                         {episodeView === 'grid' ? (ep.name.match(/\d+/) ? ep.name.match(/\d+/)?.[0] : ep.name) : ep.name}

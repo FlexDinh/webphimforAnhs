@@ -21,7 +21,7 @@ export default function SettingsPanel() {
             {/* Settings Button */}
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-[20px] right-[20px] w-[50px] h-[50px] rounded-full bg-[#1a1c2e] border border-white/10 text-white/60 hover:text-white hover:border-[var(--accent-color)] transition-all shadow-lg z-[100] flex items-center justify-center"
+                className="fixed bottom-[20px] right-[20px] w-[50px] h-[50px] rounded-full bg-gradient-to-br from-[#FFD875] to-[#F0B840] shadow-[0_4px_20px_rgba(255,216,117,0.3)] hover:shadow-[0_6px_28px_rgba(255,216,117,0.4)] text-[#0A0C14] transition-all z-[100] flex items-center justify-center"
                 title="Cài đặt"
             >
                 <FontAwesomeIcon icon={faCog} className="text-[18px]" />
@@ -30,8 +30,8 @@ export default function SettingsPanel() {
             {/* Settings Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-[16px]">
-                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm z-[999]" onClick={() => setIsOpen(false)} />
-                    <div className="bg-[#1a1c2e] rounded-[16px] w-full max-w-[420px] max-h-[80vh] overflow-y-auto relative z-[1000]">
+                    <div className="absolute inset-0 bg-[#0A0C14]/85 backdrop-blur-sm z-[999]" onClick={() => setIsOpen(false)} />
+                    <div className="bg-[#0E1019] border border-white/8 rounded-[18px] shadow-[0_24px_80px_rgba(0,0,0,0.6)] w-full max-w-[420px] max-h-[80vh] overflow-y-auto relative z-[1000]">
                         {/* Header */}
                         <div className="flex items-center justify-between p-[20px] border-b border-white/10">
                             <h2 className="text-white text-[18px] font-semibold flex items-center gap-[10px]">
@@ -40,7 +40,7 @@ export default function SettingsPanel() {
                             </h2>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="w-[32px] h-[32px] rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all flex items-center justify-center"
+                                className="w-[32px] h-[32px] bg-white/6 hover:bg-white/10 rounded-full text-white/60 hover:text-white transition-all flex items-center justify-center"
                             >
                                 <FontAwesomeIcon icon={faTimes} />
                             </button>
@@ -51,14 +51,14 @@ export default function SettingsPanel() {
                             <div>
                                 <div className="flex items-center gap-[8px] mb-[12px]">
                                     <FontAwesomeIcon icon={faPalette} className="text-[var(--accent-color)] text-[14px]" />
-                                    <span className="text-white text-[14px] font-medium">Màu chủ đạo</span>
+                                    <span className="cinema-label">Màu chủ đạo</span>
                                 </div>
                                 <div className="grid grid-cols-4 gap-[10px]">
                                     {ACCENT_COLORS.map((color) => (
                                         <button
                                             key={color.value}
                                             onClick={() => updatePreference("accentColor", color.value)}
-                                            className="relative aspect-square rounded-[10px] transition-transform hover:scale-105"
+                                            className={`relative aspect-square rounded-[10px] transition-transform hover:scale-105 ${preferences.accentColor === color.value ? 'ring-2 ring-[var(--accent-color)] ring-offset-2 ring-offset-[#0E1019]' : ''}`}
                                             style={{ backgroundColor: color.value }}
                                             title={color.name}
                                         >
@@ -76,7 +76,7 @@ export default function SettingsPanel() {
                             <div>
                                 <div className="flex items-center gap-[8px] mb-[12px]">
                                     <FontAwesomeIcon icon={faServer} className="text-[var(--accent-color)] text-[14px]" />
-                                    <span className="text-white text-[14px] font-medium">Server ưa thích</span>
+                                    <span className="cinema-label">Server ưa thích</span>
                                 </div>
                                 <div className="flex gap-[8px]">
                                     {[
@@ -87,10 +87,7 @@ export default function SettingsPanel() {
                                         <button
                                             key={option.value}
                                             onClick={() => updatePreference("preferredServer", option.value as any)}
-                                            className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all ${preferences.preferredServer === option.value
-                                                    ? "bg-[var(--accent-color)] text-black font-semibold"
-                                                    : "bg-white/5 text-white/70 hover:bg-white/10"
-                                                }`}
+                                            className={`cinema-pill ${preferences.preferredServer === option.value ? 'active' : ''}`}
                                         >
                                             {option.label}
                                         </button>
@@ -102,14 +99,14 @@ export default function SettingsPanel() {
                             <div>
                                 <div className="flex items-center gap-[8px] mb-[12px]">
                                     <FontAwesomeIcon icon={faEye} className="text-[var(--accent-color)] text-[14px]" />
-                                    <span className="text-white text-[14px] font-medium">Hiển thị trang chủ</span>
+                                    <span className="cinema-label">Hiển thị trang chủ</span>
                                 </div>
                                 <div className="space-y-[8px]">
                                     {sections.map((section) => (
                                         <button
                                             key={section.id}
                                             onClick={() => toggleSection(section.id)}
-                                            className="w-full flex items-center justify-between px-[14px] py-[10px] rounded-[10px] bg-white/5 hover:bg-white/10 transition-all"
+                                            className="w-full flex items-center justify-between px-[14px] py-[10px] bg-[#171B28] border border-white/5 rounded-[12px] transition-all hover:bg-white/5"
                                         >
                                             <span className="text-white/80 text-[13px]">{section.name}</span>
                                             <div
@@ -134,7 +131,7 @@ export default function SettingsPanel() {
                             <div>
                                 <div className="flex items-center gap-[8px] mb-[12px]">
                                     <FontAwesomeIcon icon={faFilm} className="text-[var(--accent-color)] text-[14px]" />
-                                    <span className="text-white text-[14px] font-medium">Nguồn phim ưu tiên</span>
+                                    <span className="cinema-label">Nguồn phim ưu tiên</span>
                                 </div>
                                 <p className="text-white/40 text-[11px] mb-[10px]">Chọn nguồn API ưu tiên khi tải phim</p>
                                 <div className="flex flex-wrap gap-[8px]">
@@ -147,10 +144,7 @@ export default function SettingsPanel() {
                                         <button
                                             key={option.value}
                                             onClick={() => updatePreference("apiSource" as any, option.value as any)}
-                                            className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all ${(preferences as any).apiSource === option.value || (!( preferences as any).apiSource && option.value === "auto")
-                                                    ? "bg-[var(--accent-color)] text-black font-semibold"
-                                                    : "bg-white/5 text-white/70 hover:bg-white/10"
-                                                }`}
+                                            className={`cinema-pill ${(preferences as any).apiSource === option.value || (!( preferences as any).apiSource && option.value === "auto") ? 'active' : ''}`}
                                         >
                                             {option.label}
                                         </button>
@@ -162,7 +156,7 @@ export default function SettingsPanel() {
                             <div>
                                 <div className="flex items-center gap-[8px] mb-[12px]">
                                     <FontAwesomeIcon icon={faBolt} className="text-[var(--accent-color)] text-[14px]" />
-                                    <span className="text-white text-[14px] font-medium">Chế độ hiệu suất</span>
+                                    <span className="cinema-label">Chế độ hiệu suất</span>
                                 </div>
                                 <p className="text-white/40 text-[11px] mb-[10px]">Giảm animation & hiệu ứng để tải nhanh hơn</p>
                                 <button
@@ -171,7 +165,7 @@ export default function SettingsPanel() {
                                         document.documentElement.classList.toggle('perf-mode');
                                         localStorage.setItem('rophim-perf-mode', isPerf ? 'false' : 'true');
                                     }}
-                                    className="w-full flex items-center justify-between px-[14px] py-[10px] rounded-[10px] bg-white/5 hover:bg-white/10 transition-all"
+                                    className="w-full flex items-center justify-between px-[14px] py-[10px] bg-[#171B28] border border-white/5 rounded-[12px] transition-all hover:bg-white/5"
                                 >
                                     <span className="text-white/80 text-[13px] flex items-center gap-[8px]">
                                         <FontAwesomeIcon icon={faGaugeHigh} className="text-[12px]" />
@@ -187,7 +181,7 @@ export default function SettingsPanel() {
                             <div>
                                 <div className="flex items-center gap-[8px] mb-[12px]">
                                     <FontAwesomeIcon icon={faEye} className="text-[var(--accent-color)] text-[14px]" />
-                                    <span className="text-white text-[14px] font-medium">Chất lượng ưu tiên</span>
+                                    <span className="cinema-label">Chất lượng ưu tiên</span>
                                 </div>
                                 <div className="flex gap-[8px]">
                                     {[
@@ -199,10 +193,7 @@ export default function SettingsPanel() {
                                         <button
                                             key={option.value}
                                             onClick={() => updatePreference("quality" as any, option.value as any)}
-                                            className={`px-[14px] py-[8px] rounded-full text-[12px] transition-all ${(preferences as any).quality === option.value || (!(preferences as any).quality && option.value === "auto")
-                                                    ? "bg-[var(--accent-color)] text-black font-semibold"
-                                                    : "bg-white/5 text-white/70 hover:bg-white/10"
-                                                }`}
+                                            className={`cinema-pill ${(preferences as any).quality === option.value || (!(preferences as any).quality && option.value === "auto") ? 'active' : ''}`}
                                         >
                                             {option.label}
                                         </button>
@@ -213,7 +204,7 @@ export default function SettingsPanel() {
                             {/* Reset */}
                             <button
                                 onClick={resetPreferences}
-                                className="w-full py-[10px] rounded-[10px] bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-[13px]"
+                                className="w-full py-[10px] bg-red-500/8 text-red-400 hover:bg-red-500/15 border border-red-500/15 rounded-[10px] transition-all text-[13px]"
                             >
                                 Đặt lại mặc định
                             </button>
