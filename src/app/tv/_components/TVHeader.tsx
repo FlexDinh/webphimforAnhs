@@ -26,7 +26,7 @@ export default function TVHeader() {
     e.preventDefault();
     const q = searchQuery.trim();
     if (!q) return;
-    router.push(`/tv/tim-kiem?q=${encodeURIComponent(q)}`);
+    router.push(`/tv/tim-kiem?query=${encodeURIComponent(q)}`);
   };
 
   const isActive = (path: string) => pathname === path;
@@ -88,7 +88,7 @@ export default function TVHeader() {
               style={{
                 fontSize: "11px",
                 color: COLORS.textMuted,
-                textTransform: "uppercase" as const,
+                textTransform: "uppercase",
                 letterSpacing: "2px",
               }}
             >
@@ -140,27 +140,50 @@ export default function TVHeader() {
                 fontFamily: FONT.family,
               }}
             >
-              Tìm
+              🔍 Tìm
             </button>
           </form>
 
-          {/* Link to main site */}
-          <button
-            onClick={() => router.push("/phimhay")}
-            style={{
-              padding: "8px 16px",
-              background: "rgba(255,255,255,0.08)",
-              border: `1px solid ${COLORS.border}`,
-              borderRadius: RADIUS.md,
-              color: COLORS.textMuted,
-              fontSize: FONT.sm,
-              cursor: "pointer",
-              fontFamily: FONT.family,
-              minHeight: "44px",
-            }}
-          >
-            Bản Desktop ↗
-          </button>
+          {/* Actions */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <button
+              onClick={() => router.push("/watchlist")}
+              title="Phim đã lưu"
+              style={{
+                width: "44px",
+                height: "44px",
+                background: "rgba(255,255,255,0.08)",
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: RADIUS.md,
+                color: COLORS.accent,
+                fontSize: "20px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              🔖
+            </button>
+
+            {/* Link to main site */}
+            <button
+              onClick={() => router.push("/phimhay")}
+              style={{
+                padding: "8px 16px",
+                background: "rgba(255,255,255,0.08)",
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: RADIUS.md,
+                color: COLORS.textMuted,
+                fontSize: FONT.sm,
+                cursor: "pointer",
+                fontFamily: FONT.family,
+                minHeight: "44px",
+              }}
+            >
+              Bản Desktop ↗
+            </button>
+          </div>
         </div>
 
         {/* Nav row */}
@@ -168,9 +191,9 @@ export default function TVHeader() {
           style={{
             display: "flex",
             gap: "4px",
-            overflowX: "auto" as const,
+            overflowX: "auto",
             paddingBottom: "8px",
-            scrollBehavior: "smooth" as const,
+            scrollBehavior: "smooth",
           }}
         >
           {NAV_ITEMS.map((item) => (
@@ -179,16 +202,14 @@ export default function TVHeader() {
               onClick={() => router.push(item.path)}
               style={{
                 padding: "8px 16px",
-                background: isActive(item.path)
-                  ? COLORS.accent
-                  : "transparent",
+                background: isActive(item.path) ? COLORS.accent : "transparent",
                 color: isActive(item.path) ? "#000" : COLORS.textMuted,
                 border: "none",
                 borderRadius: RADIUS.full,
                 fontSize: FONT.sm,
                 fontWeight: isActive(item.path) ? 700 : 500,
                 cursor: "pointer",
-                whiteSpace: "nowrap" as const,
+                whiteSpace: "nowrap",
                 minHeight: "40px",
                 fontFamily: FONT.family,
               }}

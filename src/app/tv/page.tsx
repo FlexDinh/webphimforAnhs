@@ -8,8 +8,147 @@ import { getKkPhimLatestMovies } from "@/lib/kkphimApi";
 import { getImageUrl } from "@/lib/imageUrl";
 import { getTVImageUrl } from "@/lib/tvImageUrl";
 import { generateSlug } from "@/lib/movieClassification";
+import { getRecentlyWatched, clearWatchProgress } from "@/lib/movieUtils";
 import TVMovieCard from "./_components/TVMovieCard";
 import { COLORS, FONT, SPACING, RADIUS, styles } from "./_components/TVStyles";
+
+/* ─── Continue Watching Section ─── */
+function TVContinueWatchingRow({
+  items,
+  onRemove,
+}: {
+  items: any[];
+  onRemove: (movieSlug: string, episodeSlug?: string) => void;
+}) {
+  const router = useRouter();
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+
+  if (!items || items.length === 0) return null;
+
+  return (
+    <section style={{ marginBottom: "40px" }}>
+      <div style={styles.sectionHeader}>
+        <h2 style={styles.sectionTitle}>⏳ Tiếp tục xem</h2>
+      </div>
+      <div style={styles.horizontalRow}>
+        {items.map((item, index) => {
+          const progressPercent = item.duration > 0 ? (item.currentTime / item.duration) * 100 : 0;
+          const isFocused = focusedIndex === index;
+
+          return (
+            <div key={`${item.movieSlug}-${item.episodeSlug || ""}`} style={{ position: "relative" as const, width: "180px", flexShrink: 0 }}>
+              <button
+                tabIndex={0}
+                onFocus={() => setFocusedIndex(index)}
+                onBlur={() => setFocusedIndex(-1)}
+                onClick={() => router.push(`/tv/phim/${item.movieSlug}`)}
+                style={{
+                  width: "100%",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  textAlign: "left" as const,
+                  outline: "none",
+                }}
+              >
+                <div
+                  style={{
+                    position: "relative" as const,
+                    width: "100%",
+                    paddingBottom: "150%",
+                    borderRadius: RADIUS.md,
+                    overflow: "hidden",
+                    background: "#2a2d3e",
+                    border: isFocused ? `2px solid ${COLORS.borderFocus}` : "2px solid transparent",
+                    boxShadow: isFocused ? `0 0 15px ${COLORS.borderFocus}80` : "none",
+                  }}
+                >
+                  <img
+                    src={getTVImageUrl(item.posterUrl)}
+                    alt={item.movieName}
+                    style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" as const }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute" as const,
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: "4px",
+                      background: "rgba(255,255,255,0.2)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        width: `${Math.min(100, Math.max(0, progressPercent))}%`,
+                        background: COLORS.accent,
+                      }}
+                    />
+                  </div>
+                </div>
+                <h3
+                  style={{
+                    margin: "8px 0 2px",
+                    fontSize: FONT.sm,
+                    fontWeight: 600,
+                    color: COLORS.text,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap" as const,
+                  }}
+                >
+                  {item.movieName}
+                </h3>
+                {item.episodeName && (
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: FONT.xs,
+                      color: COLORS.textDim,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap" as const,
+                    }}
+                  >
+                    {item.episodeName}
+                  </p>
+                )}
+              </button>
+              <button
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove(item.movieSlug, item.episodeSlug);
+                }}
+                style={{
+                  position: "absolute" as const,
+                  top: "4px",
+                  right: "4px",
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  background: "rgba(0,0,0,0.75)",
+                  color: "#fff",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "14px",
+                  zIndex: 2,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
 
 /* ─── Movie Row Section ─── */
 function TVMovieRow({
@@ -398,7 +537,16 @@ export default function TVHomePage() {
   const [heroMovies, setHeroMovies] = useState<OPhimMovie[]>([]);
   const [allMovies, setAllMovies] = useState<OPhimMovie[]>([]);
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [continueWatching, setContinueWatching] = useState<any[]>([]);
+
+  useEffect(() => {
+    setContinueWatching(getRecentlyWatched());
+  }, []);
+
+  const handleRemoveProgress = (movieSlug: string, episodeSlug?: string) => {
+    clearWatchProgress(movieSlug, episodeSlug);
+    setContinueWatching(getRecentlyWatched());
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -499,6 +647,8 @@ export default function TVHomePage() {
           padding: `${SPACING.xl}px ${SPACING.lg}px`,
         }}
       >
+        <TVContinueWatchingRow items={continueWatching} onRemove={handleRemoveProgress} />
+
         <TVTrending movies={allMovies} />
 
         <TVMovieRow

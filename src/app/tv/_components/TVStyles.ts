@@ -1,23 +1,34 @@
 // TV Theme & Style Constants
 // All styles are inline to bypass Tailwind/PostCSS and ensure compatibility with TV browsers
+// Synced with Cinematic Design System tokens from globals.css
 
 export const COLORS = {
-  bg: "#0B0D13",
-  bgCard: "#111827",
-  bgCardHover: "#1a2035",
-  bgSurface: "#1a1c2e",
+  // Backgrounds — synced with --cinema-bg-* tokens
+  bg: "#0A0C14",          // was #0B0D13 → now matches --cinema-bg-base
+  bgDeep: "#06070C",      // NEW: --cinema-bg-deep (for darkest areas)
+  bgCard: "#171B28",      // was #111827 → now matches --cinema-bg-card
+  bgCardHover: "#1E2338", // updated to complement new card bg
+  bgSurface: "#131620",   // was #1a1c2e → now matches --cinema-bg-surface
   bgOverlay: "rgba(0,0,0,0.7)",
+  // Accent colors
   accent: "#FFD875",
   accentHover: "#FFE49A",
   accentDark: "#f0a500",
+  // Text
   text: "#ffffff",
   textMuted: "rgba(255,255,255,0.6)",
   textDim: "rgba(255,255,255,0.4)",
+  // Borders
   border: "rgba(255,255,255,0.1)",
   borderFocus: "#FFD875",
+  // Status
   success: "#7dffa6",
   error: "#ff6b6b",
+  warning: "#f0a500",
   gold: "#FFD875",
+  // Focus / D-pad navigation
+  focusRing: "rgba(255, 216, 117, 0.45)",
+  focusOutline: "#FFD875",
 } as const;
 
 export const SPACING = {
@@ -181,5 +192,44 @@ export const styles = {
     borderTopColor: COLORS.accent,
     borderRadius: "50%",
     animation: "tvspin 0.8s linear infinite",
+  } as React.CSSProperties,
+
+  // Focus state for D-pad / remote navigation
+  focusRing: {
+    outline: `3px solid ${COLORS.focusOutline}`,
+    boxShadow: `0 0 0 3px ${COLORS.focusRing}`,
+    transform: "translateY(-4px) scale(1.02)",
+  } as React.CSSProperties,
+
+  // Toast notification
+  toast: {
+    position: "fixed" as const,
+    top: "90px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 200,
+    padding: "12px 24px",
+    background: COLORS.bgSurface,
+    border: `1px solid rgba(255,216,117,0.25)`,
+    borderRadius: RADIUS.md,
+    color: COLORS.accent,
+    fontSize: FONT.sm,
+    fontWeight: 600,
+    boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+  } as React.CSSProperties,
+
+  // Progress bar (for continue watching)
+  progressBar: {
+    height: "3px",
+    background: "rgba(255,255,255,0.15)",
+    borderRadius: "2px",
+    overflow: "hidden" as const,
+    marginTop: "6px",
+  } as React.CSSProperties,
+
+  progressFill: {
+    height: "100%",
+    background: `linear-gradient(90deg, ${COLORS.accent}, ${COLORS.accentDark})`,
+    borderRadius: "2px",
   } as React.CSSProperties,
 } as const;

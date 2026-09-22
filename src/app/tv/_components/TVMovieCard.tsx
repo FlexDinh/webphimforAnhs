@@ -6,9 +6,10 @@ import type { OPhimMovie } from "@/lib/ophimApi";
 import { getImageUrl } from "@/lib/ophimApi";
 import { getTVImageUrl } from "@/lib/tvImageUrl";
 import { COLORS, FONT, RADIUS } from "./TVStyles";
+import { isThuyetMinhMovie } from "@/lib/movieClassification";
 
 interface TVMovieCardProps {
-  movie: OPhimMovie;
+  movie: OPhimMovie & { episode_current?: string; lang?: string };
   width?: string;
   showRating?: boolean;
   rank?: number;
@@ -34,6 +35,11 @@ export default function TVMovieCard({
   const [imageUrl, setImageUrl] = useState(posterUrl);
   const imageLoadedRef = useRef(false);
   const rating = movie.tmdb?.vote_average;
+  const [isFocused, setIsFocused] = useState(false);
+
+  const isTM = useMemo(() => {
+    return isThuyetMinhMovie(movie) || !!movie.lang?.toLowerCase().includes("thuyết minh");
+  }, [movie]);
 
   useEffect(() => {
     imageLoadedRef.current = false;
@@ -50,6 +56,9 @@ export default function TVMovieCard({
 
   return (
     <button
+      tabIndex={0}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       onClick={() => router.push(`/tv/phim/${movie.slug}`)}
       style={{
         width,
@@ -62,6 +71,9 @@ export default function TVMovieCard({
         color: COLORS.text,
         fontFamily: FONT.family,
         position: "relative" as const,
+        outline: "none",
+        transform: isFocused ? "scale(1.03)" : "scale(1)",
+        transition: "all 0.2s ease",
       }}
     >
       {/* Poster */}
@@ -73,6 +85,8 @@ export default function TVMovieCard({
           borderRadius: RADIUS.md,
           overflow: "hidden",
           background: "#2a2d3e",
+          border: isFocused ? `2px solid ${COLORS.borderFocus}` : "2px solid transparent",
+          boxShadow: isFocused ? `0 0 15px ${COLORS.borderFocus}80` : "none",
         }}
       >
         <img
@@ -118,28 +132,64 @@ export default function TVMovieCard({
               justifyContent: "center",
               fontWeight: 900,
               fontSize: "16px",
+              zIndex: 2,
             }}
           >
             {rank}
           </div>
         )}
 
-        {/* Quality badge */}
-        {movie.quality && (
+        {/* Top Right Badges */}
+        <div style={{ position: "absolute" as const, top: "8px", right: "8px", display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-end" }}>
+          {/* Quality badge */}
+          {movie.quality && (
+            <span
+              style={{
+                padding: "3px 8px",
+                borderRadius: "4px",
+                background: COLORS.accent,
+                color: "#000",
+                fontSize: "11px",
+                fontWeight: 700,
+              }}
+            >
+              {movie.quality}
+            </span>
+          )}
+
+          {/* TM badge */}
+          {isTM && (
+            <span
+              style={{
+                padding: "3px 8px",
+                borderRadius: "4px",
+                background: "linear-gradient(135deg, #FF8C00, #FF4500)",
+                color: "#FFF",
+                fontSize: "11px",
+                fontWeight: 700,
+              }}
+            >
+              TM
+            </span>
+          )}
+        </div>
+
+        {/* Episode current badge */}
+        {movie.episode_current && (
           <span
             style={{
               position: "absolute" as const,
-              top: "8px",
-              right: "8px",
+              bottom: "8px",
+              left: "8px",
               padding: "3px 8px",
               borderRadius: "4px",
-              background: COLORS.accent,
-              color: "#000",
-              fontSize: "11px",
+              background: "rgba(0,0,0,0.75)",
+              color: "#FFF",
+              fontSize: "12px",
               fontWeight: 700,
             }}
           >
-            {movie.quality}
+            {movie.episode_current}
           </span>
         )}
 
@@ -169,7 +219,7 @@ export default function TVMovieCard({
           margin: "8px 0 2px",
           fontSize: FONT.sm,
           fontWeight: 600,
-          color: COLORS.text,
+          color: isFocused ? COLORS.accent : COLORS.text,
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap" as const,

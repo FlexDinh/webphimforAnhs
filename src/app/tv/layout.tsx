@@ -50,7 +50,7 @@ export default function TVLayout({
             }
             .tv-root {
               min-height: 100vh;
-              background: #0B0D13;
+              background: #0A0C14;
               color: #ffffff;
               font-family: Arial, Helvetica, sans-serif;
               -webkit-font-smoothing: antialiased;
@@ -60,6 +60,20 @@ export default function TVLayout({
             }
             .tv-root button {
               font-family: inherit;
+            }
+            /* Smooth focus transitions for D-pad / Remote navigation */
+            .tv-root button, .tv-root a {
+              transition: transform 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
+            }
+            .tv-root button:focus-visible, .tv-root a:focus-visible {
+              outline: 3px solid #FFD875;
+              box-shadow: 0 0 0 3px rgba(255, 216, 117, 0.45);
+              transform: translateY(-2px) scale(1.015);
+            }
+            /* Content-visibility for smoother scrolling on TV */
+            .tv-root section {
+              content-visibility: auto;
+              contain-intrinsic-size: auto 400px;
             }
             /* Scrollbar styling for Samsung Tizen */
             .tv-root ::-webkit-scrollbar {

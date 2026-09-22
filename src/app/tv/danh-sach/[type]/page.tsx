@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   getLatestMovies,
@@ -76,6 +76,7 @@ export default function TVListPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const loadingMoreRef = useRef<HTMLDivElement>(null);
 
   const config = TYPE_MAP[type];
 
@@ -85,10 +86,19 @@ export default function TVListPage() {
       setLoading(true);
       try {
         const res = await config.fetch(p);
-        setMovies(res.items || []);
+        if (p === 1) {
+          setMovies(res.items || []);
+        } else {
+          setMovies((prev) => [...prev, ...(res.items || [])]);
+          setTimeout(() => {
+            if (loadingMoreRef.current) {
+              loadingMoreRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }, 100);
+        }
         setTotalPages(res.pagination?.totalPages || 1);
       } catch {
-        setMovies([]);
+        if (p === 1) setMovies([]);
       } finally {
         setLoading(false);
       }
@@ -106,13 +116,11 @@ export default function TVListPage() {
         style={{
           ...styles.flexCenter,
           minHeight: "60vh",
-          flexDirection: "column" as const,
+          flexDirection: "column",
           gap: "16px",
         }}
       >
-        <p style={{ fontSize: FONT.lg, color: COLORS.textMuted }}>
-          Danh mục không tồn tại
-        </p>
+        <p style={{ fontSize: FONT.lg, color: COLORS.textMuted }}>Danh mục không tồn tại</p>
         <button onClick={() => router.push("/tv")} style={styles.btnPrimary}>
           Về trang chủ
         </button>
@@ -167,13 +175,10 @@ export default function TVListPage() {
             {config.title}
           </h1>
         </div>
-        <span style={{ color: COLORS.textDim, fontSize: FONT.sm }}>
-          Trang {page} / {totalPages}
-        </span>
       </div>
 
       {/* Movie Grid */}
-      {loading ? (
+      {loading && page === 1 ? (
         <div style={styles.movieGrid}>
           {Array.from({ length: 18 }).map((_, i) => (
             <div key={i}>
@@ -202,97 +207,43 @@ export default function TVListPage() {
           style={{
             ...styles.flexCenter,
             minHeight: "40vh",
-            flexDirection: "column" as const,
+            flexDirection: "column",
             gap: "16px",
           }}
         >
-          <p style={{ fontSize: FONT.lg, color: COLORS.textMuted }}>
-            Không tìm thấy phim
-          </p>
+          <p style={{ fontSize: FONT.lg, color: COLORS.textMuted }}>Không tìm thấy phim</p>
         </div>
       ) : (
         <div style={styles.movieGrid}>
-          {movies.map((movie, index) => (
-            <TVMovieCard
-              key={movie._id || movie.slug}
-              movie={movie}
-              width="100%"
-              loading={index < 12 ? "eager" : "lazy"}
-            />
-          ))}
+          {movies.map((movie, index) => {
+            const isFirstNewItem = page > 1 && index === (page - 1) * (movies.length / page);
+            return (
+              <div key={`${movie._id || movie.slug}-${index}`} ref={isFirstNewItem ? loadingMoreRef : null}>
+                <TVMovieCard movie={movie} width="100%" loading={index < 12 ? "eager" : "lazy"} />
+              </div>
+            );
+          })}
         </div>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "12px",
-            marginTop: "40px",
-            paddingBottom: "40px",
-          }}
-        >
+      {loading && page > 1 && (
+        <div style={{ textAlign: "center", marginTop: "24px" }}>
+          <p style={{ color: COLORS.textMuted, fontSize: FONT.lg }}>Đang tải thêm...</p>
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {!loading && page < totalPages && movies.length > 0 && (
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "40px", paddingBottom: "40px" }}>
           <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page <= 1}
+            onClick={() => setPage((p) => p + 1)}
             style={{
               ...styles.btnSecondary,
-              opacity: page <= 1 ? 0.4 : 1,
-              cursor: page <= 1 ? "default" : "pointer",
+              padding: "16px 40px",
+              fontSize: FONT.lg,
             }}
           >
-            ← Trang trước
-          </button>
-
-          {/* Page numbers */}
-          {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-            let pageNum: number;
-            if (totalPages <= 5) {
-              pageNum = i + 1;
-            } else if (page <= 3) {
-              pageNum = i + 1;
-            } else if (page >= totalPages - 2) {
-              pageNum = totalPages - 4 + i;
-            } else {
-              pageNum = page - 2 + i;
-            }
-
-            return (
-              <button
-                key={pageNum}
-                onClick={() => setPage(pageNum)}
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "10px",
-                  background:
-                    pageNum === page ? COLORS.accent : "rgba(255,255,255,0.1)",
-                  color: pageNum === page ? "#000" : COLORS.text,
-                  border: "none",
-                  fontWeight: pageNum === page ? 700 : 500,
-                  fontSize: FONT.md,
-                  cursor: "pointer",
-                  fontFamily: FONT.family,
-                }}
-              >
-                {pageNum}
-              </button>
-            );
-          })}
-
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages}
-            style={{
-              ...styles.btnSecondary,
-              opacity: page >= totalPages ? 0.4 : 1,
-              cursor: page >= totalPages ? "default" : "pointer",
-            }}
-          >
-            Trang sau →
+            Xem thêm
           </button>
         </div>
       )}
