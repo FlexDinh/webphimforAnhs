@@ -1,5 +1,5 @@
 // RoPhim TV Service Worker - Enhanced for Smart TV PWA
-const CACHE_NAME = "rophim-tv-v1";
+const CACHE_NAME = "rophim-tv-v2";
 const API_CACHE = "rophim-tv-api-v1";
 const IMG_CACHE = "rophim-tv-img-v1";
 
@@ -90,24 +90,23 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Strategy 3: Same-origin — Stale while revalidate
+  // Strategy 3: Same-origin — Network first, with cached fallback when offline
   if (url.origin === self.location.origin) {
     event.respondWith(
-      caches.match(event.request).then((cached) => {
-        const fetchPromise = fetch(event.request)
-          .then((response) => {
-            if (response.status === 200) {
-              const clone = response.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, clone);
-              });
-            }
-            return response;
-          })
-          .catch(() => cached);
-
-        return cached || fetchPromise;
-      })
+      fetch(event.request)
+        .then((response) => {
+          if (response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, clone);
+            });
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(event.request);
+          return cached || new Response("Network unavailable", { status: 503 });
+        })
     );
     return;
   }
