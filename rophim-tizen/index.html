@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>RoPhim TV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+            background: #0B0D13;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* ── Loading Screen ── */
+        .loading-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #0B0D13 0%, #1a1c2e 50%, #0B0D13 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-logo {
+            font-size: 64px;
+            font-weight: 800;
+            color: #FFD875;
+            margin-bottom: 8px;
+            text-shadow: 0 0 40px rgba(255, 216, 117, 0.3);
+        }
+        .loading-logo span {
+            color: #ffffff;
+        }
+        .loading-subtitle {
+            font-size: 20px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 48px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,216,117,0.15);
+            border-top-color: #FFD875;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 24px;
+        }
+        .loading-text {
+            font-size: 16px;
+            color: rgba(255,255,255,0.4);
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Error Screen ── */
+        .error-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0B0D13;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99998;
+        }
+        .error-screen.visible {
+            display: flex;
+        }
+        .error-icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+        }
+        .error-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+        .error-message {
+            font-size: 18px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+        .error-btn {
+            padding: 16px 48px;
+            border-radius: 30px;
+            background: #FFD875;
+            color: #000;
+            border: none;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .error-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 4px;
+        }
+
+        /* ── Main Frame ── */
+        #app-frame {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading">
+        <div class="loading-logo">Ro<span>Phim</span></div>
+        <div class="loading-subtitle">Smart TV</div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loading-text">Đang kết nối...</div>
+    </div>
+
+    <!-- Error Screen -->
+    <div class="error-screen" id="error">
+        <div class="error-icon">📡</div>
+        <div class="error-title">Không thể kết nối</div>
+        <div class="error-message">
+            Vui lòng kiểm tra kết nối mạng của TV và thử lại.
+        </div>
+        <button class="error-btn" id="retry-btn" onclick="loadApp()">
+            Thử lại
+        </button>
+    </div>
+
+    <!-- Main App (iframe loads the web app) -->
+    <iframe id="app-frame" 
+            src="about:blank"
+            allowfullscreen
+            allow="autoplay; fullscreen; encrypted-media">
+    </iframe>
+
+    <script>
+        // ── Configuration ──
+        var APP_URL = 'https://webphimfor-anhs.vercel.app/tv';
+        var LOAD_TIMEOUT = 15000; // 15 seconds timeout
+
+        var frame = document.getElementById('app-frame');
+        var loading = document.getElementById('loading');
+        var error = document.getElementById('error');
+        var loadingText = document.getElementById('loading-text');
+        var loadTimer = null;
+
+        // ── Load the App ──
+        function loadApp() {
+            // Reset UI
+            loading.classList.remove('hidden');
+            error.classList.remove('visible');
+            loadingText.textContent = 'Đang kết nối...';
+
+            // Set timeout for slow connections
+            loadTimer = setTimeout(function() {
+                loadingText.textContent = 'Kết nối chậm, đang thử lại...';
+            }, 5000);
+
+            var failTimer = setTimeout(function() {
+                showError();
+            }, LOAD_TIMEOUT);
+
+            // Load the URL
+            frame.src = APP_URL;
+
+            frame.onload = function() {
+                clearTimeout(loadTimer);
+                clearTimeout(failTimer);
+                loadingText.textContent = 'Đang tải giao diện...';
+                
+                // Small delay to let the page render
+                setTimeout(function() {
+                    loading.classList.add('hidden');
+                }, 800);
+            };
+
+            frame.onerror = function() {
+                clearTimeout(loadTimer);
+                clearTimeout(failTimer);
+                showError();
+            };
+        }
+
+        function showError() {
+            loading.classList.add('hidden');
+            error.classList.add('visible');
+            // Focus retry button for remote control
+            setTimeout(function() {
+                document.getElementById('retry-btn').focus();
+            }, 100);
+        }
+
+        // ── Remote Control Key Handling ──
+        document.addEventListener('keydown', function(e) {
+            var keyCode = e.keyCode;
+
+            // Samsung Tizen remote key codes
+            switch(keyCode) {
+                case 10009: // RETURN/BACK button
+                    // Send back navigation to iframe
+                    try {
+                        frame.contentWindow.history.back();
+                    } catch(err) {
+                        // If cross-origin, try postMessage
+                        frame.contentWindow.postMessage({ type: 'navigation', action: 'back' }, '*');
+                    }
+                    e.preventDefault();
+                    break;
+
+                case 10182: // EXIT button
+                    try {
+                        tizen.application.getCurrentApplication().exit();
+                    } catch(err) {
+                        window.close();
+                    }
+                    break;
+
+                case 415: // PLAY
+                case 19: // PAUSE  
+                case 417: // FAST FORWARD
+                case 412: // REWIND
+                    // Forward media keys to iframe
+                    try {
+                        frame.contentWindow.postMessage({ 
+                            type: 'mediakey', 
+                            keyCode: keyCode 
+                        }, '*');
+                    } catch(err) {}
+                    break;
+            }
+        });
+
+        // ── Register Tizen remote keys ──
+        try {
+            tizen.tvinputdevice.registerKey('MediaPlay');
+            tizen.tvinputdevice.registerKey('MediaPause');
+            tizen.tvinputdevice.registerKey('MediaStop');
+            tizen.tvinputdevice.registerKey('MediaFastForward');
+            tizen.tvinputdevice.registerKey('MediaRewind');
+        } catch(err) {
+            // Not on Tizen, ignore
+        }
+
+        // ── Visibility change (TV standby/wake) ──
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // TV woke up - refresh if needed
+                try {
+                    frame.contentWindow.location.reload();
+                } catch(err) {}
+            }
+        });
+
+        // ── Start the app ──
+        loadApp();
+    </script>
+</body>
+</html>
