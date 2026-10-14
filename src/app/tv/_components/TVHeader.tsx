@@ -147,7 +147,7 @@ export default function TVHeader() {
           {/* Actions */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <button
-              onClick={() => router.push("/watchlist")}
+              onClick={() => router.push("/tv/watchlist")}
               title="Phim đã lưu"
               style={{
                 width: "44px",

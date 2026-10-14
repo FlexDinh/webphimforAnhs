@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 export const viewport: Viewport = {
-  width: 1920,
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   themeColor: "#FFD875",
@@ -70,6 +70,15 @@ export default function TVLayout({
               box-shadow: 0 0 0 3px rgba(255, 216, 117, 0.45);
               transform: translateY(-2px) scale(1.015);
             }
+            .tv-root button:focus, .tv-root a:focus {
+              outline: 3px solid #FFD875 !important;
+              outline-offset: 4px;
+              box-shadow: 0 0 0 3px rgba(255, 216, 117, 0.45);
+            }
+            .tv-root input:focus, .tv-root select:focus, .tv-root textarea:focus {
+              outline: 3px solid #FFD875 !important;
+              outline-offset: 3px;
+            }
             /* Content-visibility for smoother scrolling on TV */
             .tv-root section {
               content-visibility: auto;
@@ -122,6 +131,7 @@ export default function TVLayout({
       />
 
       <div className="tv-root">
+        <TVRemoteNavigation />
         {/* TV Header */}
         <TVHeaderWrapper />
         {/* Page content with top padding for fixed header */}
@@ -135,6 +145,7 @@ export default function TVLayout({
 
 // Separate client component wrapper for the header
 import TVHeader from "./_components/TVHeader";
+import TVRemoteNavigation from "./_components/TVRemoteNavigation";
 
 function TVHeaderWrapper() {
   return <TVHeader />;

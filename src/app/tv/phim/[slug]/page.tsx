@@ -190,21 +190,6 @@ export default function TVMoviePage() {
     };
   }, [showAutoPlayOverlay, autoPlayCountdown, handleNextEpisode]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        handleNextEpisode();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        handlePrevEpisode();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleNextEpisode, handlePrevEpisode]);
-
   const handleWatchlistToggle = () => {
     if (!movie) return;
     const isNowIn = toggleWatchlist({

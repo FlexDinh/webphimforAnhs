@@ -552,10 +552,6 @@ export default function TVHomePage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === '?') {
         setShowShortcuts(prev => !prev);
-      } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        // Implement complex 2D spatial focus if needed. Here we just intercept for UI demonstration.
-      } else if (e.key === 'Enter') {
-        // Navigate if an element is focused
       }
     };
     window.addEventListener('keydown', handleKeyDown);
