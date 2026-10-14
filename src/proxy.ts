@@ -19,6 +19,8 @@ const API_MAX_REQS = 100;
 const API_WINDOW_MS = 60 * 1000;
 
 const CEO_AUTH_REALM = "RoPhim CEO";
+const SMART_TV_USER_AGENT =
+  /SMART[-\s]?TV|Tizen|Web0S|webOS|NetCast|HbbTV|VIDAA|BRAVIA|Android\s?TV|Google\s?TV|\bAFT[A-Z0-9]+\b|Roku|Apple\s?TV|Viera|PhilipsTV|Hisense|MiTV/i;
 
 function getClientIp(req: NextRequest): string {
   // Try to get IP from standard headers
@@ -140,6 +142,14 @@ export function proxy(request: NextRequest) {
   // We don't overwrite all headers here to avoid conflicting with next.config.ts,
   // but we can add runtime headers if needed.
   response.headers.set("X-XSS-Protection", "1; mode=block");
+
+  if (pathname === "/" && SMART_TV_USER_AGENT.test(request.headers.get("user-agent") ?? "")) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = "/tv";
+    const redirect = NextResponse.redirect(destination, 307);
+    redirect.headers.set("X-XSS-Protection", "1; mode=block");
+    return redirect;
+  }
 
   // --- 3. Auth Protection for /ceo ---
   if (pathname.startsWith("/ceo")) {
