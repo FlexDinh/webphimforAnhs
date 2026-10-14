@@ -114,7 +114,17 @@ export default function TVRemoteNavigation() {
       }
 
       const next = getNextElement(current, candidates, direction);
-      if (!next) return;
+      if (!next) {
+        if (direction === "ArrowUp" || direction === "ArrowDown") {
+          event.preventDefault();
+          const sign = direction === "ArrowDown" ? 1 : -1;
+          window.scrollBy({
+            top: sign * Math.max(160, window.innerHeight * 0.65),
+            behavior: "smooth",
+          });
+        }
+        return;
+      }
 
       event.preventDefault();
       focusElement(next);

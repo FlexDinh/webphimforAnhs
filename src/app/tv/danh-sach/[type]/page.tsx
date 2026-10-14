@@ -69,14 +69,21 @@ const TYPE_MAP: Record<string, { title: string; fetch: (page: number) => Promise
 
 export default function TVListPage() {
   const params = useParams();
-  const router = useRouter();
   const type = params.type as string;
+
+  return <TVListContent key={type} type={type} />;
+}
+
+function TVListContent({ type }: { type: string }) {
+  const router = useRouter();
 
   const [movies, setMovies] = useState<OPhimMovie[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const loadingMoreRef = useRef<HTMLDivElement>(null);
+  const loadedMovieCountRef = useRef(0);
+  const firstNewMovieIndexRef = useRef<number | null>(null);
 
   const config = TYPE_MAP[type];
 
@@ -87,14 +94,15 @@ export default function TVListPage() {
       try {
         const res = await config.fetch(p);
         if (p === 1) {
-          setMovies(res.items || []);
+          const firstPageItems = res.items || [];
+          loadedMovieCountRef.current = firstPageItems.length;
+          firstNewMovieIndexRef.current = null;
+          setMovies(firstPageItems);
         } else {
-          setMovies((prev) => [...prev, ...(res.items || [])]);
-          setTimeout(() => {
-            if (loadingMoreRef.current) {
-              loadingMoreRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-          }, 100);
+          const nextPageItems = res.items || [];
+          firstNewMovieIndexRef.current = loadedMovieCountRef.current;
+          loadedMovieCountRef.current += nextPageItems.length;
+          setMovies((prev) => [...prev, ...nextPageItems]);
         }
         setTotalPages(res.pagination?.totalPages || 1);
       } catch {
@@ -109,6 +117,12 @@ export default function TVListPage() {
   useEffect(() => {
     fetchData(page);
   }, [page, fetchData]);
+
+  useEffect(() => {
+    if (loading || firstNewMovieIndexRef.current === null) return;
+    loadingMoreRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    firstNewMovieIndexRef.current = null;
+  }, [loading, movies.length]);
 
   if (!config) {
     return (
@@ -216,7 +230,7 @@ export default function TVListPage() {
       ) : (
         <div style={styles.movieGrid}>
           {movies.map((movie, index) => {
-            const isFirstNewItem = page > 1 && index === (page - 1) * (movies.length / page);
+            const isFirstNewItem = index === firstNewMovieIndexRef.current;
             return (
               <div key={`${movie._id || movie.slug}-${index}`} ref={isFirstNewItem ? loadingMoreRef : null}>
                 <TVMovieCard movie={movie} width="100%" loading={index < 12 ? "eager" : "lazy"} />

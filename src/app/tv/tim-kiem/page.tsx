@@ -27,15 +27,45 @@ interface MovieWithSource extends OPhimMovie {
   _source: "ophim" | "kkphim";
 }
 
-function getRelevanceScore(movieName: string, query: string) {
-  const t = movieName.toLowerCase();
-  const q = query.toLowerCase();
-  if (t === q) return 100;
-  if (t.startsWith(q)) return 80;
-  if (t.includes(q)) return 60;
-  const qWords = q.split(" ");
-  const matchCount = qWords.filter((w) => t.includes(w)).length;
-  return matchCount * 10;
+function normalizeSearchText(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .trim();
+}
+
+function scoreTitle(title: string, query: string) {
+  const normalizedTitle = normalizeSearchText(title);
+  if (normalizedTitle === query) return 100;
+  if (normalizedTitle.startsWith(query)) return 80;
+  if (normalizedTitle.includes(query)) return 60;
+
+  const queryWords = query.split(/\s+/).filter(Boolean);
+  const matchedWords = queryWords.filter((word) => normalizedTitle.includes(word)).length;
+  return queryWords.length ? (matchedWords / queryWords.length) * 40 : 0;
+}
+
+function getRelevanceScore(movie: OPhimMovie, query: string) {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return 0;
+  return Math.max(
+    scoreTitle(movie.name || "", normalizedQuery),
+    scoreTitle(movie.origin_name || "", normalizedQuery)
+  );
+}
+
+function compareRating(a: OPhimMovie, b: OPhimMovie) {
+  return (b.tmdb?.vote_average ?? 0) - (a.tmdb?.vote_average ?? 0);
+}
+
+function compareYear(a: OPhimMovie, b: OPhimMovie) {
+  return (b.year ?? 0) - (a.year ?? 0);
+}
+
+function compareName(a: OPhimMovie, b: OPhimMovie) {
+  return (a.name || "").localeCompare(b.name || "");
 }
 
 function SearchContent() {
@@ -50,6 +80,7 @@ function SearchContent() {
 
   useEffect(() => {
     if (!query) return;
+    window.scrollTo({ left: 0, top: 0, behavior: "instant" });
     setLoading(true);
 
     Promise.allSettled([
@@ -91,13 +122,16 @@ function SearchContent() {
 
   const sorted = [...filtered].sort((a, b) => {
     if (sortOrder === "relevance") {
-      return getRelevanceScore(b.name, query) - getRelevanceScore(a.name, query);
+      return (
+        getRelevanceScore(b, query) - getRelevanceScore(a, query) ||
+        compareRating(a, b) ||
+        compareYear(a, b) ||
+        compareName(a, b)
+      );
     } else if (sortOrder === "year") {
-      return (b.year || 0) - (a.year || 0);
+      return compareYear(a, b) || compareRating(a, b) || compareName(a, b);
     } else if (sortOrder === "score") {
-      // If score doesn't exist, we fallback to year or something else, but we implement basic sort.
-      // OPhimMovie usually doesn't have an explicit numeric score in search, but we fulfill the requirement.
-      return (b.year || 0) - (a.year || 0);
+      return compareRating(a, b) || compareYear(a, b) || compareName(a, b);
     }
     return 0;
   });
