@@ -135,7 +135,7 @@ export default function TVLayout({
         {/* TV Header */}
         <TVHeaderWrapper />
         {/* Page content with top padding for fixed header */}
-        <main style={{ paddingTop: "110px" }}>{children}</main>
+        <main style={{ paddingTop: "144px" }}>{children}</main>
         {/* PWA Install Prompt */}
         <TVInstallPWAWrapper />
       </div>

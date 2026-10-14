@@ -41,13 +41,13 @@ export const SPACING = {
 } as const;
 
 export const FONT = {
-  xs: "12px",
-  sm: "14px",
-  md: "16px",
-  lg: "20px",
-  xl: "28px",
-  xxl: "36px",
-  hero: "48px",
+  xs: "14px",
+  sm: "18px",
+  md: "20px",
+  lg: "24px",
+  xl: "32px",
+  xxl: "42px",
+  hero: "60px",
   family: "Arial, Helvetica, sans-serif",
 } as const;
 
@@ -70,9 +70,9 @@ export const styles = {
   } as React.CSSProperties,
 
   container: {
-    maxWidth: "1400px",
+    maxWidth: "1760px",
     margin: "0 auto",
-    padding: `0 ${SPACING.lg}px`,
+    padding: `0 40px`,
   } as React.CSSProperties,
 
   flexCenter: {
@@ -92,15 +92,15 @@ export const styles = {
     display: "inline-flex",
     alignItems: "center",
     gap: "8px",
-    padding: "14px 28px",
+    padding: "18px 34px",
     background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentDark})`,
     color: "#000",
     fontWeight: 700,
-    fontSize: FONT.md,
+    fontSize: FONT.lg,
     border: "none",
     borderRadius: RADIUS.full,
     cursor: "pointer",
-    minHeight: "48px",
+    minHeight: "60px",
     textDecoration: "none",
   } as React.CSSProperties,
 
@@ -108,15 +108,15 @@ export const styles = {
     display: "inline-flex",
     alignItems: "center",
     gap: "8px",
-    padding: "12px 24px",
+    padding: "16px 30px",
     background: "rgba(255,255,255,0.1)",
     color: COLORS.text,
     fontWeight: 600,
-    fontSize: FONT.sm,
+    fontSize: FONT.md,
     border: `1px solid ${COLORS.border}`,
     borderRadius: RADIUS.full,
     cursor: "pointer",
-    minHeight: "48px",
+    minHeight: "60px",
     textDecoration: "none",
   } as React.CSSProperties,
 
@@ -137,7 +137,7 @@ export const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: "16px",
+    marginBottom: "24px",
   } as React.CSSProperties,
 
   sectionTitle: {
@@ -150,14 +150,14 @@ export const styles = {
   // Movie grid
   movieGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-    gap: "16px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+    gap: "20px",
   } as React.CSSProperties,
 
   // Horizontal scroll row
   horizontalRow: {
     display: "flex",
-    gap: "14px",
+    gap: "20px",
     overflowX: "auto" as const,
     paddingBottom: "8px",
     scrollBehavior: "smooth" as const,

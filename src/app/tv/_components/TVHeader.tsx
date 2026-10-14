@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { COLORS, FONT, SPACING, RADIUS } from "./TVStyles";
+import { COLORS, FONT, RADIUS } from "./TVStyles";
 
 const NAV_ITEMS = [
   { label: "Trang chủ", path: "/tv" },
@@ -46,9 +46,9 @@ export default function TVHeader() {
     >
       <div
         style={{
-          maxWidth: "1400px",
+          maxWidth: "1760px",
           margin: "0 auto",
-          padding: `0 ${SPACING.lg}px`,
+          padding: "0 40px",
         }}
       >
         {/* Top row: Logo + Search */}
@@ -57,8 +57,8 @@ export default function TVHeader() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            height: "64px",
-            gap: "16px",
+            height: "76px",
+            gap: "24px",
           }}
         >
           {/* Logo */}
@@ -76,7 +76,7 @@ export default function TVHeader() {
           >
             <span
               style={{
-                fontSize: "28px",
+                fontSize: "36px",
                 fontWeight: 900,
                 color: COLORS.accent,
                 letterSpacing: "-1px",
@@ -86,7 +86,7 @@ export default function TVHeader() {
             </span>
             <span
               style={{
-                fontSize: "11px",
+                fontSize: "14px",
                 color: COLORS.textMuted,
                 textTransform: "uppercase",
                 letterSpacing: "2px",
@@ -104,7 +104,7 @@ export default function TVHeader() {
               alignItems: "center",
               gap: "8px",
               flex: 1,
-              maxWidth: "400px",
+              maxWidth: "520px",
             }}
           >
             <input
@@ -114,7 +114,7 @@ export default function TVHeader() {
               placeholder="Tìm phim..."
               style={{
                 flex: 1,
-                padding: "10px 16px",
+                padding: "12px 20px",
                 background: "rgba(255,255,255,0.08)",
                 border: `1px solid ${COLORS.border}`,
                 borderRadius: RADIUS.md,
@@ -122,21 +122,21 @@ export default function TVHeader() {
                 fontSize: FONT.md,
                 outline: "none",
                 fontFamily: FONT.family,
-                minHeight: "44px",
+                minHeight: "56px",
               }}
             />
             <button
               type="submit"
               style={{
-                padding: "10px 20px",
+                padding: "12px 24px",
                 background: COLORS.accent,
                 color: "#000",
                 border: "none",
                 borderRadius: RADIUS.md,
                 fontWeight: 700,
-                fontSize: FONT.sm,
+                fontSize: FONT.md,
                 cursor: "pointer",
-                minHeight: "44px",
+                minHeight: "56px",
                 fontFamily: FONT.family,
               }}
             >
@@ -150,13 +150,13 @@ export default function TVHeader() {
               onClick={() => router.push("/tv/watchlist")}
               title="Phim đã lưu"
               style={{
-                width: "44px",
-                height: "44px",
+                width: "56px",
+                height: "56px",
                 background: "rgba(255,255,255,0.08)",
                 border: `1px solid ${COLORS.border}`,
                 borderRadius: RADIUS.md,
                 color: COLORS.accent,
-                fontSize: "20px",
+                fontSize: "24px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -170,15 +170,15 @@ export default function TVHeader() {
             <button
               onClick={() => router.push("/phimhay")}
               style={{
-                padding: "8px 16px",
+                padding: "10px 20px",
                 background: "rgba(255,255,255,0.08)",
                 border: `1px solid ${COLORS.border}`,
                 borderRadius: RADIUS.md,
                 color: COLORS.textMuted,
-                fontSize: FONT.sm,
+                fontSize: FONT.md,
                 cursor: "pointer",
                 fontFamily: FONT.family,
-                minHeight: "44px",
+                minHeight: "56px",
               }}
             >
               Bản Desktop ↗
@@ -190,9 +190,9 @@ export default function TVHeader() {
         <nav
           style={{
             display: "flex",
-            gap: "4px",
+            gap: "8px",
             overflowX: "auto",
-            paddingBottom: "8px",
+            paddingBottom: "12px",
             scrollBehavior: "smooth",
           }}
         >
@@ -201,16 +201,16 @@ export default function TVHeader() {
               key={item.path}
               onClick={() => router.push(item.path)}
               style={{
-                padding: "8px 16px",
+                padding: "10px 18px",
                 background: isActive(item.path) ? COLORS.accent : "transparent",
                 color: isActive(item.path) ? "#000" : COLORS.textMuted,
                 border: "none",
                 borderRadius: RADIUS.full,
-                fontSize: FONT.sm,
+                fontSize: FONT.md,
                 fontWeight: isActive(item.path) ? 700 : 500,
                 cursor: "pointer",
                 whiteSpace: "nowrap",
-                minHeight: "40px",
+                minHeight: "52px",
                 fontFamily: FONT.family,
               }}
             >

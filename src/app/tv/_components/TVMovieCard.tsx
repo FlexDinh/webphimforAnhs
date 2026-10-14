@@ -18,7 +18,7 @@ interface TVMovieCardProps {
 
 export default function TVMovieCard({
   movie,
-  width = "180px",
+  width = "220px",
   showRating = true,
   rank,
   loading = "lazy",
@@ -119,8 +119,8 @@ export default function TVMovieCard({
               position: "absolute" as const,
               top: "8px",
               left: "8px",
-              width: "32px",
-              height: "32px",
+              width: "40px",
+              height: "40px",
               borderRadius: "8px",
               background:
                 rank <= 3
@@ -131,7 +131,7 @@ export default function TVMovieCard({
               alignItems: "center",
               justifyContent: "center",
               fontWeight: 900,
-              fontSize: "16px",
+              fontSize: "20px",
               zIndex: 2,
             }}
           >
@@ -149,7 +149,7 @@ export default function TVMovieCard({
                 borderRadius: "4px",
                 background: COLORS.accent,
                 color: "#000",
-                fontSize: "11px",
+                fontSize: "14px",
                 fontWeight: 700,
               }}
             >
@@ -165,7 +165,7 @@ export default function TVMovieCard({
                 borderRadius: "4px",
                 background: "linear-gradient(135deg, #FF8C00, #FF4500)",
                 color: "#FFF",
-                fontSize: "11px",
+                fontSize: "14px",
                 fontWeight: 700,
               }}
             >
@@ -185,7 +185,7 @@ export default function TVMovieCard({
               borderRadius: "4px",
               background: "rgba(0,0,0,0.75)",
               color: "#FFF",
-              fontSize: "12px",
+              fontSize: "14px",
               fontWeight: 700,
             }}
           >
@@ -204,7 +204,7 @@ export default function TVMovieCard({
               borderRadius: "4px",
               background: "rgba(0,0,0,0.75)",
               color: COLORS.accent,
-              fontSize: "12px",
+              fontSize: "14px",
               fontWeight: 700,
             }}
           >

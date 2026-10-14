@@ -10,7 +10,7 @@ import { getTVImageUrl } from "@/lib/tvImageUrl";
 import { generateSlug } from "@/lib/movieClassification";
 import { getRecentlyWatched, clearWatchProgress } from "@/lib/movieUtils";
 import TVMovieCard from "./_components/TVMovieCard";
-import { COLORS, FONT, SPACING, RADIUS, styles } from "./_components/TVStyles";
+import { COLORS, FONT, RADIUS, styles } from "./_components/TVStyles";
 
 /* ─── Continue Watching Section ─── */
 function TVContinueWatchingRow({
@@ -26,7 +26,7 @@ function TVContinueWatchingRow({
   if (!items || items.length === 0) return null;
 
   return (
-    <section style={{ marginBottom: "40px" }}>
+    <section style={{ marginBottom: "48px" }}>
       <div style={styles.sectionHeader}>
         <h2 style={styles.sectionTitle}>⏳ Tiếp tục xem</h2>
       </div>
@@ -36,7 +36,7 @@ function TVContinueWatchingRow({
           const isFocused = focusedIndex === index;
 
           return (
-            <div key={`${item.movieSlug}-${item.episodeSlug || ""}`} style={{ position: "relative" as const, width: "180px", flexShrink: 0 }}>
+            <div key={`${item.movieSlug}-${item.episodeSlug || ""}`} style={{ position: "relative" as const, width: "220px", flexShrink: 0 }}>
               <button
                 tabIndex={0}
                 onFocus={() => setFocusedIndex(index)}
@@ -91,7 +91,7 @@ function TVContinueWatchingRow({
                 <h3
                   style={{
                     margin: "8px 0 2px",
-                    fontSize: FONT.sm,
+                    fontSize: FONT.md,
                     fontWeight: 600,
                     color: COLORS.text,
                     overflow: "hidden",
@@ -105,7 +105,7 @@ function TVContinueWatchingRow({
                   <p
                     style={{
                       margin: 0,
-                      fontSize: FONT.xs,
+                      fontSize: FONT.sm,
                       color: COLORS.textDim,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -136,7 +136,7 @@ function TVContinueWatchingRow({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "14px",
+                  fontSize: "16px",
                   zIndex: 2,
                 }}
               >
@@ -172,7 +172,7 @@ function TVMovieRow({
   }, []);
 
   return (
-    <section style={{ marginBottom: "40px" }}>
+    <section style={{ marginBottom: "48px" }}>
       <div style={styles.sectionHeader}>
         <h2 style={styles.sectionTitle}>{title}</h2>
         <button
@@ -196,7 +196,7 @@ function TVMovieRow({
               <div
                 key={i}
                 style={{
-                  width: "180px",
+                  width: "220px",
                   flexShrink: 0,
                 }}
               >
@@ -210,7 +210,7 @@ function TVMovieRow({
                 />
                 <div
                   style={{
-                    height: "14px",
+                    height: "18px",
                     width: "75%",
                     borderRadius: "4px",
                     background: "#2a2d3e",
@@ -249,7 +249,7 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
     return (
       <div
         style={{
-          height: "500px",
+          height: "640px",
           background: "linear-gradient(135deg, #1a1c2e, #0B0D13)",
           display: "flex",
           alignItems: "center",
@@ -276,7 +276,7 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
     <div
       style={{
         position: "relative" as const,
-        height: "540px",
+        height: "640px",
         overflow: "hidden",
         background: "#0B0D13",
       }}
@@ -319,15 +319,15 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
         style={{
           position: "relative" as const,
           zIndex: 2,
-          maxWidth: "1400px",
+          maxWidth: "1760px",
           margin: "0 auto",
-          padding: `0 ${SPACING.lg}px`,
+          padding: "0 40px",
           height: "100%",
           display: "flex",
           alignItems: "center",
         }}
       >
-        <div style={{ maxWidth: "600px" }}>
+        <div style={{ maxWidth: "760px" }}>
           {/* Tags */}
           <div
             style={{
@@ -344,7 +344,7 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
                   borderRadius: RADIUS.full,
                   background: COLORS.accent,
                   color: "#000",
-                  fontSize: "13px",
+                  fontSize: "16px",
                   fontWeight: 700,
                 }}
               >
@@ -357,7 +357,7 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
                 borderRadius: RADIUS.full,
                 background: "rgba(255,255,255,0.1)",
                 color: COLORS.text,
-                fontSize: "13px",
+                fontSize: "16px",
               }}
             >
               {movie.year || ""}
@@ -369,7 +369,7 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
                   borderRadius: RADIUS.full,
                   background: "rgba(255,216,117,0.2)",
                   color: COLORS.accent,
-                  fontSize: "13px",
+                  fontSize: "16px",
                   fontWeight: 700,
                 }}
               >
@@ -381,7 +381,7 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
           {/* Title */}
           <h1
             style={{
-              fontSize: "42px",
+              fontSize: "60px",
               fontWeight: 800,
               color: COLORS.text,
               margin: "0 0 8px",
@@ -395,7 +395,7 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
           {/* Subtitle */}
           <p
             style={{
-              fontSize: "18px",
+              fontSize: "24px",
               color: COLORS.accent,
               margin: "0 0 24px",
             }}
@@ -461,8 +461,8 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
           left: "16px",
           top: "50%",
           transform: "translateY(-50%)",
-          width: "48px",
-          height: "48px",
+          width: "56px",
+          height: "56px",
           borderRadius: "50%",
           background: "rgba(0,0,0,0.5)",
           color: COLORS.text,
@@ -484,8 +484,8 @@ function TVHero({ movies }: { movies: OPhimMovie[] }) {
           right: "16px",
           top: "50%",
           transform: "translateY(-50%)",
-          width: "48px",
-          height: "48px",
+          width: "56px",
+          height: "56px",
           borderRadius: "50%",
           background: "rgba(0,0,0,0.5)",
           color: COLORS.text,
@@ -638,9 +638,9 @@ export default function TVHomePage() {
 
       <div
         style={{
-          maxWidth: "1400px",
+          maxWidth: "1760px",
           margin: "0 auto",
-          padding: `${SPACING.xl}px ${SPACING.lg}px`,
+          padding: "48px 40px",
         }}
       >
         <TVContinueWatchingRow items={continueWatching} onRemove={handleRemoveProgress} />
