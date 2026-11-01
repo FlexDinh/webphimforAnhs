@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { DEFAULT_MANAGED_API_CONFIG } from "@/lib/apiConfig";
+import { fetchVsmovSource } from "@/lib/vsmovApi";
 
 /**
  * /api/movies — Multi-source proxy với race pattern
@@ -18,8 +19,7 @@ export const dynamic = "force-dynamic";
 const OPHIM_BASES = [
   "https://phimapi.com",
   DEFAULT_MANAGED_API_CONFIG.ophimBaseUrl,
-  "https://ophim1.com",
-].filter((v, i, a) => a.indexOf(v) === i); // unique
+].filter((v, i, a) => a.indexOf(v) === i); // unique (ophim1.com removed — domain is dead since 2026)
 
 const NGUONC_BASE = "https://phim.nguonc.com/api";
 const KKPHIM_BASE = "https://phimapi.com";
@@ -296,6 +296,7 @@ export async function GET(request: NextRequest) {
     wrapSource("KKPhim", fetchKKPhim(path, params)),
     ...OPHIM_BASES.map((base) => wrapSource(`OPhim(${base})`, fetchOPhim(base, path, params))),
     wrapSource("NguonC", fetchNguonc(path, params)),
+    wrapSource("VSMOV", fetchVsmovSource(path, params)),
   ];
 
   try {

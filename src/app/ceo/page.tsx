@@ -93,13 +93,9 @@ const tabs = [
 // Các URL này được cập nhật định kỳ từ kết quả API phim mới nhất
 const IMAGE_TEST_URLS: { label: string; url: string; dynamic?: boolean }[] = [
   {
-    label: "OPhim CDN",
-    url: "https://img.ophim.live/uploads/movies/avatar-2-thumb.jpg",
-    dynamic: true, // sẽ được thay bằng ảnh thật từ API khi test
-  },
-  {
     label: "PhimImg CDN",
-    url: "https://phimimg.com/upload/vod/20231128-1/c94e35ff50af80e5bb3e7b8a6f2d1c09.jpg",
+    url: "https://phimimg.com/uploads/movies/20261024/thuong-cong-chua-thumb.webp",
+    dynamic: true, // sẽ được thay bằng ảnh thật từ API khi test
   },
   {
     label: "TMDB Image",
@@ -107,7 +103,11 @@ const IMAGE_TEST_URLS: { label: string; url: string; dynamic?: boolean }[] = [
   },
   {
     label: "NguonC Image",
-    url: "https://phim.nguonc.com/images/film/avatar-2.jpg",
+    url: "https://img.nguonc.com/images/img-3fcdbf7e8087e53225337ac84c2332b20f8a0821933cb5bc0a8d2cf3f54795e9.jpg",
+  },
+  {
+    label: "VSMOV Image",
+    url: "https://vsmov.com/storage/images/IwrDPrB4d2DMcpnGkvan46yINL.jpg",
   },
 ];
 

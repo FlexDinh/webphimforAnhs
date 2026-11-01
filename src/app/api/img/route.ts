@@ -9,10 +9,12 @@ const ALLOWED_HOSTS = [
   "phimimg.com",
   "image.tmdb.org",
   "phim.nguonc.com",
+  "img.nguonc.com",
   "ophim1.com",
   "phimapi.com",
   "cdn.ophim.live",
   "i.imgur.com",
+  "vsmov.com",
 ];
 
 export async function GET(request: NextRequest) {

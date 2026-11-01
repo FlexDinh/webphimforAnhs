@@ -6,6 +6,7 @@ import {
     getOPhimMovieImageBase,
 } from "./apiConfig.ts";
 import { TMDB_SOURCES } from "./streamingApi";
+import { normalizeVsmovDetail } from "./vsmovApi";
 
 const DETAIL_CACHE_TTL_MS = 10 * 60 * 1000;
 const DETAIL_REVALIDATE_SECONDS = 300;
@@ -35,6 +36,11 @@ export const STABLE_PROVIDERS = [
         name: "OPhim",
         url: DEFAULT_MANAGED_API_CONFIG.ophimBaseUrl,
         image_url: getOPhimMovieImageBase(),
+    },
+    {
+        name: "VSMOV",
+        url: "https://vsmov.com/api",
+        image_url: "https://vsmov.com",
     },
 ];
 
@@ -281,6 +287,58 @@ async function fetchFromKkPhim(slug: string, getMovieName: () => Promise<string 
     throw new Error("KKPhim fetch failed");
 }
 
+async function fetchFromVsmov(slug: string, getMovieName: () => Promise<string | undefined>): Promise<UnifiedResponse> {
+    try {
+        const data = await fetchJsonWithTimeout<any>(`https://vsmov.com/api/phim/${slug}`, 6000);
+        if (data?.status) {
+            const normalized = normalizeVsmovDetail(data) as any;
+            const unified: UnifiedResponse = {
+                status: true,
+                movie: {
+                    ...normalized.movie,
+                    id: normalized.movie._id,
+                },
+                episodes: (normalized.episodes || []).map((s: any) => ({
+                    ...s,
+                    server_name: `VSMOV - ${s.server_name}`,
+                })),
+            };
+            if (isUsableDetail(unified)) {
+                return unified;
+            }
+        }
+    } catch {}
+
+    const movieName = await getMovieName();
+    if (movieName) {
+        try {
+            const searchData = await fetchJsonWithTimeout<any>(`https://vsmov.com/api/tim-kiem?keyword=${encodeURIComponent(movieName)}`, 6000);
+            const firstMatch = searchData?.items?.[0];
+            if (firstMatch?.slug) {
+                const data = await fetchJsonWithTimeout<any>(`https://vsmov.com/api/phim/${firstMatch.slug}`, 6000);
+                if (data?.status) {
+                    const normalized = normalizeVsmovDetail(data) as any;
+                    const unified: UnifiedResponse = {
+                        status: true,
+                        movie: {
+                            ...normalized.movie,
+                            id: normalized.movie._id,
+                        },
+                        episodes: (normalized.episodes || []).map((s: any) => ({
+                            ...s,
+                            server_name: `VSMOV - ${s.server_name}`,
+                        })),
+                    };
+                    if (isUsableDetail(unified)) {
+                        return unified;
+                    }
+                }
+            }
+        } catch {}
+    }
+    throw new Error("VSMOV fetch failed");
+}
+
 export async function getBestStream(slug: string) {
     try {
         const ophimData = await fetchJsonWithTimeout<any>(`${getOPhimBaseUrl()}/phim/${slug}`, 4000, 120);
@@ -318,6 +376,16 @@ export async function getBestStream(slug: string) {
                     source: "KKPhim",
                 };
             })(),
+            (async () => {
+                const data = await fetchJsonWithTimeout<any>(`https://vsmov.com/api/phim/${slug}`, 5000, 120);
+                const m3u8 = data?.episodes?.[0]?.server_data?.[0]?.link_m3u8;
+                if (!m3u8) throw new Error("VSMOV stream not found");
+                return {
+                    type: "m3u8",
+                    url: m3u8,
+                    source: "VSMOV",
+                };
+            })(),
         ]);
     } catch {
         return null;
@@ -343,7 +411,8 @@ export async function getUnifiedMovieDetail(slug: string): Promise<UnifiedRespon
         const results = await Promise.allSettled([
             ophimPromise,
             fetchFromKkPhim(slug, getMovieName),
-            fetchFromNguonC(slug, getMovieName)
+            fetchFromNguonC(slug, getMovieName),
+            fetchFromVsmov(slug, getMovieName),
         ]);
 
         const finalResult: UnifiedResponse = {

@@ -83,6 +83,14 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'img.nguonc.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'vsmov.com',
+      },
+      {
+        protocol: 'https',
         hostname: '**.ophim.live',
       },
     ],

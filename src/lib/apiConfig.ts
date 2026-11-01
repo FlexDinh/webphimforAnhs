@@ -1,6 +1,5 @@
 // Centralized fallback domain constants
 export const OPHIM_FALLBACK_DOMAINS = [
-  'https://ophim1.com',
   'https://phimapi.com',
 ] as const;
 
@@ -10,7 +9,9 @@ export const IMAGE_CDN_DOMAINS = {
   cdnOphim: 'https://phimimg.com',
   tmdb: 'https://image.tmdb.org',
   nguonc: 'https://phim.nguonc.com',
+  imgNguonc: 'https://img.nguonc.com',
   imgur: 'https://i.imgur.com',
+  vsmov: 'https://vsmov.com',
 } as const;
 
 export const ALLOWED_IMAGE_HOSTS = [
@@ -18,10 +19,12 @@ export const ALLOWED_IMAGE_HOSTS = [
   'phimimg.com',
   'image.tmdb.org',
   'phim.nguonc.com',
+  'img.nguonc.com',
   'ophim1.com',
   'phimapi.com',
   'cdn.ophim.live',
   'i.imgur.com',
+  'vsmov.com',
 ] as const;
 
 export interface ManagedApiConfig {
