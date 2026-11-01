@@ -6,7 +6,7 @@ test("builds current OPhim CDN URLs for relative poster paths", async () => {
 
   assert.equal(
     getImageUrl("hom-nay-lai-ban-het-poster.jpg"),
-    "https://img.ophim.live/uploads/movies/hom-nay-lai-ban-het-poster.jpg"
+    "https://phimimg.com/uploads/movies/hom-nay-lai-ban-het-poster.jpg"
   );
 });
 
@@ -21,8 +21,8 @@ test("normalizes protocol-relative and upload-prefixed image paths", async () =>
   const { getImageUrl } = await import("./imageUrl.ts");
 
   assert.equal(getImageUrl("//img.ophim.live/uploads/movies/a.jpg"), "https://img.ophim.live/uploads/movies/a.jpg");
-  assert.equal(getImageUrl("/uploads/movies/a.jpg"), "https://img.ophim.live/uploads/movies/a.jpg");
-  assert.equal(getImageUrl("uploads/movies/a.jpg"), "https://img.ophim.live/uploads/movies/a.jpg");
+  assert.equal(getImageUrl("/uploads/movies/a.jpg"), "https://phimimg.com/uploads/movies/a.jpg");
+  assert.equal(getImageUrl("uploads/movies/a.jpg"), "https://phimimg.com/uploads/movies/a.jpg");
 });
 
 test("uses phimimg CDN for upload/vod paths returned by phimapi", async () => {
