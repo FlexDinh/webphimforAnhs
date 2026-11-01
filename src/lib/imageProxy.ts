@@ -18,7 +18,6 @@ const PROXY_HOSTS = [
   "phimimg.com",
   "image.tmdb.org",
   "phim.nguonc.com",
-  "img.nguonc.com",
   "ophim1.com",
   "phimapi.com",
   "cdn.ophim.live",

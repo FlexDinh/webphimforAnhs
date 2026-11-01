@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
       cache: "no-store",
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; RoPhimBot/1.0; +https://rophim.vercel.app)",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
         Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
         "Accept-Encoding": "gzip, deflate, br",
         Referer: parsedUrl.origin,
